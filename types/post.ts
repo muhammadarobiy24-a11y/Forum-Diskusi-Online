@@ -20,6 +20,7 @@ export interface Post {
   author: PostAuthor;
   category: PostCategory;
   comment_count: number;
+  like_count: number;
 }
 
 export type PostSort = "newest" | "oldest" | "most_viewed" | "most_commented";

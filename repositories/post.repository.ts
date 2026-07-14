@@ -13,6 +13,7 @@ interface SupabasePost {
   author: PostAuthor[] | PostAuthor;
   category: PostCategory[] | PostCategory;
   comments?: { count: number }[];
+  likes?: { count: number }[];
 }
 
 function mapPost(item: SupabasePost): Post {
@@ -26,6 +27,7 @@ function mapPost(item: SupabasePost): Post {
     author: Array.isArray(item.author) ? item.author[0] : item.author,
     category: Array.isArray(item.category) ? item.category[0] : item.category,
     comment_count: item.comments?.[0]?.count ?? 0,
+    like_count: item.likes?.[0]?.count ?? 0,
   };
 }
 
@@ -118,7 +120,8 @@ export async function getPostById(id: string): Promise<Post | null> {
         name,
         slug
       ),
-      comments(count)
+      comments(count),
+      likes(count)
     `
     )
     .eq("id", id)
@@ -135,19 +138,7 @@ export async function getPostById(id: string): Promise<Post | null> {
 
 export async function incrementPostViews(id: string): Promise<void> {
   const supabase = createClient();
-
-  const { data } = await supabase
-    .from("posts")
-    .select("views")
-    .eq("id", id)
-    .single();
-
-  if (data) {
-    await supabase
-      .from("posts")
-      .update({ views: data.views + 1 })
-      .eq("id", id);
-  }
+  await supabase.rpc("increment_post_views", { post_id: id });
 }
 
 export async function deletePost(id: string): Promise<void> {
@@ -214,7 +205,8 @@ export async function getPosts({
         name,
         slug
       ),
-      comments(count)
+      comments(count),
+      likes(count)
     `,
       { count: "exact" }
     )
@@ -239,7 +231,7 @@ export async function getPosts({
       query = query.order("views", { ascending: false });
       break;
     case "most_commented":
-      query = query.order("created_at", { ascending: false });
+      query = query.order("comment_count", { ascending: false });
       break;
     default:
       query = query.order("created_at", { ascending: false });
@@ -251,11 +243,7 @@ export async function getPosts({
 
   if (error) throw error;
 
-  let posts = (data as SupabasePost[] || []).map(mapPost);
-
-  if (sort === "most_commented") {
-    posts = posts.sort((a, b) => b.comment_count - a.comment_count);
-  }
+  const posts = (data as SupabasePost[] || []).map(mapPost);
 
   const totalCount = count || 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / limit));

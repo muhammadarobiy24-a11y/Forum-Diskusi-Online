@@ -20,7 +20,7 @@ export default function AdminLayout({
   const { user } = useSession();
   const pathname = usePathname();
 
-  if (!user || user.user_metadata?.role !== "admin") {
+  if (!user || user.app_metadata?.role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Access denied. Admin only.</p>

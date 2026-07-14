@@ -5,12 +5,17 @@ import Link from "next/link";
 import { Menu, Search, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/components/providers/SessionProvider";
+import { useUnreadNotifications } from "@/hooks/useUnreadNotifications";
 import UserMenu from "./UserMenu";
 import MobileNav from "./MobileNav";
 
 export default function AppHeader() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { user } = useSession();
+  const { data: unreadCount } = useUnreadNotifications(user?.id);
+
+  const displayCount = unreadCount ?? 0;
+  const hasUnread = displayCount > 0;
 
   return (
     <>
@@ -39,10 +44,21 @@ export default function AppHeader() {
             />
           </div>
 
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <Link href="/notifications">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              {hasUnread && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+                  {displayCount > 99 ? "99+" : displayCount}
+                </span>
+              )}
+            </Button>
+          </Link>
 
           {user && <UserMenu />}
         </div>

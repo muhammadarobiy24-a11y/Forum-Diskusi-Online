@@ -33,7 +33,7 @@ export default function CreateCategoryPage() {
     },
   });
 
-  if (!user || user.user_metadata?.role !== "admin") {
+  if (!user || user.app_metadata?.role !== "admin") {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <p className="text-muted-foreground">Access denied. Admin only.</p>

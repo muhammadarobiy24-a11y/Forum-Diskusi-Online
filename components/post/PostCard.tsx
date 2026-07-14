@@ -5,6 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Clock, MessageCircle } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils/date";
+import { useSession } from "@/components/providers/SessionProvider";
+import { useLikeStatus } from "@/hooks/useLikeStatus";
+import { useBookmarkStatus } from "@/hooks/useBookmarkStatus";
+import LikeButton from "@/components/like/LikeButton";
+import BookmarkButton from "@/components/bookmark/BookmarkButton";
 import type { Post } from "@/types/post";
 
 interface PostCardProps {
@@ -12,6 +17,10 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post }: PostCardProps) {
+  const { user } = useSession();
+  const { data: isLiked } = useLikeStatus(user?.id, post.id);
+  const { data: isBookmarked } = useBookmarkStatus(user?.id, post.id);
+
   const contentPreview =
     post.content.length > 150
       ? post.content.substring(0, 150) + "..."
@@ -35,14 +44,14 @@ export default function PostCard({ post }: PostCardProps) {
             {contentPreview}
           </p>
 
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <span className="font-medium text-foreground">
                 {post.author?.username || "Anonymous"}
               </span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-center gap-1">
                 <Eye className="h-4 w-4" />
                 <span>{post.views}</span>
@@ -51,6 +60,15 @@ export default function PostCard({ post }: PostCardProps) {
                 <MessageCircle className="h-4 w-4" />
                 <span>{post.comment_count}</span>
               </div>
+              <LikeButton
+                postId={post.id}
+                isLiked={isLiked ?? false}
+                likeCount={post.like_count}
+              />
+              <BookmarkButton
+                postId={post.id}
+                isBookmarked={isBookmarked ?? false}
+              />
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 <span>{formatRelativeDate(post.created_at)}</span>

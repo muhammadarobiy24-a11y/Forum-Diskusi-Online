@@ -10,6 +10,12 @@ export const QUERY_KEYS = {
   comments: ["comments"] as const,
   replies: ["replies"] as const,
 
+  bookmarks: ["bookmarks"] as const,
+
+  likes: ["likes"] as const,
+
+  notifications: ["notifications"] as const,
+
   adminCategories: ["admin-categories"] as const,
 } as const;
 
@@ -33,4 +39,19 @@ export const queryKeys = {
   comments: (postId: string) => [...QUERY_KEYS.comments, postId] as const,
 
   replies: (commentId: string) => [...QUERY_KEYS.replies, commentId] as const,
+
+  bookmarks: (userId: string, params?: { page?: number; limit?: number; search?: string; sort?: string }) =>
+    params
+      ? [...QUERY_KEYS.bookmarks, userId, params] as const
+      : [...QUERY_KEYS.bookmarks, userId] as const,
+
+  bookmark: (postId: string) => ["bookmark", postId] as const,
+
+  likes: (postId: string) => [...QUERY_KEYS.likes, postId] as const,
+
+  like: (postId: string) => ["like", postId] as const,
+
+  notifications: (userId: string) => [...QUERY_KEYS.notifications, userId] as const,
+
+  unreadNotifications: (userId: string) => ["unread-notifications", userId] as const,
 };

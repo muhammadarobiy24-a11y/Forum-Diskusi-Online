@@ -8,7 +8,7 @@ import { LayoutGrid, Users } from "lucide-react";
 export default function AdminPage() {
   const { user } = useSession();
 
-  if (!user || user.user_metadata?.role !== "admin") {
+  if (!user || user.app_metadata?.role !== "admin") {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <p className="text-muted-foreground">Access denied. Admin only.</p>

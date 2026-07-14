@@ -48,7 +48,7 @@ export default function AdminCategoriesPage() {
     },
   });
 
-  if (!user || user.user_metadata?.role !== "admin") {
+  if (!user || user.app_metadata?.role !== "admin") {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <p className="text-muted-foreground">Access denied. Admin only.</p>
@@ -67,7 +67,7 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold">Manage Categories</h1>
         <Link href="/admin/categories/create">
           <Button>
@@ -91,7 +91,7 @@ export default function AdminCategoriesPage() {
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 border rounded-lg"
                 >
                   <div>
                     <h3 className="font-medium">{category.name}</h3>

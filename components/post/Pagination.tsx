@@ -46,7 +46,7 @@ export default function Pagination({
         >
           <Link href={buildUrl(page - 1)} className="flex items-center gap-1">
             <ChevronLeft className="h-4 w-4" />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </Link>
         </Button>
 
@@ -88,7 +88,7 @@ export default function Pagination({
           disabled={page === totalPages}
         >
           <Link href={buildUrl(page + 1)} className="flex items-center gap-1">
-            Next
+            <span className="hidden sm:inline">Next</span>
             <ChevronRight className="h-4 w-4" />
           </Link>
         </Button>

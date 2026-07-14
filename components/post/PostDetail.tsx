@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Eye, Clock, ArrowLeft, Pencil, MessageCircle } from "lucide-react";
 import { formatDate } from "@/lib/utils/date";
 import { useSession } from "@/components/providers/SessionProvider";
+import { useLikeStatus } from "@/hooks/useLikeStatus";
+import { useBookmarkStatus } from "@/hooks/useBookmarkStatus";
+import LikeButton from "@/components/like/LikeButton";
+import BookmarkButton from "@/components/bookmark/BookmarkButton";
 import DeletePostButton from "./DeletePostButton";
 import type { Post } from "@/types/post";
 
@@ -16,6 +20,8 @@ interface PostDetailProps {
 
 export default function PostDetail({ post }: PostDetailProps) {
   const { user } = useSession();
+  const { data: isLiked } = useLikeStatus(user?.id, post.id);
+  const { data: isBookmarked } = useBookmarkStatus(user?.id, post.id);
   const initials = (post.author?.username || "A").slice(0, 2).toUpperCase();
   const isAuthor = user?.id === post.author?.id;
 
@@ -26,12 +32,12 @@ export default function PostDetail({ post }: PostDetailProps) {
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to posts
+        Kembali ke daftar postingan
       </Link>
 
       <div className="space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-3xl font-bold">{post.title}</h1>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">{post.title}</h1>
           <div className="flex items-center gap-2 shrink-0">
             {post.category && (
               <Badge variant="secondary">
@@ -41,8 +47,8 @@ export default function PostDetail({ post }: PostDetailProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Avatar size="sm">
                 {post.author?.avatar_url && (
@@ -55,19 +61,21 @@ export default function PostDetail({ post }: PostDetailProps) {
               </span>
             </div>
 
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{formatDate(post.created_at)}</span>
-            </div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                <span>{formatDate(post.created_at)}</span>
+              </div>
 
-            <div className="flex items-center gap-1">
-              <Eye className="h-4 w-4" />
-              <span>{post.views} views</span>
-            </div>
+              <div className="flex items-center gap-1">
+                <Eye className="h-4 w-4" />
+                <span>{post.views} views</span>
+              </div>
 
-            <div className="flex items-center gap-1">
-              <MessageCircle className="h-4 w-4" />
-              <span>{post.comment_count} komentar</span>
+              <div className="flex items-center gap-1">
+                <MessageCircle className="h-4 w-4" />
+                <span>{post.comment_count} komentar</span>
+              </div>
             </div>
           </div>
 
@@ -82,6 +90,18 @@ export default function PostDetail({ post }: PostDetailProps) {
               <DeletePostButton postId={post.id} />
             </div>
           )}
+        </div>
+
+        <div className="flex items-center gap-2 border-t pt-4">
+          <LikeButton
+            postId={post.id}
+            isLiked={isLiked ?? false}
+            likeCount={post.like_count}
+          />
+          <BookmarkButton
+            postId={post.id}
+            isBookmarked={isBookmarked ?? false}
+          />
         </div>
       </div>
 
