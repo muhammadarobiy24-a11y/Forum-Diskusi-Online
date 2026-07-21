@@ -2,120 +2,154 @@
 
 import { useSession } from "@/components/providers/SessionProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Crown, Shield } from "lucide-react";
 import type { Community } from "@/features/community/types/community";
 
-interface MemberListProps {
-  community?: Community | null;
-}
+type MemberStatus = "online" | "idle" | "dnd" | "offline";
 
-/* mock online users — real implementation would need a presence API */
-function OnlineMember({
-  username,
-  avatarUrl,
-  role,
-  status = "online",
-}: {
+interface MemberRowProps {
   username: string;
   avatarUrl?: string | null;
-  role?: string;
-  status?: "online" | "idle" | "dnd" | "offline";
-}) {
+  role?: "owner" | "moderator" | "member";
+  status?: MemberStatus;
+  activity?: string;
+}
+
+const STATUS_CONFIG: Record<MemberStatus, { cls: string; label: string }> = {
+  online:  { cls: "dc-status-online",  label: "Online"  },
+  idle:    { cls: "dc-status-idle",    label: "Idle"    },
+  dnd:     { cls: "dc-status-dnd",     label: "Do Not Disturb" },
+  offline: { cls: "dc-status-offline", label: "Offline" },
+};
+
+function MemberRow({ username, avatarUrl, role, status = "online", activity }: MemberRowProps) {
   const initials = username.slice(0, 2).toUpperCase();
-  const statusClass = {
-    online:  "dc-status-online",
-    idle:    "dc-status-idle",
-    dnd:     "dc-status-dnd",
-    offline: "dc-status-offline",
-  }[status];
+  const { cls, label } = STATUS_CONFIG[status];
+  const isOffline = status === "offline";
 
   return (
-    <div className="group flex items-center gap-2 rounded px-2 py-1 hover:bg-[var(--dc-hover)] transition-colors cursor-pointer">
+    <div
+      className="group flex items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-[oklch(0.30_0.006_264)] transition-colors cursor-pointer mx-2"
+    >
       <div className="relative shrink-0">
         <Avatar size="sm">
           {avatarUrl && <AvatarImage src={avatarUrl} alt={username} />}
-          <AvatarFallback className="text-xs bg-[var(--dc-blurple)] text-white">
+          <AvatarFallback
+            className={`text-[11px] font-bold ${isOffline ? "bg-[oklch(0.31_0.006_264)] text-[var(--dc-text-channel)]" : "bg-[var(--dc-blurple)] text-white"}`}
+          >
             {initials}
           </AvatarFallback>
         </Avatar>
         <span
-          className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[var(--dc-member-bg)] ${statusClass}`}
+          className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[oklch(0.225_0.005_264)] ${cls}`}
+          title={label}
         />
       </div>
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-[var(--dc-text-muted)] group-hover:text-[var(--dc-text-primary)] truncate transition-colors">
-          {username}
-        </p>
-        {role && (
-          <p className="text-[10px] text-[var(--dc-text-channel)] truncate">{role}</p>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1">
+          <p
+            className={`text-[13px] font-semibold truncate transition-colors leading-tight ${
+              isOffline
+                ? "text-[var(--dc-text-channel)] group-hover:text-[oklch(0.72_0.006_264)]"
+                : "text-[oklch(0.78_0.006_264)] group-hover:text-[var(--dc-text-primary)]"
+            }`}
+          >
+            {username}
+          </p>
+          {role === "owner" && (
+            <Crown className="h-3 w-3 text-amber-400 shrink-0" />
+          )}
+          {role === "moderator" && (
+            <Shield className="h-3 w-3 text-[var(--dc-blurple)] shrink-0" />
+          )}
+        </div>
+        {activity && (
+          <p className="text-[11px] text-[var(--dc-text-channel)] truncate leading-tight">
+            {activity}
+          </p>
         )}
       </div>
     </div>
   );
 }
 
+function SectionLabel({ label, count }: { label: string; count: number }) {
+  return (
+    <p className="px-4 pt-5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--dc-text-channel)]">
+      {label} — {count}
+    </p>
+  );
+}
+
+interface MemberListProps {
+  community?: Community | null;
+}
+
 export default function MemberList({ community }: MemberListProps) {
   const { user } = useSession();
   const currentUsername =
-    user?.user_metadata?.username || user?.email?.split("@")[0] || "You";
+    (user?.user_metadata?.username as string) ||
+    user?.email?.split("@")[0] ||
+    "You";
   const currentAvatarUrl = user?.user_metadata?.avatar_url as string | undefined;
 
+  const offlineCount = community ? Math.max(0, community.member_count - 1) : 0;
+
   return (
-    <aside className="dc-member-bg hidden xl:flex flex-col w-60 shrink-0 overflow-y-auto border-l border-[var(--dc-hover)]">
-      <div className="p-3 space-y-4">
-        {/* Online section */}
-        <div>
-          <p className="px-2 mb-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--dc-text-channel)]">
-            Online — 1
-          </p>
-          <OnlineMember
-            username={currentUsername}
-            avatarUrl={currentAvatarUrl}
-            role="Member"
-            status="online"
-          />
-        </div>
+    <aside className="dc-member-bg hidden xl:flex flex-col w-64 shrink-0 overflow-y-auto border-l border-[oklch(1_0_0/6%)]">
+      {/* Online members */}
+      <SectionLabel label="Online" count={1} />
+      <MemberRow
+        username={currentUsername}
+        avatarUrl={currentAvatarUrl}
+        role="member"
+        status="online"
+        activity="Browsing forum"
+      />
 
-        {/* Community info */}
-        {community && (
-          <div>
-            <p className="px-2 mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--dc-text-channel)]">
-              About Community
-            </p>
-            <div className="px-2 space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="text-[var(--dc-text-channel)]">Members</span>
-                <span className="text-[var(--dc-text-primary)] font-medium">
-                  {community.member_count.toLocaleString("id-ID")}
-                </span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-[var(--dc-text-channel)]">Posts</span>
-                <span className="text-[var(--dc-text-primary)] font-medium">
-                  {community.post_count.toLocaleString("id-ID")}
-                </span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-[var(--dc-text-channel)]">Type</span>
-                <span className="text-[var(--dc-text-primary)] font-medium capitalize">
-                  {community.visibility}
-                </span>
-              </div>
-            </div>
+      {/* Offline members */}
+      {offlineCount > 0 && (
+        <>
+          <SectionLabel label="Offline" count={offlineCount} />
+          <div className="px-2">
+            {[...Array(Math.min(offlineCount, 5))].map((_, i) => (
+              <MemberRow
+                key={i}
+                username={`Member ${i + 1}`}
+                status="offline"
+                role="member"
+              />
+            ))}
+            {offlineCount > 5 && (
+              <p className="px-2 pt-1 pb-2 text-[12px] text-[var(--dc-text-channel)] italic">
+                +{offlineCount - 5} more offline
+              </p>
+            )}
           </div>
-        )}
+        </>
+      )}
 
-        {/* Offline section */}
-        <div>
-          <p className="px-2 mb-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--dc-text-channel)]">
-            Offline — {community ? Math.max(0, community.member_count - 1) : 0}
+      {/* Community info card */}
+      {community && (
+        <div className="mx-3 mt-4 mb-3 rounded-lg bg-[oklch(0.21_0.005_264)] border border-[oklch(1_0_0/6%)] p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--dc-text-channel)] mb-2">
+            Community Info
           </p>
-          <p className="px-2 text-xs text-[var(--dc-text-channel)] italic">
-            {community?.member_count
-              ? `${community.member_count - 1} member lainnya offline`
-              : "Belum ada member lain"}
-          </p>
+          <div className="space-y-1.5">
+            {[
+              { label: "Members",    value: community.member_count.toLocaleString("id-ID") },
+              { label: "Posts",      value: community.post_count.toLocaleString("id-ID") },
+              { label: "Visibility", value: community.visibility },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-center">
+                <span className="text-[12px] text-[var(--dc-text-channel)]">{label}</span>
+                <span className="text-[12px] font-medium text-[var(--dc-text-primary)] capitalize">{value}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </aside>
   );
 }

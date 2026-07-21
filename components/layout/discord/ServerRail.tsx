@@ -2,41 +2,57 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Plus, Compass } from "lucide-react";
+import { Home, Plus, Compass, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCommunities } from "@/features/community/hooks/useCommunities";
 
-function ServerIcon({
-  href,
-  label,
-  active,
-  children,
-}: {
+interface ServerIconProps {
   href: string;
   label: string;
   active?: boolean;
+  hasNotification?: boolean;
   children: React.ReactNode;
-}) {
+}
+
+function ServerIcon({ href, label, active, hasNotification, children }: ServerIconProps) {
   return (
-    <Link href={href} className="group relative flex items-center" title={label}>
-      {/* active indicator pill */}
+    <div className="relative flex items-center group" title={label}>
+      {/* Active pill indicator */}
       <span
         className={cn(
-          "absolute -left-3 w-1 rounded-r-full bg-[var(--dc-text-primary)] transition-all duration-200",
-          active ? "h-9 opacity-100" : "h-0 opacity-0 group-hover:h-5 group-hover:opacity-100"
+          "absolute -left-3 w-[3px] rounded-r-full bg-white transition-all duration-200 ease-out",
+          active
+            ? "h-10"
+            : "h-0 group-hover:h-5 opacity-0 group-hover:opacity-100"
         )}
       />
-      <div
-        className={cn(
-          "flex h-12 w-12 items-center justify-center overflow-hidden transition-all duration-200 text-[var(--dc-text-muted)]",
-          active
-            ? "rounded-[16px] bg-[var(--dc-blurple)] text-white"
-            : "rounded-[24px] bg-[var(--dc-hover)] group-hover:rounded-[16px] group-hover:bg-[var(--dc-blurple)] group-hover:text-white"
-        )}
-      >
-        {children}
-      </div>
-    </Link>
+
+      {/* Notification dot */}
+      {hasNotification && !active && (
+        <span className="absolute -left-1.5 bottom-0 w-2 h-2 rounded-full bg-white" />
+      )}
+
+      <Link href={href}>
+        <div
+          className={cn(
+            "relative flex h-12 w-12 items-center justify-center overflow-hidden font-semibold text-base transition-all duration-200 ease-out select-none",
+            active
+              ? "rounded-2xl bg-[var(--dc-blurple)] text-white shadow-lg dc-glow-blurple"
+              : "rounded-3xl bg-[oklch(0.28_0.006_264)] text-[var(--dc-text-muted)] group-hover:rounded-2xl group-hover:bg-[var(--dc-blurple)] group-hover:text-white group-hover:shadow-lg group-hover:dc-glow-blurple"
+          )}
+        >
+          {children}
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+function Divider() {
+  return (
+    <div className="flex items-center justify-center w-12">
+      <div className="h-[2px] w-8 rounded-full bg-[oklch(0.31_0.006_264)]" />
+    </div>
   );
 }
 
@@ -44,24 +60,32 @@ export default function ServerRail() {
   const pathname = usePathname();
   const { data: communities } = useCommunities();
 
-  const isHome = pathname === "/" || pathname.startsWith("/post") || pathname.startsWith("/bookmarks") || pathname.startsWith("/notifications");
+  const isHome =
+    pathname === "/" ||
+    pathname.startsWith("/post") ||
+    pathname.startsWith("/bookmarks") ||
+    pathname.startsWith("/notifications") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/categories");
 
   return (
     <nav
-      className="dc-server-rail hidden lg:flex flex-col items-center gap-2 py-3 w-[72px] shrink-0 overflow-y-auto"
-      aria-label="Server list"
+      className="dc-server-rail hidden lg:flex flex-col items-center gap-2.5 pt-3 pb-3 w-[80px] shrink-0 overflow-y-auto overflow-x-hidden"
+      aria-label="Communities"
     >
-      {/* Home */}
-      <ServerIcon href="/" label="Home" active={isHome}>
-        <Home className="h-5 w-5" />
+      {/* Home / Direct Messages */}
+      <ServerIcon href="/post" label="Home" active={isHome}>
+        <MessageSquare className="h-[22px] w-[22px]" />
       </ServerIcon>
 
-      {/* divider */}
-      <div className="mx-auto h-px w-8 bg-[var(--dc-hover)] rounded-full" />
+      <Divider />
 
-      {/* Communities */}
+      {/* Community server icons */}
       {communities?.map((community) => {
-        const isActive = pathname === `/communities/${community.slug}` || pathname.startsWith(`/communities/${community.slug}/`);
+        const isActive =
+          pathname === `/communities/${community.slug}` ||
+          pathname.startsWith(`/communities/${community.slug}/`);
         const initial = (community.name?.[0] ?? "?").toUpperCase();
 
         return (
@@ -79,23 +103,30 @@ export default function ServerRail() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <span className="text-sm font-bold">{initial}</span>
+              <span className="text-base font-bold tracking-tight">{initial}</span>
             )}
           </ServerIcon>
         );
       })}
 
-      {/* divider */}
-      <div className="mx-auto h-px w-8 bg-[var(--dc-hover)] rounded-full" />
+      <Divider />
 
-      {/* Explore */}
-      <ServerIcon href="/communities" label="Explore Communities" active={pathname === "/communities"}>
-        <Compass className="h-5 w-5" />
+      {/* Explore communities */}
+      <ServerIcon
+        href="/communities"
+        label="Explore Communities"
+        active={pathname === "/communities"}
+      >
+        <Compass className="h-[22px] w-[22px]" />
       </ServerIcon>
 
-      {/* Create */}
-      <ServerIcon href="/communities/create" label="Create Community" active={pathname === "/communities/create"}>
-        <Plus className="h-5 w-5" />
+      {/* Create community */}
+      <ServerIcon
+        href="/communities/create"
+        label="Create a Community"
+        active={pathname === "/communities/create"}
+      >
+        <Plus className="h-[22px] w-[22px]" strokeWidth={2.5} />
       </ServerIcon>
     </nav>
   );
