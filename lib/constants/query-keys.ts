@@ -17,6 +17,10 @@ export const QUERY_KEYS = {
   notifications: ["notifications"] as const,
 
   adminCategories: ["admin-categories"] as const,
+
+  communities: ["communities"] as const,
+  community: ["community"] as const,
+  communityMembership: ["community-membership"] as const,
 } as const;
 
 export const queryKeys = {
@@ -54,4 +58,11 @@ export const queryKeys = {
   notifications: (userId: string) => [...QUERY_KEYS.notifications, userId] as const,
 
   unreadNotifications: (userId: string) => ["unread-notifications", userId] as const,
+
+  communities: () => QUERY_KEYS.communities,
+
+  community: (slug: string) => [...QUERY_KEYS.community, slug] as const,
+
+  communityMembership: (communityId: string) =>
+    [...QUERY_KEYS.communityMembership, communityId] as const,
 };
