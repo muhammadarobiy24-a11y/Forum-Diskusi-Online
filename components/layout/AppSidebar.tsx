@@ -7,16 +7,20 @@ import {
   Home,
   LayoutGrid,
   Bookmark,
+  Bell,
   User,
   Settings,
 } from "lucide-react";
+import { Users } from "lucide-react";
 
 const menuItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/categories", label: "Categories", icon: LayoutGrid },
   { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+  { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/settings", label: "Settings", icon: Settings },
+  { title: "communities", href: "/communities", icon: Users,}
 ];
 
 interface AppSidebarProps {
@@ -60,3 +64,4 @@ export default function AppSidebar({ className }: AppSidebarProps) {
     </aside>
   );
 }
+

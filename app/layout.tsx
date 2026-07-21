@@ -32,7 +32,29 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('forum-theme');
+                  if (theme === 'dark' || theme === 'light') {
+                    document.documentElement.classList.add(theme);
+                  } else if (theme === 'system' || !theme) {
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                      document.documentElement.classList.add('dark');
+                    } else {
+                      document.documentElement.classList.add('light');
+                    }
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="h-full overflow-hidden">
         <ThemeProvider defaultTheme="system" storageKey="forum-theme">
           <QueryProvider>
             <SessionProvider>

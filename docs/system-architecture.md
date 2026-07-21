@@ -1,12 +1,12 @@
-# Forum Diskusi Online - System Architecture
+# Reddit-like Community Discussion Platform - System Architecture
 
 ## Project Information
 
 | Item               | Value                                     |
 | ------------------ | ----------------------------------------- |
-| Project Name       | Forum Diskusi Online                      |
+| Project Name       | Reddit-like Community Discussion Platform |
 | Architecture Style | Clean Architecture + Layered Architecture |
-| Frontend           | Next.js 15 (App Router)                   |
+| Frontend           | Next.js 16 (App Router)                   |
 | Backend            | Next.js Server Actions                    |
 | Database           | Supabase PostgreSQL                       |
 | Authentication     | Supabase Auth                             |
@@ -18,12 +18,12 @@
 
 # System Overview
 
-```text id="s5h8d2"
+```text
 Browser
    ↓
 Next.js App Router
    ↓
-Server Actions
+Server Actions / React Query
    ↓
 Service Layer
    ↓
@@ -40,7 +40,7 @@ Supabase
 
 # High-Level Architecture
 
-```text id="p7f4k9"
+```text
 ┌─────────────────┐
 │     Browser     │
 └────────┬────────┘
@@ -49,15 +49,12 @@ Supabase
 ┌─────────────────┐
 │ Next.js Frontend│
 │ App Router      │
+│ React Query     │
 └────────┬────────┘
          │
          ▼
 ┌─────────────────┐
 │ Server Actions  │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
 │ Service Layer   │
 └────────┬────────┘
          │
@@ -76,23 +73,36 @@ Supabase
 
 # Frontend Architecture
 
-```text id="f2m8x1"
-Pages
+```text
+Pages (App Router)
  ↓
-Layouts
+Layouts (MainLayout, AuthLayout)
  ↓
 Components
+ ├── Community
+ ├── Post
+ ├── Comment
+ ├── Vote
+ ├── Feed
+ ├── Sidebar
+ ├── Moderation
+ ├── Markdown
+ └── UI (Shadcn)
  ↓
-Hooks
+Hooks (React Query)
  ↓
-Server Actions
+Services
+ ↓
+Repositories
+ ↓
+Supabase Client
 ```
 
 ---
 
 # Backend Architecture
 
-```text id="v8k2c5"
+```text
 Server Actions
  ↓
 Services
@@ -106,10 +116,12 @@ Supabase Database
 
 # Directory Layer Architecture
 
-```text id="n4q7w3"
+```text
 app/
  ↓
 components/
+ ↓
+hooks/
  ↓
 services/
  ↓
@@ -124,7 +136,7 @@ lib/supabase/
 
 ## Login Flow
 
-```text id="d6k9m1"
+```text
 Login Page
  ↓
 Server Action
@@ -135,19 +147,19 @@ Session Created
  ↓
 Middleware Validation
  ↓
-Redirect to Home
+Redirect to Home Feed
 ```
 
 ---
 
 ## Register Flow
 
-```text id="r5j8p2"
+```text
 Register
  ↓
 Supabase Auth Signup
  ↓
-Create Profile
+Create Profile (with karma=0, cake_day=current_date)
  ↓
 Email Verification
  ↓
@@ -158,140 +170,281 @@ Login
 
 # Authorization Architecture (RBAC)
 
-```text id="c3n6v8"
+```text
 Member
- ├── Create Post
+ ├── Create Post (in joined communities)
+ ├── Vote (upvote/downvote)
  ├── Comment
- └── Bookmark
+ ├── Save Post
+ ├── Create Community
+ └── Join/Leave Community
 
-Moderator
- ├── Delete Reported Content
- └── Manage Reports
+Community Moderator (per community)
+ ├── Pin/Unpin Post
+ ├── Lock/Unlock Post
+ ├── Remove Post/Comment (in own community)
+ ├── Manage Community Rules
+ ├── Manage Community Flairs
+ ├── Manage Community Members
+ └── Review Reports (in own community)
 
 Admin
- ├── Manage Users
- ├── Manage Categories
+ ├── Manage All Communities
+ ├── Manage All Users
+ ├── Change User Role
  └── Full Access
 ```
 
 ---
 
-# Post Management Flow
+# Community Architecture
 
-## Create Post
+```text
+Community
+ ├── Creator (auto-moderator)
+ ├── Members
+ ├── Rules
+ ├── Flairs
+ ├── Posts
+ └── Moderators
+```
 
-```text id="q1z4l7"
+## Community Membership Flow
+
+```text
+User
+ ↓
+Browse Communities
+ ↓
+Click Join
+ ↓
+community_members INSERT
+ ↓
+Update member_count
+ ↓
+UI Update
+```
+
+---
+
+# Feed Architecture
+
+## Home Feed
+
+```text
+Logged In?
+ ├── YES → Fetch posts from joined communities
+ │         Sort by (Hot/Top/New/Rising)
+ └── NO  → Fetch global popular posts
+           Sort by Hot
+```
+
+## Community Feed
+
+```text
+Community Slug
+ ↓
+Fetch community posts
+ ↓
+Sort by (Hot/Top/New/Rising)
+ ↓
+Render Feed
+```
+
+## Sort Algorithms
+
+### Hot
+
+```text
+hot_score = log10(max(|vote_score|, 1)) * sign(vote_score) + hours_since_post / 12
+```
+
+### Top
+
+```text
+Sort by vote_score DESC
+Filter: today / this week / this month / this year / all time
+```
+
+### New
+
+```text
+Sort by created_at DESC
+```
+
+### Rising
+
+```text
+Sort by (vote_score / hours_since_post) DESC
+Only posts < 24 hours old
+```
+
+---
+
+# Voting Architecture
+
+```text
+Vote Button
+ ↓
+Optimistic UI Update
+ ↓
+Server Action
+ ↓
+Upsert vote
+ ↓
+Recalculate vote_score (post/comment)
+ ↓
+Recalculate hot_score (post)
+ ↓
+Update karma (voter + author)
+ ↓
+Notification (if upvote)
+```
+
+## Karma Calculation
+
+```text
+user karma = SUM(post vote_scores) + SUM(comment vote_scores)
+```
+
+---
+
+# Post Architecture
+
+## Create Post Flow
+
+```text
 Post Form
+ ↓
+Select Community
+ ↓
+Select Flair (optional)
+ ↓
+Choose Type (Text/Link/Image)
+ ↓
+Write Content
  ↓
 Zod Validation
  ↓
 Server Action
  ↓
-Service Layer
+Insert Post
  ↓
-Repository Layer
+Update post_count (community)
  ↓
-Supabase Database
- ↓
-Revalidate Path
+Redirect to Post Detail
 ```
 
 ---
 
-## Edit Post
+# Community Sidebar Architecture
 
-```text id="e7r2f5"
-Edit Form
- ↓
-Validation
- ↓
-Update Database
- ↓
-Refresh Cache
-```
-
----
-
-## Delete Post
-
-```text id="t8m3k1"
-Delete Button
- ↓
-Permission Check
- ↓
-Delete Database
- ↓
-Revalidate Feed
-```
-
----
-
-# Comment Architecture
-
-## Create Comment
-
-```text id="y2p6n4"
-Comment Form
- ↓
-Validation
- ↓
-Insert Comment
- ↓
-Create Notification
- ↓
-Realtime Update
-```
-
----
-
-## Reply Comment
-
-```text id="g4w8c9"
-Comment
- ↓
-parent_id
- ↓
-Nested Comment
+```text
+Route Context
+ ├── Home Feed
+ │   └── HomeSidebar
+ │       ├── Trending Communities
+ │       ├── Popular Posts
+ │       └── Quick Links
+ │
+ ├── Community Page
+ │   └── CommunityInfoSidebar
+ │       ├── About Community
+ │       ├── Community Rules
+ │       ├── Community Moderators
+ │       └── Join/Leave Button
+ │
+ └── Post Detail
+     └── PostSidebar
+         ├── Community Info
+         └── Community Rules
 ```
 
 ---
 
 # Search Architecture
 
-```text id="a9x5m2"
+```text
 Search Input
  ↓
-Debounce
+Select Scope (Posts/Communities/Users)
  ↓
-Server Action
+Debounce (500ms)
  ↓
-Supabase Query
+Search Query
  ↓
-Result
+Repository (Supabase ilike)
+ ↓
+Results
+ ↓
+Render
 ```
 
 ---
 
-# Category Architecture
+# Moderation Architecture
 
-```text id="h7q3f1"
-Category Click
+```text
+Community Moderator
  ↓
-Filter Posts
+Mod Menu (Pin/Lock/Remove)
  ↓
-Query Database
+Action Confirmation
  ↓
-Render Feed
+Update Post/Comment
+ ↓
+Create Notification
+ ↓
+UI Update
+```
+
+## Report Flow
+
+```text
+Report Button
+ ↓
+Select Reason
+ ↓
+Add Description (optional)
+ ↓
+Insert Report
+ ↓
+Notify Community Moderator
+ ↓
+Moderator Reviews
+ ↓
+Action (Resolve/Dismiss/Warn/Remove)
+ ↓
+Notify Reporter
+```
+
+---
+
+# Markdown Editor Architecture
+
+```text
+MarkdownEditor
+ ├── Toolbar (Bold, Italic, Headers, etc.)
+ ├── Textarea
+ └── Preview Toggle
+     ↓
+Markdown Content
+ ↓
+Render as HTML (safe)
 ```
 
 ---
 
 # Notification Architecture
 
-```text id="u5k1d8"
-New Comment
-New Reply
-New Like
+```text
+Event
+ ├── Upvote/Downvote
+ ├── New Comment
+ ├── New Reply
+ ├── Mention
+ ├── Moderation Action
+ └── Community Invite
  ↓
 Insert Notification
  ↓
@@ -299,94 +452,46 @@ Supabase Realtime
  ↓
 Client Subscription
  ↓
-Notification UI Update
+Notification UI Update (badge + list)
 ```
 
 ---
 
-# Bookmark Architecture
+# Trending Architecture
 
-```text id="b6n9p3"
-Bookmark Button
- ↓
-Toggle Bookmark
- ↓
-Update Database
- ↓
-Refresh UI
-```
-
----
-
-# Like Architecture
-
-```text id="m8r2x6"
-Like Button
- ↓
-Toggle Like
- ↓
-Update Counter
- ↓
-Refresh UI
-```
-
----
-
-# Avatar Upload Architecture
-
-```text id="z3f7k4"
-Upload Image
- ↓
-Supabase Storage
- ↓
-Public URL
- ↓
-Save URL to Database
-```
-
----
-
-# Moderation Architecture
-
-```text id="w1m5q8"
-Report Content
- ↓
-Create Report
- ↓
-Moderator Review
- ↓
-Action
- ├── Ignore
- ├── Delete Comment
- └── Delete Post
+```text
+Trending Calculation
+ ├── Trending Communities
+ │   └── member_count growth rate (last 7 days)
+ │
+ └── Trending Posts
+     └── vote_velocity (votes in last 24 hours)
 ```
 
 ---
 
 # Error Handling Architecture
 
-```text id="l4t8y1"
+```text
 Try Catch
  ↓
 Service Error
  ↓
 Custom Error Message
  ↓
-Toast Notification
+Toast Notification (Sonner)
 ```
 
 ---
 
 # Caching Strategy
 
-```text id="k7n2v9"
-Server Components
- ↓
-React Cache
- ↓
-Revalidate Path
- ↓
-Fresh Data
+```text
+React Query
+ ├── Stale Time: 5 minutes
+ ├── Cache Time: 30 minutes
+ ├── Optimistic Updates (votes, saves)
+ └── Placeholder Data (feed transitions)
 ```
 
 ---
@@ -395,29 +500,26 @@ Fresh Data
 
 ## Authentication
 
-```text id="d9m6p4"
+```text
 Supabase Auth
 Session Management
 Middleware Protection
 ```
 
----
-
 ## Authorization
 
-```text id="u3q8k5"
-Role Based Access Control
-Row Level Security
+```text
+Role Based Access Control (Global: member/moderator/admin)
+Community Level Access Control (member/moderator)
+Row Level Security (per table)
 Protected Routes
 ```
 
----
-
 ## Validation
 
-```text id="x5r1n7"
-Zod Validation
-Server Validation
+```text
+Zod Validation (Client + Server)
+Server Validation (Repository Layer)
 Input Sanitization
 ```
 
@@ -425,21 +527,24 @@ Input Sanitization
 
 # Performance Strategy
 
-```text id="j8p4m2"
-Server Components
-Dynamic Import
-Pagination
-Infinite Scroll
-Image Optimization
-Database Indexing
-Caching
+```text
+Server Components (default)
+Dynamic Import (heavy components)
+Pagination (10 items per page)
+Optimistic Updates (votes, saves)
+Debounced Search (500ms)
+Database Indexing (all foreign keys + sort columns)
+Hot Score Pre-calculation (trigger)
+Karma Pre-calculation (trigger)
+Image Optimization (Next.js Image)
+Code Splitting (Route-based)
 ```
 
 ---
 
 # Deployment Architecture
 
-```text id="c2v7f9"
+```text
 Vercel
  ↓
 Next.js Application
@@ -447,7 +552,7 @@ Next.js Application
 Supabase Cloud
  ├── PostgreSQL
  ├── Auth
- ├── Storage
+ ├── Storage (avatars, post-images, community-banners)
  └── Realtime
 ```
 
@@ -455,14 +560,14 @@ Supabase Cloud
 
 # Complete System Flow
 
-```text id="s6k3p1"
+```text
 User
  ↓
 Browser
  ↓
 Next.js App Router
  ↓
-Server Actions
+Server Actions / React Query
  ↓
 Service Layer
  ↓
@@ -472,7 +577,7 @@ Supabase
  ↓
 Response
  ↓
-UI Update
+UI Update (Optimistic + Refetch)
 ```
 
 ---
@@ -484,40 +589,47 @@ UI Update
 * Separation of Concerns
 * Single Responsibility Principle
 * Modular Design
+* Repository Pattern
+
+### Feature-Based Structure
+
+* Community feature (all related files grouped)
+* Post feature
+* Vote feature
+* Feed feature
+* Moderation feature
 
 ### Scalability
 
-* Feature-based structure
-* Reusable components
-* Extensible database design
+* Hot Score pre-calculation
+* Karma pre-calculation
+* Database indexing
+* Pagination
+* Feed algorithms
 
-### Security
+### Production Ready
 
-* Authentication
-* Authorization
-* RLS Policies
-* Validation
-
-### Maintainability
-
-* Type Safety
-* Consistent folder structure
-* Documentation Driven Development
+* Type Safety (TypeScript)
+* Validation (Zod)
+* Error Handling
+* Security (RLS, RBAC)
+* Performance (caching, indexing)
+* Documentation
 
 ---
 
 # Final Architecture Stack
 
-```text id="r4n8w2"
-Presentation Layer
+```text
+Presentation Layer (UI Components)
 ↓
-Application Layer
+State Management Layer (React Query)
 ↓
-Business Layer
+Application Layer (Server Actions + Hooks)
 ↓
-Data Access Layer
+Business Layer (Services)
 ↓
-Supabase Infrastructure Layer
+Data Access Layer (Repositories)
+↓
+Infrastructure Layer (Supabase)
 ```
-
-

@@ -18,7 +18,7 @@
 | **State Management** | React Query (TanStack Query) |
 | **Form** | React Hook Form + Zod |
 | **Auth** | Supabase Auth + SSR |
-| **Tujuan** | Platform forum diskusi dengan posts, comments, replies |
+| **Tujuan** | Platform forum diskusi dengan posts, comments, replies, bookmarks, likes, notifications |
 
 ---
 
@@ -28,7 +28,7 @@
 online-forum/
 ├── app/
 │   ├── (auth)/           # Auth pages (login, register, forgot/reset password)
-│   ├── (main)/           # Main app pages (posts, categories, profile, etc.)
+│   ├── (main)/           # Main app pages (posts, categories, profile, bookmarks, notifications)
 │   ├── admin/            # Admin dashboard
 │   ├── actions/          # Server actions (auth)
 │   ├── layout.tsx        # Root layout
@@ -39,9 +39,12 @@ online-forum/
 │
 ├── components/
 │   ├── auth/             # Auth forms (LoginForm, RegisterForm, etc.)
+│   ├── bookmark/         # Bookmark components
 │   ├── category/         # Category components
 │   ├── comment/          # Comment & reply components
 │   ├── layout/           # Layout components (Header, Sidebar, etc.)
+│   ├── like/             # Like components
+│   ├── notification/     # Notification components
 │   ├── post/             # Post components
 │   ├── profile/          # Profile components
 │   ├── providers/        # Context providers (Query, Session, Theme)
@@ -118,6 +121,27 @@ online-forum/
 - 6.5: URL Query Params as Single Source of Truth
 - 6.6: Debounced Search (500ms)
 
+### Sprint 7 - Bookmarks & Likes ✅
+- 7.1: Database & RLS (bookmarks, likes tables)
+- 7.2: Bookmark CRUD (toggle, list, status)
+- 7.3: Likes CRUD (toggle, count, status)
+- 7.4: Counts & UI Enhancement (LikeButton, BookmarkButton, optimistic updates)
+- 7.5: My Bookmarks Page Enhancement (search, sort, pagination)
+
+### Sprint 8 - Notifications ✅
+- 8.1: Notifications Database (MVP)
+- 8.2: Notification Repository, Service & React Query
+- 8.3: Notifications Page (MVP)
+- 8.4: Mark Notification as Read
+- 8.5: Notification Badge on Header
+
+### Sprint 9 - QA & Polish ✅
+- 9.1: UI & UX Audit & Polishing
+- 9.2: Responsive Layout Audit
+- 9.3: Loading, Empty State & Error State Audit
+- 9.4: Security & Authorization Audit
+- 9.5: Final QA, Code Cleanup & Production Readiness
+
 ---
 
 ## Database
@@ -128,11 +152,11 @@ online-forum/
 |-------|--------|-------|
 | `profiles` | ✅ Active | User profiles, FK to auth.users |
 | `categories` | ✅ Active | Forum categories |
-| `posts` | ✅ Active | Forum posts with views |
+| `posts` | ✅ Active | Forum posts with views, comment_count |
 | `comments` | ✅ Active | Comments + replies (parent_id) |
-| `bookmarks` | ⏳ Planned | Sprint 7 |
-| `likes` | ⏳ Planned | Sprint 7 |
-| `notifications` | ⏳ Planned | Future sprint |
+| `bookmarks` | ✅ Active | User bookmarks (user_id, post_id) |
+| `likes` | ✅ Active | User likes (user_id, post_id) |
+| `notifications` | ✅ Active | User notifications (type: like, comment, reply, bookmark) |
 
 ### Enums
 
@@ -156,6 +180,17 @@ online-forum/
 | `sql/comments-table.sql` | Comments table DDL |
 | `sql/comments-indexes.sql` | Comment indexes |
 | `sql/comments-rls.sql` | Comment RLS policies |
+| `sql/bookmarks-table.sql` | Bookmarks table DDL |
+| `sql/bookmarks-indexes.sql` | Bookmark indexes |
+| `sql/bookmarks-rls.sql` | Bookmark RLS policies |
+| `sql/likes-table.sql` | Likes table DDL |
+| `sql/likes-indexes.sql` | Like indexes |
+| `sql/likes-rls.sql` | Like RLS policies |
+| `sql/notifications-table.sql` | Notifications table DDL |
+| `sql/notifications-indexes.sql` | Notification indexes |
+| `sql/notifications-rls.sql` | Notification RLS policies |
+| `sql/increment-post-views.sql` | RPC function for view counter |
+| `sql/comment-count-trigger.sql` | Comment count column + trigger |
 
 ---
 
@@ -174,7 +209,7 @@ online-forum/
 - ✅ View profile
 - ✅ Edit profile (username, full_name, bio)
 - ✅ Avatar upload (Supabase Storage)
-- ✅ Profile stats (placeholder)
+- ✅ Profile stats
 
 ### Categories
 - ✅ List categories
@@ -192,6 +227,7 @@ online-forum/
 - ✅ Edit post (author only)
 - ✅ Delete post (author only)
 - ✅ Comment count display
+- ✅ Like count display
 
 ### Comments
 - ✅ List comments
@@ -205,6 +241,32 @@ online-forum/
 - ✅ Debounced search (500ms)
 - ✅ URL-based state management
 - ✅ Pagination with page info
+
+### Bookmarks
+- ✅ Toggle bookmark on posts
+- ✅ Bookmark status detection
+- ✅ My Bookmarks page with search, sort, pagination
+- ✅ Bookmark count
+
+### Likes
+- ✅ Toggle like on posts
+- ✅ Like status detection
+- ✅ Like count display
+- ✅ Optimistic updates
+
+### Notifications
+- ✅ Notifications list page
+- ✅ Notification types (like, comment, reply, bookmark)
+- ✅ Mark as read (single & all)
+- ✅ Unread badge on header
+- ✅ Notification skeleton & empty states
+
+### UI/UX
+- ✅ Responsive design (mobile, tablet, desktop)
+- ✅ Consistent loading states
+- ✅ Consistent empty states
+- ✅ Consistent error states
+- ✅ Accessibility (aria-labels)
 
 ---
 
@@ -228,9 +290,9 @@ online-forum/
 |-------|-------------|
 | `/profile` | User profile |
 | `/profile/edit` | Edit profile |
-| `/bookmarks` | My bookmarks (placeholder) |
-| `/notifications` | Notifications (placeholder) |
-| `/settings` | Settings (placeholder) |
+| `/bookmarks` | My bookmarks |
+| `/notifications` | Notifications |
+| `/settings` | Settings |
 | `/post/create` | Create post |
 | `/post/[id]/edit` | Edit post |
 
@@ -261,6 +323,15 @@ online-forum/
 | `useCreateReply` | `hooks/useCreateReply.ts` | Create reply mutation |
 | `useCategories` | `hooks/useCategories.ts` | Fetch categories |
 | `useDebounce` | `hooks/useDebounce.ts` | Debounce value |
+| `useBookmarks` | `hooks/useBookmarks.ts` | Fetch bookmarks list |
+| `useToggleBookmark` | `hooks/useToggleBookmark.ts` | Toggle bookmark mutation |
+| `useBookmarkStatus` | `hooks/useBookmarkStatus.ts` | Check bookmark status |
+| `useLikeCount` | `hooks/useLikes.ts` | Fetch like count |
+| `useToggleLike` | `hooks/useToggleLike.ts` | Toggle like mutation |
+| `useLikeStatus` | `hooks/useLikeStatus.ts` | Check like status |
+| `useNotifications` | `hooks/useNotifications.ts` | Fetch notifications list |
+| `useUnreadNotifications` | `hooks/useUnreadNotifications.ts` | Fetch unread count |
+| `useMarkNotificationRead` | `hooks/useMarkNotificationRead.ts` | Mark notifications as read |
 
 ---
 
@@ -271,6 +342,9 @@ online-forum/
 | Post | `repositories/post.repository.ts` | `createPost`, `updatePost`, `deletePost`, `getPostById`, `getPosts`, `incrementPostViews` |
 | Category | `repositories/category.repository.ts` | `getCategories` |
 | Comment | `repositories/comment.repository.ts` | `createComment`, `updateComment`, `deleteComment`, `getCommentsByPostId`, `getReplies`, `createReply` |
+| Bookmark | `repositories/bookmark.repository.ts` | `getBookmarks`, `isBookmarked`, `toggleBookmark`, `removeBookmark` |
+| Like | `repositories/like.repository.ts` | `getLikeCount`, `isLiked`, `toggleLike`, `getLikes` |
+| Notification | `repositories/notification.repository.ts` | `getNotifications`, `getUnreadCount`, `markAsRead`, `markAllAsRead` |
 
 ---
 
@@ -281,6 +355,9 @@ online-forum/
 | Post | `services/post.service.ts` | `fetchPosts`, `fetchPost`, `addPost`, `editPost`, `removePost`, `increasePostViews` |
 | Category | `services/category.service.ts` | `fetchCategories` |
 | Comment | `services/comment.service.ts` | `fetchComments`, `addComment`, `editComment`, `removeComment`, `fetchReplies`, `addReply` |
+| Bookmark | `services/bookmark.service.ts` | `fetchBookmarks`, `checkBookmark`, `toggleUserBookmark`, `deleteBookmark` |
+| Like | `services/like.service.ts` | `fetchLikes`, `fetchLikeCount`, `checkLike`, `toggleUserLike` |
+| Notification | `services/notification.service.ts` | `fetchNotifications`, `fetchUnreadCount`, `markNotificationAsRead`, `markAllNotificationsAsRead` |
 
 ---
 
@@ -293,7 +370,7 @@ online-forum/
 - `ResetPasswordForm.tsx` - Reset password form
 
 ### Layout
-- `AppHeader.tsx` - Top navigation
+- `AppHeader.tsx` - Top navigation with notification badge
 - `AppSidebar.tsx` - Desktop sidebar
 - `MobileNav.tsx` - Mobile navigation drawer
 - `UserMenu.tsx` - User dropdown menu
@@ -306,9 +383,9 @@ online-forum/
 - `ProfileStats.tsx` - Profile statistics
 
 ### Post
-- `PostCard.tsx` - Post list card
+- `PostCard.tsx` - Post list card with like/bookmark buttons
 - `PostList.tsx` - Post list container
-- `PostDetail.tsx` - Post detail view
+- `PostDetail.tsx` - Post detail view with like/bookmark actions
 - `PostForm.tsx` - Create/edit post form
 - `PostSearch.tsx` - Search input
 - `PostSort.tsx` - Sort dropdown
@@ -339,6 +416,22 @@ online-forum/
 - `CategoryEmptyState.tsx` - Empty state
 - `CategoryListSkeleton.tsx` - Loading skeleton
 
+### Bookmark
+- `BookmarkButton.tsx` - Toggle bookmark button
+- `BookmarkCard.tsx` - Bookmark post card
+- `BookmarkList.tsx` - Bookmark list container
+- `BookmarkSkeleton.tsx` - Loading skeleton
+- `BookmarkEmptyState.tsx` - Empty state
+
+### Like
+- `LikeButton.tsx` - Toggle like button with count
+
+### Notification
+- `NotificationCard.tsx` - Notification display
+- `NotificationList.tsx` - Notification list container
+- `NotificationSkeleton.tsx` - Loading skeleton
+- `NotificationEmptyState.tsx` - Empty state
+
 ### UI (Shadcn)
 - `button.tsx`, `input.tsx`, `textarea.tsx`, `card.tsx`, `avatar.tsx`, `badge.tsx`, `dialog.tsx`, `dropdown-menu.tsx`, `select.tsx`, `skeleton.tsx`
 
@@ -361,12 +454,14 @@ online-forum/
 - **Supabase Auth**: JWT-based authentication
 - **Middleware**: Route protection
 - **Session Provider**: Client-side session state
+- **app_metadata**: Admin role check (not user_metadata)
 
 ### UI/UX
 - **Debounced Search**: 500ms delay to reduce requests
 - **Skeleton Loading**: Better perceived performance
 - **Toast Notifications**: Sonner for feedback
 - **Responsive Design**: Mobile-first approach
+- **Optimistic Updates**: Like & bookmark toggles
 
 ---
 
@@ -395,9 +490,6 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 | Item | Priority | Notes |
 |------|----------|-------|
 | Tests | High | No unit/integration tests yet |
-| Loading states | Medium | Some routes missing loading.tsx |
-| Error boundaries | Medium | Some routes missing error.tsx |
-| Admin role check | Low | UI-only check, needs server validation |
 | Comments pagination | Low | No pagination for comments yet |
 
 ---
@@ -408,60 +500,41 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 |-------|----------|-------|
 | React Hook Form `watch()` warning | Low | Library compatibility with React Compiler |
 | Middleware deprecation | Low | Next.js 16 recommends "proxy" convention |
-| Base-UI Select | Low | Custom implementation due to missing component |
 
 ---
 
-## Next Sprint - Sprint 7: Bookmarks & Likes
-
-### 7.1 Database & RLS
-- Create bookmarks table
-- Create likes table
-- Add RLS policies
-- Add indexes
-
-### 7.2 Bookmark CRUD
-- Toggle bookmark on posts
-- Remove bookmark
-- Bookmarks list page
-
-### 7.3 Likes CRUD
-- Toggle like on posts
-- Remove like
-- Like count display
-
-### 7.4 Counts & UI
-- Like count on post card/detail
-- Bookmark count on profile
-- Visual indicators (filled/unfilled icons)
-
-### 7.5 My Bookmarks Page Enhancement
-- Full bookmarks page with posts
-- Pagination for bookmarks
-
----
-
-## Next Action
+## Next Sprint - Sprint 10: Deployment
 
 Ketika project dibuka kembali:
 
 1. **Verify environment**: Pastikan `.env.local` sudah terisi dengan benar
 2. **Install dependencies**: `npm install`
-3. **Run migrations**: Execute SQL files di Supabase Dashboard
+3. **Run SQL migrations**: Execute all SQL files di Supabase Dashboard
    - `sql/posts-indexes.sql`
    - `sql/posts-rls.sql`
    - `sql/comments-table.sql`
    - `sql/comments-indexes.sql`
    - `sql/comments-rls.sql`
+   - `sql/bookmarks-table.sql`
+   - `sql/bookmarks-indexes.sql`
+   - `sql/bookmarks-rls.sql`
+   - `sql/likes-table.sql`
+   - `sql/likes-indexes.sql`
+   - `sql/likes-rls.sql`
+   - `sql/notifications-table.sql`
+   - `sql/notifications-indexes.sql`
+   - `sql/notifications-rls.sql`
+   - `sql/increment-post-views.sql`
+   - `sql/comment-count-trigger.sql`
 4. **Start dev server**: `npm run dev`
-5. **Continue Sprint 7**: Mulai dari 7.1 Database & RLS untuk bookmarks dan likes
+5. **Continue Sprint 10**: Deployment setup
 
 ---
 
 ## Quick Reference
 
 ### Key Files
-- **Types**: `types/post.ts`, `types/comment.ts`, `types/index.ts`
+- **Types**: `types/post.ts`, `types/comment.ts`, `types/bookmark.ts`, `types/like.ts`, `types/notification.ts`, `types/index.ts`
 - **Constants**: `lib/constants/query-keys.ts`, `lib/constants/routes.ts`
 - **Supabase**: `lib/supabase/client.ts`, `lib/supabase/server.ts`
 - **Middleware**: `lib/supabase/middleware.ts`, `middleware.ts`
@@ -477,5 +550,5 @@ npm run typecheck    # Run TypeScript check
 
 ---
 
-*Document generated: Sprint 6.6 Complete*
+*Document generated: Sprint 9.5 Complete*
 *Last updated: July 2026*

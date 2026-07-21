@@ -48,73 +48,164 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ── Discord dark theme (default) ───────────────────────── */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Discord colours in oklch */
+  /* #313338 → main chat bg          */
+  /* #2b2d31 → channel sidebar bg    */
+  /* #1e1f22 → server rail bg        */
+  /* #404249 → hover/active state    */
+  /* #5865f2 → Discord blurple       */
+  /* #b5bac1 → secondary text        */
+
+  --background:         oklch(0.245 0.005 264);   /* #313338 */
+  --foreground:         oklch(0.92  0.005 264);   /* #dcddde */
+  --card:               oklch(0.225 0.005 264);   /* #2b2d31 */
+  --card-foreground:    oklch(0.92  0.005 264);
+  --popover:            oklch(0.225 0.005 264);
+  --popover-foreground: oklch(0.92  0.005 264);
+  --primary:            oklch(0.58  0.22  264);   /* #5865f2 blurple */
+  --primary-foreground: oklch(1     0     0);
+  --secondary:          oklch(0.29  0.005 264);   /* #383a40 */
+  --secondary-foreground: oklch(0.92 0.005 264);
+  --muted:              oklch(0.29  0.005 264);
+  --muted-foreground:   oklch(0.68  0.006 264);   /* #b5bac1 */
+  --accent:             oklch(0.31  0.006 264);   /* #404249 */
+  --accent-foreground:  oklch(0.92  0.005 264);
+  --destructive:        oklch(0.63  0.22  27);    /* #ed4245 */
+  --border:             oklch(1     0     0 / 8%);
+  --input:              oklch(0.20  0.005 264);   /* #1e1f22 */
+  --ring:               oklch(0.58  0.22  264);
+  --radius:             0.375rem;
+
+  /* chart */
+  --chart-1: oklch(0.58 0.22 264);
+  --chart-2: oklch(0.65 0.18 150);
+  --chart-3: oklch(0.70 0.20 55);
+  --chart-4: oklch(0.63 0.22 27);
+  --chart-5: oklch(0.60 0.20 310);
+
+  /* sidebar (channel sidebar panel) */
+  --sidebar:                oklch(0.225 0.005 264); /* #2b2d31 */
+  --sidebar-foreground:     oklch(0.92  0.005 264);
+  --sidebar-primary:        oklch(0.58  0.22  264);
+  --sidebar-primary-foreground: oklch(1  0    0);
+  --sidebar-accent:         oklch(0.31  0.006 264);
+  --sidebar-accent-foreground: oklch(0.92 0.005 264);
+  --sidebar-border:         oklch(1     0     0 / 6%);
+  --sidebar-ring:           oklch(0.58  0.22  264);
+
+  /* discord-specific custom tokens */
+  --dc-server-rail:   oklch(0.175 0.005 264);   /* #1e1f22 */
+  --dc-channel-bg:    oklch(0.225 0.005 264);   /* #2b2d31 */
+  --dc-chat-bg:       oklch(0.245 0.005 264);   /* #313338 */
+  --dc-member-bg:     oklch(0.225 0.005 264);   /* #2b2d31 */
+  --dc-hover:         oklch(0.31  0.006 264);   /* #404249 */
+  --dc-active:        oklch(0.35  0.006 264);
+  --dc-blurple:       oklch(0.58  0.22  264);   /* #5865f2 */
+  --dc-text-primary:  oklch(0.92  0.005 264);   /* #dcddde */
+  --dc-text-muted:    oklch(0.68  0.006 264);   /* #b5bac1 */
+  --dc-text-channel:  oklch(0.60  0.006 264);   /* #949ba4 */
+  --dc-green:         oklch(0.65  0.20  145);   /* #23a55a online */
+  --dc-yellow:        oklch(0.78  0.18  85);    /* idle */
+  --dc-red:           oklch(0.63  0.22  27);    /* dnd */
+}
+
+/* light mode tetap pakai discord dark — app ini full dark */
+.light {
+  --background:         oklch(0.245 0.005 264);
+  --foreground:         oklch(0.92  0.005 264);
+  --card:               oklch(0.225 0.005 264);
+  --card-foreground:    oklch(0.92  0.005 264);
+  --popover:            oklch(0.225 0.005 264);
+  --popover-foreground: oklch(0.92  0.005 264);
+  --primary:            oklch(0.58  0.22  264);
+  --primary-foreground: oklch(1     0     0);
+  --secondary:          oklch(0.29  0.005 264);
+  --secondary-foreground: oklch(0.92 0.005 264);
+  --muted:              oklch(0.29  0.005 264);
+  --muted-foreground:   oklch(0.68  0.006 264);
+  --accent:             oklch(0.31  0.006 264);
+  --accent-foreground:  oklch(0.92  0.005 264);
+  --destructive:        oklch(0.63  0.22  27);
+  --border:             oklch(1     0     0 / 8%);
+  --input:              oklch(0.20  0.005 264);
+  --ring:               oklch(0.58  0.22  264);
+  --radius:             0.375rem;
+  --chart-1: oklch(0.58 0.22 264);
+  --chart-2: oklch(0.65 0.18 150);
+  --chart-3: oklch(0.70 0.20 55);
+  --chart-4: oklch(0.63 0.22 27);
+  --chart-5: oklch(0.60 0.20 310);
+  --sidebar:                oklch(0.225 0.005 264);
+  --sidebar-foreground:     oklch(0.92  0.005 264);
+  --sidebar-primary:        oklch(0.58  0.22  264);
+  --sidebar-primary-foreground: oklch(1  0    0);
+  --sidebar-accent:         oklch(0.31  0.006 264);
+  --sidebar-accent-foreground: oklch(0.92 0.005 264);
+  --sidebar-border:         oklch(1     0     0 / 6%);
+  --sidebar-ring:           oklch(0.58  0.22  264);
+  --dc-server-rail:   oklch(0.175 0.005 264);
+  --dc-channel-bg:    oklch(0.225 0.005 264);
+  --dc-chat-bg:       oklch(0.245 0.005 264);
+  --dc-member-bg:     oklch(0.225 0.005 264);
+  --dc-hover:         oklch(0.31  0.006 264);
+  --dc-active:        oklch(0.35  0.006 264);
+  --dc-blurple:       oklch(0.58  0.22  264);
+  --dc-text-primary:  oklch(0.92  0.005 264);
+  --dc-text-muted:    oklch(0.68  0.006 264);
+  --dc-text-channel:  oklch(0.60  0.006 264);
+  --dc-green:         oklch(0.65  0.20  145);
+  --dc-yellow:        oklch(0.78  0.18  85);
+  --dc-red:           oklch(0.63  0.22  27);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background:         oklch(0.245 0.005 264);
+  --foreground:         oklch(0.92  0.005 264);
+  --card:               oklch(0.225 0.005 264);
+  --card-foreground:    oklch(0.92  0.005 264);
+  --popover:            oklch(0.225 0.005 264);
+  --popover-foreground: oklch(0.92  0.005 264);
+  --primary:            oklch(0.58  0.22  264);
+  --primary-foreground: oklch(1     0     0);
+  --secondary:          oklch(0.29  0.005 264);
+  --secondary-foreground: oklch(0.92 0.005 264);
+  --muted:              oklch(0.29  0.005 264);
+  --muted-foreground:   oklch(0.68  0.006 264);
+  --accent:             oklch(0.31  0.006 264);
+  --accent-foreground:  oklch(0.92  0.005 264);
+  --destructive:        oklch(0.63  0.22  27);
+  --border:             oklch(1     0     0 / 8%);
+  --input:              oklch(0.20  0.005 264);
+  --ring:               oklch(0.58  0.22  264);
+  --radius:             0.375rem;
+  --chart-1: oklch(0.58 0.22 264);
+  --chart-2: oklch(0.65 0.18 150);
+  --chart-3: oklch(0.70 0.20 55);
+  --chart-4: oklch(0.63 0.22 27);
+  --chart-5: oklch(0.60 0.20 310);
+  --sidebar:                oklch(0.225 0.005 264);
+  --sidebar-foreground:     oklch(0.92  0.005 264);
+  --sidebar-primary:        oklch(0.58  0.22  264);
+  --sidebar-primary-foreground: oklch(1  0    0);
+  --sidebar-accent:         oklch(0.31  0.006 264);
+  --sidebar-accent-foreground: oklch(0.92 0.005 264);
+  --sidebar-border:         oklch(1     0     0 / 6%);
+  --sidebar-ring:           oklch(0.58  0.22  264);
+  --dc-server-rail:   oklch(0.175 0.005 264);
+  --dc-channel-bg:    oklch(0.225 0.005 264);
+  --dc-chat-bg:       oklch(0.245 0.005 264);
+  --dc-member-bg:     oklch(0.225 0.005 264);
+  --dc-hover:         oklch(0.31  0.006 264);
+  --dc-active:        oklch(0.35  0.006 264);
+  --dc-blurple:       oklch(0.58  0.22  264);
+  --dc-text-primary:  oklch(0.92  0.005 264);
+  --dc-text-muted:    oklch(0.68  0.006 264);
+  --dc-text-channel:  oklch(0.60  0.006 264);
+  --dc-green:         oklch(0.65  0.20  145);
+  --dc-yellow:        oklch(0.78  0.18  85);
+  --dc-red:           oklch(0.63  0.22  27);
 }
 
 @layer base {
@@ -128,3 +219,21 @@
     @apply font-sans;
   }
 }
+
+/* ── Discord-specific utilities ─────────────────────────── */
+.dc-server-rail  { background-color: var(--dc-server-rail); }
+.dc-channel-bg   { background-color: var(--dc-channel-bg); }
+.dc-chat-bg      { background-color: var(--dc-chat-bg); }
+.dc-member-bg    { background-color: var(--dc-member-bg); }
+
+/* scrollbar discord-style */
+::-webkit-scrollbar          { width: 8px; height: 8px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: oklch(0.175 0.005 264); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: oklch(0.31 0.006 264); }
+
+/* status dot */
+.dc-status-online  { background-color: var(--dc-green); }
+.dc-status-idle    { background-color: var(--dc-yellow); }
+.dc-status-dnd     { background-color: var(--dc-red); }
+.dc-status-offline { background-color: var(--dc-text-channel); }

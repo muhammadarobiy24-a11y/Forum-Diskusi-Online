@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Home, LayoutGrid, Bookmark, User, Settings } from "lucide-react";
+import { X, Home, LayoutGrid, Bookmark, Bell, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,7 @@ const menuItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/categories", label: "Categories", icon: LayoutGrid },
   { href: "/bookmarks", label: "Bookmarks", icon: Bookmark },
+  { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

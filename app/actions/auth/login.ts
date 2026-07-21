@@ -25,8 +25,13 @@ export async function login(formData: LoginInput, redirectTo?: string) {
   });
 
   if (error) {
+    if (error.message.includes("Email not confirmed")) {
+      return {
+        error: "Please confirm your email address before signing in. Check your inbox for the confirmation link.",
+      };
+    }
     return {
-      error: error.message,
+      error: "Invalid email or password. Please try again.",
     };
   }
 

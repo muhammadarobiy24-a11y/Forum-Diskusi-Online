@@ -1,4 +1,4 @@
-# Forum Diskusi Online - Row Level Security (RLS) Policies
+# Reddit-like Community Discussion Platform - Row Level Security (RLS) Policies
 
 ## Overview
 
@@ -7,50 +7,123 @@ Project menggunakan:
 * Supabase Auth
 * Row Level Security (RLS)
 * Role Based Access Control (RBAC)
+* Community Level Access Control
 
-Role:
+Roles:
 
-```text id="f3k2h9"
-member
-moderator
-admin
+```text
+Global:  member, moderator, admin
+Community: member, moderator
 ```
 
 ---
 
 # Authorization Matrix
 
-| Action             | Guest | Member | Moderator | Admin |
-| ------------------ | ----- | ------ | --------- | ----- |
-| View Posts         | ✅     | ✅      | ✅         | ✅     |
-| Create Post        | ❌     | ✅      | ✅         | ✅     |
-| Edit Own Post      | ❌     | ✅      | ✅         | ✅     |
-| Delete Own Post    | ❌     | ✅      | ✅         | ✅     |
-| Delete Any Post    | ❌     | ❌      | ✅         | ✅     |
-| Create Comment     | ❌     | ✅      | ✅         | ✅     |
-| Delete Any Comment | ❌     | ❌      | ✅         | ✅     |
-| Bookmark Post      | ❌     | ✅      | ✅         | ✅     |
-| Like Post          | ❌     | ✅      | ✅         | ✅     |
-| View Notifications | ❌     | Own    | Own       | Own   |
-| Manage Categories  | ❌     | ❌      | ❌         | ✅     |
-| Manage Users       | ❌     | ❌      | ❌         | ✅     |
-| Manage Reports     | ❌     | ❌      | ✅         | ✅     |
+| Action                      | Guest | Member | Mod (community) | Admin |
+| --------------------------- | ----- | ------ | --------------- | ----- |
+| View Posts                  | ✅     | ✅      | ✅               | ✅     |
+| Create Post                 | ❌     | ✅      | ✅               | ✅     |
+| Edit Own Post               | ❌     | ✅      | ✅               | ✅     |
+| Delete Own Post             | ❌     | ✅      | ✅               | ✅     |
+| Vote on Posts               | ❌     | ✅      | ✅               | ✅     |
+| Vote on Comments            | ❌     | ✅      | ✅               | ✅     |
+| Comment                     | ❌     | ✅      | ✅               | ✅     |
+| Save Post                   | ❌     | ✅      | ✅               | ✅     |
+| Create Community            | ❌     | ✅      | ✅               | ✅     |
+| Join Community              | ❌     | ✅      | ✅               | ✅     |
+| Leave Community             | ❌     | ✅      | ✅               | ✅     |
+| View Notifications          | ❌     | Own    | Own             | Own   |
+| Pin Post (own community)    | ❌     | ❌      | ✅               | ✅     |
+| Lock Post (own community)   | ❌     | ❌      | ✅               | ✅     |
+| Remove Post (community)     | ❌     | ❌      | ✅               | ✅     |
+| Remove Comment (community)  | ❌     | ❌      | ✅               | ✅     |
+| Manage Community Rules      | ❌     | ❌      | ✅               | ✅     |
+| Manage Community Flairs     | ❌     | ❌      | ✅               | ✅     |
+| Manage Community Members    | ❌     | ❌      | ✅               | ✅     |
+| Review Reports (community)  | ❌     | ❌      | ✅               | ✅     |
+| Manage All Communities      | ❌     | ❌      | ❌               | ✅     |
+| Manage Users                | ❌     | ❌      | ❌               | ✅     |
+| Delete Any Community        | ❌     | ❌      | ❌               | ✅     |
+| Manage All Reports          | ❌     | ❌      | ❌               | ✅     |
 
 ---
 
-# Helper Function
+# Helper Functions
 
 ## Current User Role
 
-```sql id="l7m4x2"
-create or replace function get_user_role()
-returns app_role
-language sql
-stable
-as $$
-  select role
-  from profiles
-  where id = auth.uid();
+```sql
+CREATE OR REPLACE FUNCTION get_user_role()
+RETURNS app_role
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT role FROM profiles WHERE id = auth.uid();
+$$;
+```
+
+## Is Community Member
+
+```sql
+CREATE OR REPLACE FUNCTION is_community_member(p_community_id UUID)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM community_members
+    WHERE community_id = p_community_id
+    AND user_id = auth.uid()
+  );
+$$;
+```
+
+## Is Community Moderator
+
+```sql
+CREATE OR REPLACE FUNCTION is_community_moderator(p_community_id UUID)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM community_members
+    WHERE community_id = p_community_id
+    AND user_id = auth.uid()
+    AND role = 'moderator'
+  );
+$$;
+```
+
+## Is Community Creator
+
+```sql
+CREATE OR REPLACE FUNCTION is_community_creator(p_community_id UUID)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM communities
+    WHERE id = p_community_id
+    AND creator_id = auth.uid()
+  );
+$$;
+```
+
+## Can Moderate Community
+
+```sql
+CREATE OR REPLACE FUNCTION can_moderate_community(p_community_id UUID)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT
+    get_user_role() = 'admin'
+    OR is_community_moderator(p_community_id)
+    OR is_community_creator(p_community_id);
 $$;
 ```
 
@@ -60,90 +133,238 @@ $$;
 
 ## Enable RLS
 
-```sql id="r2f6k8"
-alter table profiles enable row level security;
+```sql
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ```
-
----
 
 ## Read Profiles
 
 Semua pengguna dapat melihat profil.
 
-```sql id="n5p9v3"
-create policy "profiles_select"
-on profiles
-for select
-using (true);
+```sql
+CREATE POLICY "profiles_select"
+ON profiles
+FOR SELECT
+USING (true);
 ```
-
----
 
 ## Insert Profile
 
 Hanya user sendiri saat registrasi.
 
-```sql id="w8q1d4"
-create policy "profiles_insert"
-on profiles
-for insert
-with check (auth.uid() = id);
+```sql
+CREATE POLICY "profiles_insert"
+ON profiles
+FOR INSERT
+WITH CHECK (auth.uid() = id);
 ```
-
----
 
 ## Update Own Profile
 
-```sql id="c4t7m9"
-create policy "profiles_update_own"
-on profiles
-for update
-using (auth.uid() = id)
-with check (auth.uid() = id);
+```sql
+CREATE POLICY "profiles_update_own"
+ON profiles
+FOR UPDATE
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
 ```
-
----
 
 ## Admin Update Any Profile
 
-```sql id="p6y2k5"
-create policy "profiles_admin_update"
-on profiles
-for update
-using (get_user_role() = 'admin');
+```sql
+CREATE POLICY "profiles_admin_update"
+ON profiles
+FOR UPDATE
+USING (get_user_role() = 'admin');
 ```
 
 ---
 
-# Categories Policies
+# Communities Policies
 
 ## Enable RLS
 
-```sql id="v1j5r8"
-alter table categories enable row level security;
+```sql
+ALTER TABLE communities ENABLE ROW LEVEL SECURITY;
+```
+
+## Read Communities
+
+Semua orang dapat melihat komunitas.
+
+```sql
+CREATE POLICY "communities_select"
+ON communities
+FOR SELECT
+USING (true);
+```
+
+## Create Community
+
+User terdaftar dapat membuat komunitas.
+
+```sql
+CREATE POLICY "communities_insert"
+ON communities
+FOR INSERT
+WITH CHECK (auth.uid() = creator_id);
+```
+
+## Update Community
+
+Creator atau moderator komunitas.
+
+```sql
+CREATE POLICY "communities_update"
+ON communities
+FOR UPDATE
+USING (
+  can_moderate_community(id)
+);
+```
+
+## Delete Community
+
+Creator atau admin.
+
+```sql
+CREATE POLICY "communities_delete"
+ON communities
+FOR DELETE
+USING (
+  creator_id = auth.uid()
+  OR get_user_role() = 'admin'
+);
 ```
 
 ---
 
-## Read Categories
+# Community Members Policies
 
-```sql id="g7q3k1"
-create policy "categories_select"
-on categories
-for select
-using (true);
+## Enable RLS
+
+```sql
+ALTER TABLE community_members ENABLE ROW LEVEL SECURITY;
+```
+
+## Read Members
+
+Semua orang dapat melihat anggota komunitas.
+
+```sql
+CREATE POLICY "community_members_select"
+ON community_members
+FOR SELECT
+USING (true);
+```
+
+## Join Community (Insert)
+
+User sendiri.
+
+```sql
+CREATE POLICY "community_members_insert"
+ON community_members
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+```
+
+## Leave Community (Delete)
+
+User sendiri.
+
+```sql
+CREATE POLICY "community_members_delete"
+ON community_members
+FOR DELETE
+USING (auth.uid() = user_id);
+```
+
+## Moderate Members (Remove/Update Role)
+
+Moderator atau admin komunitas.
+
+```sql
+CREATE POLICY "community_members_moderate"
+ON community_members
+FOR UPDATE
+USING (
+  can_moderate_community(community_id)
+);
+
+CREATE POLICY "community_members_moderate_delete"
+ON community_members
+FOR DELETE
+USING (
+  can_moderate_community(community_id)
+);
 ```
 
 ---
 
-## Admin Manage Categories
+# Community Rules Policies
 
-```sql id="x2d9f6"
-create policy "categories_admin_all"
-on categories
-for all
-using (
-  get_user_role() = 'admin'
+## Enable RLS
+
+```sql
+ALTER TABLE community_rules ENABLE ROW LEVEL SECURITY;
+```
+
+## Read Rules
+
+Semua orang dapat melihat rules.
+
+```sql
+CREATE POLICY "community_rules_select"
+ON community_rules
+FOR SELECT
+USING (true);
+```
+
+## Manage Rules
+
+Moderator atau admin komunitas.
+
+```sql
+CREATE POLICY "community_rules_manage"
+ON community_rules
+FOR ALL
+USING (
+  can_moderate_community(community_id)
+);
+```
+
+---
+
+# Community Flairs Policies
+
+## Enable RLS
+
+```sql
+ALTER TABLE community_flairs ENABLE ROW LEVEL SECURITY;
+```
+
+## Read Flairs
+
+Semua orang dapat melihat flairs.
+
+```sql
+CREATE POLICY "community_flairs_select"
+ON community_flairs
+FOR SELECT
+USING (true);
+```
+
+## Manage Flairs
+
+Moderator atau admin komunitas.
+
+```sql
+CREATE POLICY "community_flairs_manage"
+ON community_flairs
+FOR ALL
+USING (
+  can_moderate_community(community_id)
 );
 ```
 
@@ -153,72 +374,72 @@ using (
 
 ## Enable RLS
 
-```sql id="m4n7p2"
-alter table posts enable row level security;
+```sql
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 ```
-
----
 
 ## Read Posts
 
-```sql id="h5v8d1"
-create policy "posts_select"
-on posts
-for select
-using (
+Published posts atau removed.
+
+```sql
+CREATE POLICY "posts_select"
+ON posts
+FOR SELECT
+USING (
   status = 'published'
+  OR status = 'removed'
 );
 ```
-
----
 
 ## Create Post
 
-```sql id="t8f3q9"
-create policy "posts_insert"
-on posts
-for insert
-with check (
-  auth.uid() = user_id
-);
-```
+User terdaftar.
 
----
+```sql
+CREATE POLICY "posts_insert"
+ON posts
+FOR INSERT
+WITH CHECK (auth.uid() = author_id);
+```
 
 ## Update Own Post
 
-```sql id="y6k2m4"
-create policy "posts_update_own"
-on posts
-for update
-using (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "posts_update_own"
+ON posts
+FOR UPDATE
+USING (auth.uid() = author_id);
 ```
-
----
 
 ## Delete Own Post
 
-```sql id="u1q7x5"
-create policy "posts_delete_own"
-on posts
-for delete
-using (
-  auth.uid() = user_id
+```sql
+CREATE POLICY "posts_delete_own"
+ON posts
+FOR DELETE
+USING (auth.uid() = author_id);
+```
+
+## Moderator Pin/Lock/Remove (Community)
+
+```sql
+CREATE POLICY "posts_community_moderator"
+ON posts
+FOR UPDATE
+USING (
+  can_moderate_community(community_id)
 );
 ```
 
----
-
 ## Moderator/Admin Delete Any Post
 
-```sql id="b9p4f2"
-create policy "posts_moderator_delete"
-on posts
-for delete
-using (
-  get_user_role() in ('moderator','admin')
+```sql
+CREATE POLICY "posts_moderator_delete"
+ON posts
+FOR DELETE
+USING (
+  get_user_role() = 'admin'
 );
 ```
 
@@ -228,154 +449,136 @@ using (
 
 ## Enable RLS
 
-```sql id="k3m8v7"
-alter table comments enable row level security;
+```sql
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 ```
-
----
 
 ## Read Comments
 
-```sql id="r5d1q8"
-create policy "comments_select"
-on comments
-for select
-using (true);
+```sql
+CREATE POLICY "comments_select"
+ON comments
+FOR SELECT
+USING (true);
 ```
-
----
 
 ## Create Comment
 
-```sql id="f7n2k6"
-create policy "comments_insert"
-on comments
-for insert
-with check (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "comments_insert"
+ON comments
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
 ```
-
----
 
 ## Delete Own Comment
 
-```sql id="c9x5m1"
-create policy "comments_delete_own"
-on comments
-for delete
-using (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "comments_delete_own"
+ON comments
+FOR DELETE
+USING (auth.uid() = user_id);
 ```
-
----
 
 ## Moderator/Admin Delete Any Comment
 
-```sql id="z4q8f3"
-create policy "comments_moderator_delete"
-on comments
-for delete
-using (
-  get_user_role() in ('moderator','admin')
+```sql
+CREATE POLICY "comments_moderator_delete"
+ON comments
+FOR DELETE
+USING (
+  get_user_role() = 'admin'
+  OR (
+    EXISTS (
+      SELECT 1 FROM posts
+      WHERE posts.id = comments.post_id
+      AND can_moderate_community(posts.community_id)
+    )
+  )
 );
 ```
 
 ---
 
-# Likes Policies
+# Votes Policies
 
 ## Enable RLS
 
-```sql id="j6v2p9"
-alter table likes enable row level security;
+```sql
+ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
+```
+
+## Read Votes
+
+```sql
+CREATE POLICY "votes_select"
+ON votes
+FOR SELECT
+USING (true);
+```
+
+## Insert Vote
+
+```sql
+CREATE POLICY "votes_insert"
+ON votes
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+```
+
+## Update Vote (Change upvote ↔ downvote)
+
+```sql
+CREATE POLICY "votes_update"
+ON votes
+FOR UPDATE
+USING (auth.uid() = user_id);
+```
+
+## Remove Vote
+
+```sql
+CREATE POLICY "votes_delete"
+ON votes
+FOR DELETE
+USING (auth.uid() = user_id);
 ```
 
 ---
 
-## Read Likes
-
-```sql id="m8f4k2"
-create policy "likes_select"
-on likes
-for select
-using (true);
-```
-
----
-
-## Insert Like
-
-```sql id="x1p7q6"
-create policy "likes_insert"
-on likes
-for insert
-with check (
-  auth.uid() = user_id
-);
-```
-
----
-
-## Remove Like
-
-```sql id="d5m9v1"
-create policy "likes_delete"
-on likes
-for delete
-using (
-  auth.uid() = user_id
-);
-```
-
----
-
-# Bookmarks Policies
+# Saved Posts Policies
 
 ## Enable RLS
 
-```sql id="q2k6f8"
-alter table bookmarks enable row level security;
+```sql
+ALTER TABLE saved_posts ENABLE ROW LEVEL SECURITY;
 ```
 
----
+## View Own Saved Posts
 
-## View Own Bookmarks
-
-```sql id="n4x1p7"
-create policy "bookmarks_select"
-on bookmarks
-for select
-using (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "saved_posts_select"
+ON saved_posts
+FOR SELECT
+USING (auth.uid() = user_id);
 ```
 
----
+## Save Post
 
-## Create Bookmark
-
-```sql id="v7m3d2"
-create policy "bookmarks_insert"
-on bookmarks
-for insert
-with check (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "saved_posts_insert"
+ON saved_posts
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
 ```
 
----
+## Unsave Post
 
-## Delete Bookmark
-
-```sql id="p5q8f1"
-create policy "bookmarks_delete"
-on bookmarks
-for delete
-using (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "saved_posts_delete"
+ON saved_posts
+FOR DELETE
+USING (auth.uid() = user_id);
 ```
 
 ---
@@ -384,34 +587,26 @@ using (
 
 ## Enable RLS
 
-```sql id="f2v7k9"
-alter table notifications enable row level security;
+```sql
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ```
-
----
 
 ## View Own Notifications
 
-```sql id="y4m8p6"
-create policy "notifications_select"
-on notifications
-for select
-using (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "notifications_select"
+ON notifications
+FOR SELECT
+USING (auth.uid() = user_id);
 ```
-
----
 
 ## Update Own Notifications
 
-```sql id="r9k2f5"
-create policy "notifications_update"
-on notifications
-for update
-using (
-  auth.uid() = user_id
-);
+```sql
+CREATE POLICY "notifications_update"
+ON notifications
+FOR UPDATE
+USING (auth.uid() = user_id);
 ```
 
 ---
@@ -420,63 +615,48 @@ using (
 
 ## Enable RLS
 
-```sql id="m3v6q1"
-alter table reports enable row level security;
+```sql
+ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 ```
-
----
 
 ## Create Report
 
-```sql id="x7f2k8"
-create policy "reports_insert"
-on reports
-for insert
-with check (
-  auth.uid() = reporter_id
-);
+```sql
+CREATE POLICY "reports_insert"
+ON reports
+FOR INSERT
+WITH CHECK (auth.uid() = reporter_id);
 ```
-
----
 
 ## View Own Reports
 
-```sql id="d4m9p2"
-create policy "reports_select_own"
-on reports
-for select
-using (
-  auth.uid() = reporter_id
-);
+```sql
+CREATE POLICY "reports_select_own"
+ON reports
+FOR SELECT
+USING (auth.uid() = reporter_id);
 ```
 
----
+## Moderator/Admin View All Reports (Community)
+
+```sql
+CREATE POLICY "reports_moderator_select"
+ON reports
+FOR SELECT
+USING (
+  can_moderate_community(community_id)
+);
+```
 
 ## Moderator/Admin Manage Reports
 
-```sql id="p8q5v3"
-create policy "reports_moderator_all"
-on reports
-for all
-using (
-  get_user_role() in ('moderator','admin')
-);
-```
-
----
-
-# Activity Logs Policies (Jika digunakan)
-
-```sql id="k1m7f4"
-alter table activity_logs enable row level security;
-```
-
-```sql id="n6v2q9"
-create policy "activity_logs_admin"
-on activity_logs
-for select
-using (
-  get_user_role() = 'admin'
+```sql
+CREATE POLICY "reports_moderator_all"
+ON reports
+FOR ALL
+USING (
+  can_moderate_community(community_id)
+  OR get_user_role() = 'admin'
 );
 ```
 
@@ -491,35 +671,62 @@ using (
 * Owner Update
 * Owner Delete
 
----
-
 ## post-images bucket
 
 * Public Read
 * Authenticated Upload
 * Owner Delete
 
+## community-banners bucket (NEW)
+
+* Public Read
+* Community Creator/Moderator Upload
+* Community Creator/Moderator Update
+* Community Creator/Moderator Delete
+
 ---
 
 # Security Principles
 
-```text id="g5k8m2"
+```text
 1. Least Privilege Principle
 2. Owner-Based Access
-3. Role-Based Access
-4. Database-Level Security
-5. Defense in Depth
+3. Role-Based Access (Global)
+4. Community-Level Access Control
+5. Database-Level Security (RLS)
+6. Defense in Depth
 ```
 
 ---
 
 # RLS Deployment Order
 
-```text id="q9f3v1"
-1. Create enum
-2. Create tables
-3. Enable RLS
-4. Create helper functions
+```text
+1. Create enum types
+2. Create helper functions
+3. Create/update tables
+4. Enable RLS
 5. Create policies
 6. Test policies
+```
+
+---
+
+# RLS Testing Checklist
+
+```text
+✓ Guest cannot create post
+✓ Guest can view published posts
+✓ Member can create post in joined community
+✓ Member cannot create post in non-joined community (if private)
+✓ Member can upvote/downvote
+✓ Member cannot vote twice on same post
+✓ Member can save/unsave post
+✓ Community moderator can pin/lock/remove post
+✓ Community moderator cannot moderate other communities
+✓ Admin can moderate all communities
+✓ User can only edit own profile
+✓ User can only delete own posts/comments
+✓ Reports are visible to moderators of the community
+✓ Notifications are only visible to owner
 ```

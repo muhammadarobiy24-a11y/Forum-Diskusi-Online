@@ -9,6 +9,7 @@ import BookmarkList from "@/components/bookmark/BookmarkList";
 import PostSearch from "@/components/post/PostSearch";
 import PostSort from "@/components/post/PostSort";
 import Pagination from "@/components/post/Pagination";
+import ChannelHeader from "@/components/layout/discord/ChannelHeader";
 import type { BookmarkSort } from "@/types/bookmark";
 
 const BOOKMARKS_PER_PAGE = 10;
@@ -74,15 +75,14 @@ export default function BookmarksPage() {
 
   if (sessionLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Bookmarks</h1>
-          <p className="text-muted-foreground mt-1">
-            Postingan yang Anda simpan.
-          </p>
+      <>
+        <ChannelHeader channelName="bookmarks" channelDescription="Postingan yang Anda simpan" />
+        <div className="flex-1 overflow-y-auto dc-chat-bg">
+          <div className="max-w-3xl mx-auto px-5 py-5">
+            <BookmarkList bookmarks={undefined} isLoading={true} />
+          </div>
         </div>
-        <BookmarkList bookmarks={undefined} isLoading={true} />
-      </div>
+      </>
     );
   }
 
@@ -99,35 +99,24 @@ export default function BookmarksPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Bookmarks</h1>
-        <p className="text-muted-foreground mt-1">
-          Postingan yang Anda simpan.
-        </p>
+    <>
+      <ChannelHeader channelName="bookmarks" channelDescription="Postingan yang Anda simpan" />
+      <div className="flex-1 overflow-y-auto dc-chat-bg">
+        <div className="max-w-3xl mx-auto px-5 py-5 space-y-5">
+          <PostSearch value={localSearch} onChange={setLocalSearch} />
+          <div className="flex justify-end">
+            <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
+          </div>
+          <BookmarkList bookmarks={data?.bookmarks} isLoading={isLoading} />
+          {data && (
+            <Pagination
+              pagination={data.pagination}
+              baseUrl="/bookmarks"
+              searchParams={searchParamsObj}
+            />
+          )}
+        </div>
       </div>
-
-      <PostSearch
-        value={localSearch}
-        onChange={setLocalSearch}
-      />
-
-      <div className="flex justify-end">
-        <PostSort
-          value={sort}
-          onChange={(value) => updateParams({ sort: value })}
-        />
-      </div>
-
-      <BookmarkList bookmarks={data?.bookmarks} isLoading={isLoading} />
-
-      {data && (
-        <Pagination
-          pagination={data.pagination}
-          baseUrl="/bookmarks"
-          searchParams={searchParamsObj}
-        />
-      )}
-    </div>
+    </>
   );
 }

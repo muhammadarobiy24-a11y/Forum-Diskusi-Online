@@ -37,5 +37,5 @@ export async function register(formData: RegisterInput) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/login?registered=true");
 }

@@ -1,302 +1,628 @@
+# Sprint Planning - Reddit-like Community Discussion Platform
+
+> Sprint 0-10 sudah selesai (Forum Diskusi Online).
+> Sprint 11+ adalah evolusi ke Reddit-like Community Discussion Platform.
+
+---
+
 # Sprint Timeline
 
-| Sprint    | Fokus                         | Estimasi |
-| --------- | ----------------------------- | -------- |
-| Sprint 0  | Project Setup & Foundation    | 2-3 hari |
-| Sprint 1  | Authentication                | 2-3 hari |
-| Sprint 2  | User Profile & Layout         | 2 hari   |
-| Sprint 3  | Categories                    | 1-2 hari |
-| Sprint 4  | Posts CRUD                    | 3 hari   |
-| Sprint 5  | Comments & Replies            | 2-3 hari |
-| Sprint 6  | Search & Filtering            | 2 hari   |
-| Sprint 7  | Likes & Bookmarks             | 2 hari   |
-| Sprint 8  | Notifications                 | 2 hari   |
-| Sprint 9  | Moderation & Admin            | 3 hari   |
-| Sprint 10 | Testing, Deployment & Go-Live | 2-3 hari |
+| Sprint    | Fokus                                        | Estimasi |
+| --------- | -------------------------------------------- | -------- |
+| Sprint 0-10 | Forum Diskusi Online (DONE)                | -        |
+| Sprint 11 | Database Migration: Communities & Votes      | 2-3 hari |
+| Sprint 12 | Communities: CRUD & Membership               | 3 hari   |
+| Sprint 13 | Voting System (Upvote & Downvote)            | 2-3 hari |
+| Sprint 14 | Feed System (Hot, Top, New, Rising)          | 3 hari   |
+| Sprint 15 | Community Page & Sidebar                     | 2-3 hari |
+| Sprint 16 | Flair System & Markdown Editor               | 2-3 hari |
+| Sprint 17 | Saved Posts & Search Enhancement             | 2 hari   |
+| Sprint 18 | Moderation Tools & Reports Enhancement       | 3 hari   |
+| Sprint 19 | Trending, Popular, User Karma                | 2-3 hari |
+| Sprint 20 | QA, Polish & Production Readiness            | 2-3 hari |
 
 ---
 
-# Sprint 0 – Project Foundation
+# Sprint 11 – Database Migration: Communities & Votes
 
 ## Goal
 
-Mempersiapkan environment dan arsitektur project.
-
-## User Story
-
-Sebagai developer, saya ingin memiliki project yang siap dikembangkan.
-
-## Task Breakdown
-
-### Project Setup
-
-* Create Next.js project
-* Setup TypeScript
-* Setup Tailwind
-* Setup ESLint
-* Setup Prettier
-* Setup Husky
-* Setup lint-staged
-
-### Supabase Setup
-
-* Create project
-* Configure environment variables
-* Configure authentication
-* Configure storage bucket
-
-### Folder Setup
-
-* Implement folder structure
-* Setup aliases
-* Setup providers
-
-### Dependency Installation
-
-```text id="n7a2v4"
-@supabase/ssr
-@supabase/supabase-js
-react-hook-form
-zod
-@hookform/resolvers
-@tanstack/react-query
-sonner
-lucide-react
-class-variance-authority
-clsx
-tailwind-merge
-```
-
-### Validation
-
-```bash id="v8d5k1"
-npm run lint
-npm run typecheck
-npm run build
-```
-
----
-
-# Sprint 1 – Authentication
-
-## Goal
-
-Implementasi login dan register.
-
-## User Story
-
-Sebagai pengguna, saya dapat membuat akun dan login.
+Migrate database dari forum model ke Reddit-like community model.
 
 ## Features
 
-* Register
-* Login
-* Logout
-* Email Verification
-* Protected Route
-* Middleware Authentication
+### Database Changes
+
+* Rename `categories` → `communities` (add new columns: creator_id, banner_url, is_private, member_count, post_count)
+* Create `community_members` table
+* Create `community_rules` table
+* Create `community_flairs` table
+* Create `votes` table (replacing likes)
+* Create `saved_posts` table (replacing bookmarks)
+* Add `karma`, `cake_day` to profiles
+* Add `community_id`, `flair_id`, `vote_score`, `hot_score`, `content_type`, `is_pinned` to posts
+* Add `vote_score` to comments
+* Update `reports` table (add community_id, reason enum)
+* Update notification_type enum
+
+### Enums
+
+* Create `community_role` enum
+* Create `vote_type` enum
+* Create `content_type` enum
+* Create `report_reason` enum
+* Update `post_status` (add 'removed')
+* Update `notification_type` (add 'upvote', 'downvote', 'moderation', 'community_invite')
+
+### Triggers
+
+* vote-score-trigger.sql
+* hot-score-trigger.sql
+* community-counts-trigger.sql
+* karma-trigger.sql
 
 ## Acceptance Criteria
 
-✅ User dapat register.
-
-✅ User dapat login.
-
-✅ User dapat logout.
-
-✅ Session tersimpan.
+* ✅ Semua tabel baru sudah dibuat.
+* ✅ Semua enum sudah diupdate.
+* ✅ Triggers bekerja dengan benar.
+* ✅ Data existing (likes → votes, bookmarks → saved_posts, categories → communities) sudah di-migrate.
+* ✅ RLS policies baru sudah diterapkan.
 
 ---
 
-# Sprint 2 – User Profile & Layout
+# Sprint 12 – Communities: CRUD & Membership
 
 ## Goal
 
-Membangun UI dasar aplikasi.
+Implementasi komunitas sebagai unit konten utama.
 
 ## Features
 
-* Sidebar
-* Header
-* Responsive Layout
-* Profile Page
-* Edit Profile
-* Avatar Upload
+### Community CRUD
+
+* Community list page (popular communities)
+* Community detail page
+* Create community form
+* Edit community (creator only)
+* Community search
+
+### Community Membership
+
+* Join community button
+* Leave community button
+* Community members list
+* Member count display
+
+### Community Rules
+
+* Community rules display
+* Community rules management (moderator)
+
+### Community Flairs
+
+* Community flairs display
+* Community flairs management (moderator)
+
+## Files to Create/Update
+
+### Types
+
+* types/community.ts
+* types/community-member.ts
+* types/community-rule.ts
+* types/community-flair.ts
+
+### Repositories
+
+* repositories/community.repository.ts
+* repositories/community-membership.repository.ts
+* repositories/community-rules.repository.ts
+* repositories/community-flairs.repository.ts
+
+### Services
+
+* services/community.service.ts
+* services/community-membership.service.ts
+* services/community-rules.service.ts
+* services/community-flairs.service.ts
+
+### Hooks
+
+* hooks/useCommunities.ts
+* hooks/useCommunity.ts
+* hooks/useCreateCommunity.ts
+* hooks/useJoinCommunity.ts
+* hooks/useLeaveCommunity.ts
+* hooks/useCommunityMembers.ts
+* hooks/useCommunityRules.ts
+* hooks/useCommunityFlairs.ts
+
+### Components
+
+* components/community/CommunityCard.tsx
+* components/community/CommunityList.tsx
+* components/community/CommunityHeader.tsx
+* components/community/CommunitySidebar.tsx
+* components/community/CommunityRules.tsx
+* components/community/CommunityFlairList.tsx
+* components/community/CommunityMembers.tsx
+* components/community/JoinLeaveButton.tsx
+* components/community/CreateCommunityForm.tsx
+* components/community/CommunitySearch.tsx
+* components/community/PopularCommunities.tsx
+* components/community/CommunitySkeleton.tsx
+* components/community/CommunityEmptyState.tsx
+
+### Pages
+
+* app/(main)/communities/page.tsx
+* app/(main)/communities/[slug]/page.tsx
+* app/(main)/communities/[slug]/rules/page.tsx
+* app/(main)/communities/[slug]/loading.tsx
+
+### Schemas
+
+* schemas/community.schema.ts
+* schemas/community-rules.schema.ts
+* schemas/community-flairs.schema.ts
+
+### Constants
+
+* Update lib/constants/routes.ts
+* Update lib/constants/query-keys.ts
 
 ## Acceptance Criteria
 
-✅ Layout responsive.
-
-✅ User dapat mengubah profil.
+* ✅ User dapat melihat daftar komunitas.
+* ✅ User dapat membuat komunitas baru.
+* ✅ User dapat join/leave komunitas.
+* ✅ Moderator dapat mengelola rules dan flairs.
+* ✅ Community detail menampilkan info, rules, dan posts.
 
 ---
 
-# Sprint 3 – Categories
+# Sprint 13 – Voting System
 
 ## Goal
 
-Membuat sistem kategori.
+Menggantikan Like dengan Upvote & Downvote.
 
 ## Features
 
-* List Categories
-* Filter By Category
-* Admin CRUD Category
+### Post Voting
+
+* Upvote post
+* Downvote post
+* Vote score display (net: upvote - downvote)
+* Vote status (apakah user sudah vote)
+* Optimistic update
+
+### Comment Voting
+
+* Upvote comment
+* Downvote comment
+* Vote score display
+
+### Karma System
+
+* Post karma calculation
+* Comment karma calculation
+* Total karma display
+
+## Files to Create/Update
+
+### Types
+
+* types/vote.ts (replacing like.ts)
+
+### Repositories
+
+* repositories/vote.repository.ts (replacing like.repository.ts)
+
+### Services
+
+* services/vote.service.ts (replacing like.service.ts)
+
+### Hooks
+
+* hooks/useVote.ts (replacing useToggleLike.ts)
+* hooks/useCommentVote.ts
+* hooks/useVoteStatus.ts (replacing useLikeStatus.ts)
+
+### Components
+
+* components/like/VoteButton.tsx (renamed, redesigned: up + score + down)
+* components/like/CommentVoteButton.tsx
+
+### Utils
+
+* lib/utils/karma.ts
+* lib/utils/hot-score.ts
 
 ## Acceptance Criteria
 
-✅ User dapat melihat kategori.
-
-✅ Admin dapat mengelola kategori.
+* ✅ User dapat upvote dan downvote post.
+* ✅ User dapat upvote dan downvote komentar.
+* ✅ Vote score ditampilkan dengan benar.
+* ✅ Karma user dihitung dan ditampilkan.
+* ✅ Optimistic update bekerja.
 
 ---
 
-# Sprint 4 – Posts CRUD
+# Sprint 14 – Feed System
 
 ## Goal
 
-Membuat sistem postingan.
+Membangun sistem feed ala Reddit.
 
 ## Features
 
-* Create Post
-* Edit Post
-* Delete Post
-* View Post Detail
-* View Counter
+### Home Feed
+
+* Logged-in: posts dari komunitas yang diikuti.
+* Guest: posts populer global.
+* Sort: Hot, Top, New, Rising.
+
+### Community Feed
+
+* Posts dari satu komunitas.
+* Sort: Hot, Top, New, Rising, Most Commented.
+
+### Sort Algorithms
+
+* Hot: vote_score + time decay.
+* Top: vote_score DESC + time filter.
+* New: created_at DESC.
+* Rising: vote velocity (votes/hour).
+
+### Feed Components
+
+* HomeFeed.tsx
+* CommunityFeed.tsx
+* FeedSort.tsx (tabs: Hot/Top/New/Rising)
+
+## Files to Create/Update
+
+### Repositories
+
+* repositories/feed.repository.ts
+
+### Services
+
+* services/feed.service.ts
+
+### Hooks
+
+* hooks/useHomeFeed.ts
+* hooks/useCommunityFeed.ts
+
+### Components
+
+* components/feed/HomeFeed.tsx
+* components/feed/CommunityFeed.tsx
+* components/feed/FeedSort.tsx
+
+### Pages
+
+* app/(main)/page.tsx (Home Feed)
+* app/(main)/communities/[slug]/page.tsx (Community Feed)
 
 ## Acceptance Criteria
 
-✅ User dapat CRUD post.
-
-✅ Hanya owner yang dapat mengedit.
+* ✅ Home feed menampilkan posts yang relevan.
+* ✅ Community feed menampilkan posts dari komunitas.
+* ✅ Sorting bekerja (Hot, Top, New, Rising).
+* ✅ Hot algorithm menghasilkan ranking yang wajar.
+* ✅ Top filter per waktu bekerja.
 
 ---
 
-# Sprint 5 – Comments & Replies
+# Sprint 15 – Community Page & Sidebar
 
 ## Goal
 
-Membuat sistem diskusi.
+Membangun community page dan Reddit-like sidebar.
 
 ## Features
 
-* Create Comment
-* Delete Comment
-* Reply Comment
-* Nested Comment
+### Community Page
+
+* Community header (banner, icon, name, description)
+* Community feed
+* Join/Leave button
+* Member count, post count
+
+### Sidebar
+
+* Home sidebar (trending, popular)
+* Community sidebar (about, rules, mods, join button)
+* Post detail sidebar (community info, rules)
+* Context-aware sidebar
+
+## Files to Create/Update
+
+### Components
+
+* components/sidebar/HomeSidebar.tsx
+* components/sidebar/CommunityInfoSidebar.tsx
+* components/sidebar/PostSidebar.tsx
+* components/sidebar/SidebarSkeleton.tsx
+* components/layout/RedditSidebar.tsx
+
+### Pages
+
+* Update app/(main)/communities/[slug]/page.tsx
+* Update app/(main)/post/[id]/page.tsx
 
 ## Acceptance Criteria
 
-✅ User dapat berkomentar.
-
-✅ User dapat membalas komentar.
+* ✅ Community page menampilkan header dan feed.
+* ✅ Sidebar konteks-aware (beda di home, community, post detail).
+* ✅ Community sidebar menampilkan info, rules, moderators.
+* ✅ Responsive (sidebar hidden on mobile, toggle via menu).
 
 ---
 
-# Sprint 6 – Search & Filtering
+# Sprint 16 – Flair System & Markdown Editor
 
 ## Goal
 
-Membuat pencarian forum.
+Implementasi flair untuk post dan markdown editor.
 
 ## Features
 
-* Search Post
-* Debounce Search
-* Filter Category
-* Sort Latest
-* Sort Popular
+### Flair System
+
+* Community moderator membuat flair (nama + warna)
+* User memilih flair saat create post
+* Flair badge ditampilkan di post
+* Filter post by flair
+
+### Markdown Editor
+
+* Rich text toolbar (Bold, Italic, Headers, Links, Code, Lists, Quotes, Images)
+* Live preview
+* Safe HTML rendering
+
+## Files to Create/Update
+
+### Components
+
+* components/flair/FlairBadge.tsx
+* components/flair/FlairPicker.tsx
+* components/flair/FlairManager.tsx
+* components/flair/FlairFilter.tsx
+* components/markdown/MarkdownEditor.tsx
+* components/markdown/MarkdownPreview.tsx
+* components/markdown/MarkdownToolbar.tsx
+
+### Utils
+
+* lib/utils/markdown.ts
 
 ## Acceptance Criteria
 
-✅ Search bekerja.
-
-✅ Filter bekerja.
+* ✅ Moderator dapat membuat dan mengelola flair.
+* ✅ User dapat memilih flair saat create post.
+* ✅ Flair badge ditampilkan di post.
+* ✅ Markdown editor bekerja dengan toolbar dan preview.
+* ✅ Content aman dari XSS.
 
 ---
 
-# Sprint 7 – Likes & Bookmarks
+# Sprint 17 – Saved Posts & Search Enhancement
 
 ## Goal
 
-Meningkatkan engagement.
+Menggantikan bookmarks dan enhance search.
 
 ## Features
 
-* Like Post
-* Unlike Post
-* Bookmark Post
-* Bookmark List
+### Saved Posts (replacing Bookmarks)
+
+* Save post to folder
+* Unsave post
+* Saved posts list with folders
+* Folder management
+
+### Search Enhancement
+
+* Search scope: Posts, Communities, Users
+* Search community by name
+* Search user by username
+* Unified search page
+
+## Files to Create/Update
+
+### Types
+
+* types/saved-post.ts
+* types/search.ts
+
+### Repositories
+
+* repositories/saved-post.repository.ts
+* repositories/search.repository.ts
+
+### Services
+
+* services/saved-post.service.ts
+* services/search.service.ts
+
+### Hooks
+
+* hooks/useSavePost.ts
+* hooks/useSaveStatus.ts
+* hooks/useSavedPosts.ts
+* hooks/useSearch.ts
+* hooks/useSearchCommunity.ts
+* hooks/useSearchUser.ts
+
+### Components
+
+* components/bookmark/SaveButton.tsx
+* components/bookmark/SavedPostCard.tsx
+* components/bookmark/SavedPostList.tsx
+* components/bookmark/FolderManager.tsx
+* components/bookmark/SavedPostSkeleton.tsx
+* components/bookmark/SavedPostEmptyState.tsx
+* components/community/CommunitySearch.tsx
+* components/profile/UserSearch.tsx
+
+### Pages
+
+* app/(main)/bookmarks/page.tsx (updated: folders)
 
 ## Acceptance Criteria
 
-✅ Like tersimpan.
-
-✅ Bookmark tersimpan.
+* ✅ User dapat save post ke folder.
+* ✅ User dapat mengelola folder saved posts.
+* ✅ Search dapat mencari posts, communities, dan users.
+* ✅ Search debounce bekerja.
 
 ---
 
-# Sprint 8 – Notifications
+# Sprint 18 – Moderation Tools & Reports Enhancement
 
 ## Goal
 
-Membangun sistem notifikasi.
+Membangun moderation tools level komunitas dan enhance reports.
 
 ## Features
 
-* Notification Center
-* Mark as Read
-* Realtime Notification
+### Community Moderator Tools
+
+* Pin/Unpin post
+* Lock/Unlock post
+* Remove post (soft delete)
+* Remove comment
+* Manage community members (approve/remove)
+* Review reports di komunitas
+
+### Reports Enhancement
+
+* Report reasons (spam, harassment, hate speech, etc.)
+* Report description
+* Community-scoped reports
+* Moderator resolution
+
+## Files to Create/Update
+
+### Types
+
+* types/report.ts
+
+### Repositories
+
+* repositories/report.repository.ts
+
+### Services
+
+* services/report.service.ts
+
+### Hooks
+
+* hooks/usePinPost.ts
+* hooks/useLockPost.ts
+* hooks/useRemovePost.ts
+* hooks/useReports.ts
+* hooks/useCreateReport.ts
+
+### Components
+
+* components/moderation/ModTools.tsx
+* components/moderation/ModMenu.tsx
+* components/moderation/ReportDialog.tsx
+* components/moderation/ReportList.tsx
+* components/moderation/ManageRules.tsx
+* components/moderation/ManageFlairs.tsx
+* components/post/PinnedBadge.tsx
+* components/post/LockedBadge.tsx
+
+### Pages
+
+* app/admin/users/page.tsx
 
 ## Acceptance Criteria
 
-✅ User menerima notifikasi.
-
-✅ Realtime berjalan.
+* ✅ Moderator dapat pin/lock/remove post.
+* ✅ Report dengan reason dan description.
+* ✅ Moderator dapat review reports di komunitasnya.
+* ✅ Admin dapat manage semua users.
 
 ---
 
-# Sprint 9 – Moderation & Admin
+# Sprint 19 – Trending, Popular & User Karma
 
 ## Goal
 
-Membangun fitur admin.
+Membangun trending, popular, dan enhance karma display.
 
 ## Features
 
-### Reports
+### Trending
 
-* Report Post
-* Report Comment
-* Review Report
+* Trending communities (pertumbuhan anggota)
+* Trending posts (vote velocity)
+* Trending page
 
-### Admin Dashboard
+### Popular
 
-* Manage Users
-* Manage Categories
-* Moderate Posts
-* Moderate Comments
+* Popular posts (global)
+* Popular communities
+* Display di sidebar
 
-### RBAC
+### User Karma
 
-* Member
-* Moderator
-* Admin
+* Post karma breakdown
+* Comment karma breakdown
+* Total karma
+* Karma badge di profil dan sebelah username
+
+## Files to Create/Update
+
+### Repositories
+
+* repositories/trending.repository.ts
+
+### Services
+
+* services/trending.service.ts
+
+### Hooks
+
+* hooks/useTrending.ts
+* hooks/usePopularPosts.ts
+* hooks/usePopularCommunities.ts
+
+### Components
+
+* components/feed/TrendingPosts.tsx
+* components/feed/PopularPosts.tsx
+* components/community/PopularCommunities.tsx
+* components/profile/KarmaBadge.tsx
+* components/sidebar/HomeSidebar.tsx (trending section)
+* components/post/PostCard.tsx (show karma next to username)
+
+### Utils
+
+* lib/utils/karma.ts
 
 ## Acceptance Criteria
 
-✅ Moderator dapat menangani laporan.
-
-✅ Admin dapat mengelola sistem.
+* ✅ Trending communities dan posts ditampilkan.
+* ✅ Popular posts dan communities ditampilkan.
+* ✅ Karma user ditampilkan di profil dan di sebelah username.
+* ✅ Sidebar menampilkan trending dan popular.
 
 ---
 
-# Sprint 10 – Testing & Go-Live
+# Sprint 20 – QA, Polish & Production Readiness
 
 ## Goal
 
-Menyiapkan aplikasi untuk production.
+Quality assurance dan deployment.
 
 ## Features
 
@@ -311,8 +637,9 @@ Menyiapkan aplikasi untuk production.
 ### Performance
 
 * Image Optimization
-* Caching
+* Caching (React Query config)
 * Code Splitting
+* Database query optimization
 
 ### Deployment
 
@@ -324,16 +651,15 @@ Menyiapkan aplikasi untuk production.
 
 * Update README
 * Update Progress Log
+* Update project-checkpoint.md
 
 ## Acceptance Criteria
 
-✅ Build berhasil.
-
-✅ Tidak ada Type Error.
-
-✅ Tidak ada ESLint Error.
-
-✅ Deployment berhasil.
+* ✅ Build berhasil.
+* ✅ Tidak ada Type Error.
+* ✅ Tidak ada ESLint Error.
+* ✅ Semua fitur berjalan.
+* ✅ Deployment berhasil.
 
 ---
 
@@ -341,7 +667,7 @@ Menyiapkan aplikasi untuk production.
 
 Setiap sprint dianggap selesai jika:
 
-```text id="m3k8v2"
+```text
 ✓ Feature selesai
 ✓ UI responsive
 ✓ TypeScript pass
@@ -355,52 +681,69 @@ Setiap sprint dianggap selesai jika:
 
 ---
 
-# Development Workflow Bersama MiMo
+# Migration Strategy (from Sprint 0-10 to Sprint 11+)
 
-```text id="w6p1f4"
-ChatGPT
-↓
-Membuat task sprint
-↓
-MiMo
-↓
-Implementasi
-↓
-Validation
-↓
+```text
+1. Backup database
+2. Run migration scripts (new tables + alter existing)
+3. Migrate data:
+   - categories → communities (add creator_id, member_count, post_count)
+   - likes → votes (map: like → upvote)
+   - bookmarks → saved_posts (add folder column)
+4. Add new columns to existing tables:
+   - profiles: karma, cake_day
+   - posts: community_id, flair_id, vote_score, hot_score, content_type, is_pinned
+   - comments: vote_score
+   - reports: community_id, reason
+5. Deploy new code
+6. Verify all features
+7. Remove old tables (categories, likes, bookmarks) after verification
+```
+
+---
+
+# Development Workflow
+
+```text
+Documentation Review
+ ↓
+Sprint Planning
+ ↓
+Implementation (Repository → Service → Hook → Component)
+ ↓
+Validation (TypeScript + ESLint + Build)
+ ↓
+Manual Testing
+ ↓
 Code Review
-↓
+ ↓
 Merge
-↓
+ ↓
 Sprint berikutnya
 ```
 
 ---
 
-# Urutan Pengerjaan yang Saya Rekomendasikan
+# Urutan Pengerjaan
 
-```text id="q4n7k1"
-Sprint 0
-↓
-Sprint 1
-↓
-Sprint 2
-↓
-Sprint 3
-↓
-Sprint 4
-↓
-Sprint 5
-↓
-Sprint 6
-↓
-Sprint 7
-↓
-Sprint 8
-↓
-Sprint 9
-↓
-Sprint 10
-↓
-Go-Live
+```text
+Sprint 11 (Database Migration)
+ ↓
+Sprint 12 (Communities)
+ ↓
+Sprint 13 (Voting)
+ ↓
+Sprint 14 (Feed System)
+ ↓
+Sprint 15 (Community Page & Sidebar)
+ ↓
+Sprint 16 (Flair & Markdown)
+ ↓
+Sprint 17 (Saved Posts & Search)
+ ↓
+Sprint 18 (Moderation & Reports)
+ ↓
+Sprint 19 (Trending & Karma)
+ ↓
+Sprint 20 (QA & Go-Live)
 ```

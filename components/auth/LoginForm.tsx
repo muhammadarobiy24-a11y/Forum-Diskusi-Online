@@ -16,6 +16,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
+  const registered = searchParams.get("registered");
 
   const {
     register,
@@ -43,6 +44,11 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {registered && (
+        <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
+          Account created successfully! Please sign in.
+        </div>
+      )}
       <div className="space-y-2">
         <label htmlFor="email" className="text-sm font-medium">
           Email

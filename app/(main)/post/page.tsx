@@ -11,6 +11,7 @@ import PostSearch from "@/components/post/PostSearch";
 import PostSort from "@/components/post/PostSort";
 import Pagination from "@/components/post/Pagination";
 import CategoryFilterButtons from "@/components/category/CategoryFilterButtons";
+import ChannelHeader from "@/components/layout/discord/ChannelHeader";
 import type { Category } from "@/types";
 import type { PostSort as PostSortType } from "@/types/post";
 
@@ -112,43 +113,35 @@ export default function PostsPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Posts</h1>
-        <p className="text-muted-foreground mt-1">
-          Browse discussions and find interesting topics.
-        </p>
+    <>
+      <ChannelHeader channelName="posts" channelDescription="Browse discussions and find interesting topics" />
+      <div className="flex-1 overflow-y-auto dc-chat-bg">
+        <div className="max-w-3xl mx-auto px-5 py-5 space-y-5">
+          <PostSearch value={localSearch} onChange={setLocalSearch} />
+
+          {categories && categories.length > 0 && (
+            <CategoryFilterButtons
+              categories={categories}
+              value={category}
+              onChange={(value) => updateParams({ category: value })}
+            />
+          )}
+
+          <div className="flex justify-end">
+            <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
+          </div>
+
+          <PostList posts={data?.posts} isLoading={isLoading} />
+
+          {data && (
+            <Pagination
+              pagination={data.pagination}
+              baseUrl="/post"
+              searchParams={searchParamsObj}
+            />
+          )}
+        </div>
       </div>
-
-      <PostSearch
-        value={localSearch}
-        onChange={setLocalSearch}
-      />
-
-      {categories && categories.length > 0 && (
-        <CategoryFilterButtons
-          categories={categories}
-          value={category}
-          onChange={(value) => updateParams({ category: value })}
-        />
-      )}
-
-      <div className="flex justify-end">
-        <PostSort
-          value={sort}
-          onChange={(value) => updateParams({ sort: value })}
-        />
-      </div>
-
-      <PostList posts={data?.posts} isLoading={isLoading} />
-
-      {data && (
-        <Pagination
-          pagination={data.pagination}
-          baseUrl="/post"
-          searchParams={searchParamsObj}
-        />
-      )}
-    </div>
+    </>
   );
 }
