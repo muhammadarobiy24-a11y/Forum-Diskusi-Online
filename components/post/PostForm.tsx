@@ -191,7 +191,7 @@ export default function PostForm({ mode, initialData }: PostFormProps) {
                   type="button"
                   disabled={isUploadingMedia || isPending}
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-[var(--forum-text-secondary)] hover:text-violet-600 hover:bg-violet-50 border border-gray-200 rounded-full transition-colors disabled:opacity-50"
                 >
                   {isUploadingMedia ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
