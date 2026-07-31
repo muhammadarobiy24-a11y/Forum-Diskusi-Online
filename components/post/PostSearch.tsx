@@ -11,30 +11,29 @@ export default function PostSearch({ value, onChange }: PostSearchProps) {
   return (
     <div className="relative group">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-        <Search size={16} className="text-white/40 transition-colors group-focus-within:text-violet-400" />
+        <Search size={16} className="text-[var(--forum-text-muted)] transition-colors group-focus-within:text-violet-500" />
       </div>
       <input
         type="text"
         placeholder="Cari diskusi atau topik..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full text-sm font-medium text-white/90 placeholder:text-white/30 outline-none transition-all duration-300"
+        className="w-full text-sm font-medium text-[var(--forum-text-primary)] placeholder:text-[var(--forum-text-muted)] outline-none transition-all duration-200"
         style={{
-          background: "rgba(255,255,255,0.04)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: 20,
-          padding: "1rem 1.25rem 1rem 3rem",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.02)",
+          background: "#f3f2ef",
+          border: "1.5px solid #e5e3de",
+          borderRadius: 16,
+          padding: "0.75rem 1.25rem 0.75rem 3rem",
         }}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = "rgba(124,58,237,0.5)";
-          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12), inset 0 1px 0 rgba(255,255,255,0.02)";
+          e.currentTarget.style.background = "#fff";
+          e.currentTarget.style.borderColor = "#7c3aed";
+          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.12)";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-          e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.02)";
+          e.currentTarget.style.background = "#f3f2ef";
+          e.currentTarget.style.borderColor = "#e5e3de";
+          e.currentTarget.style.boxShadow = "none";
         }}
       />
     </div>

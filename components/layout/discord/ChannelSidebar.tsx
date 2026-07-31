@@ -56,25 +56,20 @@ function NavLink({
       className={cn(
         "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-3 text-base font-semibold transition-all duration-150",
         active
-          ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
-          : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
+          ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border border-[var(--forum-active-border)]"
+          : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border border-transparent"
       )}
     >
-      {/* Active left bar */}
       {active && (
         <span
           className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[24px] rounded-r-full"
-          style={{
-            background: "var(--forum-active-bar)",
-            boxShadow: "0 0 8px var(--forum-active-bar)",
-          }}
+          style={{ background: "var(--forum-active-bar)" }}
         />
       )}
-
       <Icon
         className={cn(
           "h-[18px] w-[18px] shrink-0 transition-colors",
-          active ? "text-violet-400" : "text-white/35 group-hover:text-white/60"
+          active ? "text-[var(--forum-active-bar)]" : "text-[var(--forum-text-muted)] group-hover:text-[var(--forum-text-secondary)]"
         )}
       />
       <span className="truncate flex-1">{label}</span>
@@ -90,17 +85,10 @@ function NavLink({
   );
 }
 
-/* ─── Section label ──────────────────────────────────────── */
-function SectionLabel({
-  label,
-  action,
-}: {
-  label: string;
-  action?: React.ReactNode;
-}) {
+function SectionLabel({ label, action }: { label: string; action?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between px-5 pt-6 pb-2">
-      <span className="text-[12px] font-bold uppercase tracking-widest text-white/35">
+      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--forum-text-muted)]">
         {label}
       </span>
       {action}
@@ -117,9 +105,9 @@ function CommunitySidebar({ slug }: { slug: string }) {
   if (isLoading) {
     return (
       <div className="flex-1 p-4 space-y-2.5 animate-pulse">
-        <div className="h-20 rounded-2xl bg-white/5" />
+        <div className="h-20 rounded-2xl bg-gray-100" />
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-10 rounded-xl bg-white/4" />
+          <div key={i} className="h-10 rounded-xl bg-gray-100" />
         ))}
       </div>
     );
@@ -137,53 +125,36 @@ function CommunitySidebar({ slug }: { slug: string }) {
       {/* Community header card */}
       <div
         className="relative mx-3 mt-3 mb-1 rounded-2xl overflow-hidden shrink-0"
-        style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.07)",
-        }}
+        style={{ background: "#fff", border: "1px solid #e8e6f0", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
       >
         {/* Banner */}
         <div className="h-16 w-full overflow-hidden relative">
           {community?.banner_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={community.banner_url}
-              alt=""
-              className="h-full w-full object-cover opacity-50"
-            />
+            <img src={community.banner_url} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="h-full w-full bg-gradient-to-br from-violet-600/40 via-blue-500/25 to-transparent" />
+            <div className="h-full w-full bg-gradient-to-br from-violet-100 via-blue-50 to-transparent" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent" />
         </div>
-
         {/* Icon + name */}
         <div className="flex items-center gap-3 px-4 pt-2 pb-3">
           <div
-            className="-mt-5 h-10 w-10 rounded-xl border-2 overflow-hidden flex items-center justify-center text-base font-black text-white shrink-0 shadow-lg"
-            style={{
-              background: community?.icon_url
-                ? undefined
-                : "linear-gradient(135deg, #7c3aed, #3b82f6)",
-              borderColor: "rgba(0,0,0,0.5)",
-            }}
+            className="-mt-5 h-10 w-10 rounded-xl border-2 border-white overflow-hidden flex items-center justify-center text-base font-black text-white shrink-0 shadow-md"
+            style={{ background: community?.icon_url ? undefined : "linear-gradient(135deg, #7c3aed, #3b82f6)" }}
           >
             {community?.icon_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={community.icon_url}
-                alt={community.name}
-                className="h-full w-full object-cover"
-              />
+              <img src={community.icon_url} alt={community.name} className="h-full w-full object-cover" />
             ) : (
               (community?.name?.[0] ?? "?").toUpperCase()
             )}
           </div>
           <div className="min-w-0 -mt-1">
-            <p className="text-base font-bold text-white truncate leading-tight">
+            <p className="text-base font-bold text-[var(--forum-text-primary)] truncate leading-tight">
               {community?.name ?? slug}
             </p>
-            <p className="text-[11px] text-white/40 truncate">
+            <p className="text-[11px] text-[var(--forum-text-muted)] truncate">
               {community?.member_count?.toLocaleString("id-ID") ?? "—"} anggota
             </p>
           </div>
@@ -252,8 +223,8 @@ function CategoryFilter() {
   return (
     <div className="px-3 pt-1 pb-2">
       <div className="flex items-center gap-2 px-2 pt-5 pb-2">
-        <Tag className="h-3 w-3 text-white/35" />
-        <span className="text-[12px] font-bold uppercase tracking-widest text-white/35">
+        <Tag className="h-3 w-3 text-[var(--forum-text-muted)]" />
+        <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--forum-text-muted)]">
           Kategori
         </span>
       </div>
@@ -263,8 +234,8 @@ function CategoryFilter() {
           className={cn(
             "w-full text-left rounded-xl px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
             !active
-              ? "bg-[var(--forum-active)] text-white border-[var(--forum-active-border)]"
-              : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border-transparent"
+              ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border-[var(--forum-active-border)]"
+              : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border-transparent"
           )}
         >
           Semua
@@ -278,8 +249,8 @@ function CategoryFilter() {
               className={cn(
                 "w-full text-left rounded-xl px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
                 isActive
-                  ? "bg-[var(--forum-active)] text-white border-[var(--forum-active-border)]"
-                  : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border-transparent"
+                  ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border-[var(--forum-active-border)]"
+                  : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border-transparent"
               )}
             >
               {cat.name}
@@ -301,22 +272,20 @@ function DefaultSidebar() {
       {/* App brand */}
       <Link
         href="/post"
-        className="flex items-center gap-3.5 px-5 h-[68px] shrink-0 border-b border-[var(--forum-sidebar-border)] hover:bg-[var(--forum-hover)] transition-colors"
+        className="flex items-center gap-3.5 px-5 h-[68px] shrink-0 border-b hover:bg-[var(--forum-hover)] transition-colors"
+        style={{ borderColor: "var(--forum-sidebar-border)" }}
       >
         <div
-          className="flex h-9 w-9 items-center justify-center rounded-xl shadow-lg shrink-0"
-          style={{
-            background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
-            boxShadow: "0 0 18px rgba(124,58,237,0.50)",
-          }}
+          className="flex h-9 w-9 items-center justify-center rounded-xl shadow-md shrink-0"
+          style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}
         >
           <MessageCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
         </div>
         <div>
-          <p className="text-base font-black text-white tracking-tight leading-tight">
+          <p className="text-base font-black text-[var(--forum-text-primary)] tracking-tight leading-tight">
             Forum Diskusi
           </p>
-          <p className="text-[11px] text-white/35 font-medium leading-tight">
+          <p className="text-[11px] text-[var(--forum-text-muted)] font-medium leading-tight">
             Community Platform
           </p>
         </div>
@@ -353,7 +322,7 @@ function DefaultSidebar() {
           action={
             <Link
               href="/communities/create"
-              className="flex h-5 w-5 items-center justify-center rounded-lg text-white/35 hover:bg-white/10 hover:text-white transition-colors"
+              className="flex h-5 w-5 items-center justify-center rounded-lg text-[var(--forum-text-muted)] hover:bg-[var(--forum-hover)] hover:text-[var(--forum-active-bar)] transition-colors"
               title="Buat Komunitas"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -373,28 +342,24 @@ function DefaultSidebar() {
                 className={cn(
                   "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-2.5 text-base font-semibold transition-all duration-150",
                   isActive
-                    ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
-                    : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
+                    ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border border-[var(--forum-active-border)]"
+                    : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border border-transparent"
                 )}
               >
                 {isActive && (
                   <span
                     className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[20px] rounded-r-full"
-                    style={{
-                      background: "var(--forum-active-bar)",
-                      boxShadow: "0 0 8px var(--forum-active-bar)",
-                    }}
+                    style={{ background: "var(--forum-active-bar)" }}
                   />
                 )}
                 <div
-                  className="h-7 w-7 rounded-lg overflow-hidden flex items-center justify-center text-[11px] font-black text-white shrink-0"
+                  className="h-7 w-7 rounded-lg overflow-hidden flex items-center justify-center text-[11px] font-black shrink-0"
                   style={{
                     background: isActive
-                      ? "linear-gradient(135deg, rgba(124,58,237,0.9), rgba(59,130,246,0.9))"
-                      : "rgba(255,255,255,0.10)",
-                    border: isActive
-                      ? "1px solid rgba(167,139,250,0.4)"
-                      : "1px solid rgba(255,255,255,0.08)",
+                      ? "linear-gradient(135deg, #7c3aed, #3b82f6)"
+                      : "#ede9fe",
+                    color: isActive ? "white" : "#7c3aed",
+                    border: isActive ? "none" : "1px solid #d4caff",
                   }}
                 >
                   {c.icon_url ? (
@@ -406,13 +371,13 @@ function DefaultSidebar() {
                 </div>
                 <span className="truncate">{c.name}</span>
                 {isActive && (
-                  <ChevronRight className="h-3.5 w-3.5 ml-auto shrink-0 text-white/40" />
+                  <ChevronRight className="h-3.5 w-3.5 ml-auto shrink-0 text-[var(--forum-active-bar)]" />
                 )}
               </Link>
             );
           })
         ) : (
-          <div className="mx-4 py-3 text-[12px] text-white/30 italic text-center">
+          <div className="mx-4 py-3 text-[12px] text-[var(--forum-text-muted)] italic text-center">
             Belum ada komunitas
           </div>
         )}
@@ -420,7 +385,7 @@ function DefaultSidebar() {
         {communities && communities.length > 10 && (
           <Link
             href="/communities"
-            className="flex items-center gap-2 mx-4 py-2 text-[12px] font-semibold text-white/40 hover:text-white/70 transition-colors"
+            className="flex items-center gap-2 mx-4 py-2 text-[12px] font-semibold text-[var(--forum-text-muted)] hover:text-[var(--forum-text-primary)] transition-colors"
           >
             <span>Lihat semua komunitas</span>
             <ChevronRight className="h-3.5 w-3.5" />

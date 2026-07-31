@@ -41,24 +41,8 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('forum-theme');
-                  if (theme === 'dark' || theme === 'light') {
-                    document.documentElement.classList.add(theme);
-                  } else if (theme === 'system' || !theme) {
-                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                      document.documentElement.classList.add('dark');
-                    } else {
-                      document.documentElement.classList.add('light');
-                    }
-                  }
-                  // Apply color theme background to prevent flash
-                  var colorTheme = localStorage.getItem('forum-color-theme') || 'frosted';
-                  var bgs = {
-                    frosted: 'linear-gradient(135deg, #0d0d1a 0%, #0f0a1e 40%, #0a1020 100%)',
-                    midnight: 'linear-gradient(135deg, #020818 0%, #030d2e 40%, #030c28 100%)',
-                    slate: 'linear-gradient(135deg, #0a0f0a 0%, #0d1a10 40%, #091208 100%)'
-                  };
-                  document.documentElement.style.setProperty('--app-bg', bgs[colorTheme] || bgs.frosted);
+                  // Light mode is the default — set bg immediately to prevent flash
+                  document.documentElement.style.setProperty('--app-bg', '#faf9f6');
                 } catch(e) {}
               })();
             `,

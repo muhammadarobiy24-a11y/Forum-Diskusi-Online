@@ -8,50 +8,43 @@ export default function DiscordLayout({ children }: DiscordLayoutProps) {
   return (
     <div
       className="flex h-screen w-screen overflow-hidden relative"
-      style={{
-        background:
-          "var(--app-bg, linear-gradient(135deg, #0d0d1a 0%, #0f0a1e 40%, #0a1020 100%))",
-        color: "white",
-      }}
+      style={{ background: "var(--forum-panel-bg, #faf9f6)" }}
     >
-      {/* Ambient orbs — dekoratif, tidak mengganggu */}
+      {/* Subtle pastel orbs — sangat lembut */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
         <div
           className="absolute rounded-full"
           style={{
-            top: "-15%", left: "-10%",
-            width: 600, height: 600,
-            background:
-              "radial-gradient(circle, var(--orb-color-1, #7c3aed) 0%, transparent 70%)",
-            opacity: 0.12,
+            top: "-20%", left: "-10%",
+            width: 700, height: 700,
+            background: "radial-gradient(circle, #ede9fe 0%, transparent 70%)",
+            opacity: 0.5,
             filter: "blur(80px)",
           }}
         />
         <div
           className="absolute rounded-full"
           style={{
-            top: "50%", left: "65%",
+            top: "40%", left: "60%",
+            width: 500, height: 500,
+            background: "radial-gradient(circle, #fde8d8 0%, transparent 70%)",
+            opacity: 0.4,
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          className="absolute rounded-full"
+          style={{
+            top: "70%", left: "5%",
             width: 400, height: 400,
-            background:
-              "radial-gradient(circle, var(--orb-color-2, #3b82f6) 0%, transparent 70%)",
-            opacity: 0.08,
-            filter: "blur(80px)",
-          }}
-        />
-        <div
-          className="absolute rounded-full"
-          style={{
-            top: "75%", left: "15%",
-            width: 350, height: 350,
-            background:
-              "radial-gradient(circle, var(--orb-color-3, #a855f7) 0%, transparent 70%)",
-            opacity: 0.08,
+            background: "radial-gradient(circle, #dbeafe 0%, transparent 70%)",
+            opacity: 0.35,
             filter: "blur(80px)",
           }}
         />
       </div>
 
-      {/* Layout — sidebar + main */}
+      {/* Layout */}
       <div className="relative z-10 flex w-full h-full">
         <ChannelSidebarWrapper />
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
