@@ -47,7 +47,7 @@ function TopBarAction({
   active?: boolean;
   children: React.ReactNode;
 }) {
-  const cls = `flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer shrink-0
+  const cls = `flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer shrink-0
     ${active ? "bg-white/10 text-white" : "text-white/50 hover:bg-white/8 hover:text-white/90"}`;
 
   if (href)
@@ -103,7 +103,7 @@ export default function ChannelHeader({
   return (
     <>
       <header
-        className="flex h-[52px] items-center gap-3 px-4 shrink-0 z-20"
+        className="flex h-[60px] items-center gap-3 px-5 shrink-0 z-20"
         style={{
           background: "var(--forum-topbar-bg)",
           backdropFilter: "blur(20px)",
@@ -116,18 +116,18 @@ export default function ChannelHeader({
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <button
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden flex h-8 w-8 items-center justify-center rounded-xl text-white/50 hover:bg-white/8 hover:text-white transition-colors shrink-0"
+            className="lg:hidden flex h-9 w-9 items-center justify-center rounded-xl text-white/50 hover:bg-white/8 hover:text-white transition-colors shrink-0"
             aria-label="Buka menu"
           >
             <Menu className="h-5 w-5" />
           </button>
 
           <div className="min-w-0">
-            <h1 className="text-[15px] font-bold text-white/90 truncate capitalize leading-tight">
+            <h1 className="text-xl font-bold text-white/90 truncate capitalize leading-tight">
               {title}
             </h1>
             {channelDescription && (
-              <p className="text-[11px] text-white/40 truncate hidden sm:block leading-tight">
+              <p className="text-[13px] text-white/40 truncate hidden sm:block leading-tight mt-0.5">
                 {channelDescription}
               </p>
             )}
@@ -137,7 +137,7 @@ export default function ChannelHeader({
         {/* CENTER — search (desktop inline) */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex items-center gap-2 rounded-xl px-3 py-1.5 w-64 transition-all duration-200"
+          className="hidden md:flex items-center gap-2 rounded-xl px-4 py-2 w-80 transition-all duration-200"
           style={{
             background: "rgba(0,0,0,0.25)",
             border: searchFocused
@@ -149,7 +149,7 @@ export default function ChannelHeader({
           }}
         >
           <Search
-            className="h-3.5 w-3.5 shrink-0 transition-colors"
+            className="h-4 w-4 shrink-0 transition-colors"
             style={{ color: searchFocused ? "#a78bfa" : "rgba(255,255,255,0.30)" }}
           />
           <input
@@ -159,7 +159,7 @@ export default function ChannelHeader({
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             placeholder="Cari diskusi..."
-            className="bg-transparent text-[13px] font-medium text-white/90 placeholder:text-white/30 outline-none flex-1 w-full"
+            className="bg-transparent text-sm font-medium text-white/90 placeholder:text-white/30 outline-none flex-1 w-full"
           />
           {search && (
             <button
@@ -187,7 +187,7 @@ export default function ChannelHeader({
 
           <TopBarAction href="/notifications" label="Notifikasi">
             <div className="relative">
-              <Bell className="h-4 w-4" />
+              <Bell className="h-[18px] w-[18px]" />
               {hasUnread && (
                 <span
                   className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-black/40"
@@ -200,7 +200,7 @@ export default function ChannelHeader({
           </TopBarAction>
 
           <TopBarAction href="/profile" label="Profil">
-            <User className="h-4 w-4" />
+            <User className="h-[18px] w-[18px]" />
           </TopBarAction>
         </div>
       </header>
