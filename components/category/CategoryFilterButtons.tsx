@@ -14,7 +14,7 @@ export default function CategoryFilterButtons({
   onChange,
 }: CategoryFilterButtonsProps) {
   return (
-    <div className="flex flex-wrap gap-2.5">
+    <div className="flex flex-wrap gap-3">
       <button
         onClick={() => onChange("")}
         className="px-4 py-2 text-sm font-bold rounded-2xl transition-all duration-300"
