@@ -9,108 +9,82 @@ import LikeButton from "@/components/like/LikeButton";
 import BookmarkButton from "@/components/bookmark/BookmarkButton";
 import type { Bookmark } from "@/types/bookmark";
 
-interface BookmarkCardProps {
-  bookmark: Bookmark;
+const CARD_STYLES = [
+  { bg: "#ffffff",  border: "#e8e6f0" },
+  { bg: "#f0edff",  border: "#d4caff" },
+  { bg: "#fff4ed",  border: "#ffd5b4" },
+  { bg: "#edf6ff",  border: "#b3d9ff" },
+  { bg: "#edfff5",  border: "#b6f5d3" },
+];
+
+function getStyle(id: string) {
+  const sum = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return CARD_STYLES[sum % CARD_STYLES.length];
 }
 
-export default function BookmarkCard({ bookmark }: BookmarkCardProps) {
+export default function BookmarkCard({ bookmark }: { bookmark: Bookmark }) {
   const { user } = useSession();
   const post = bookmark.post;
   const { data: isLiked } = useLikeStatus(user?.id, post?.id || "");
 
   if (!post) return null;
 
+  const style = getStyle(post.id);
+
   return (
     <Link href={`/post/${post.id}`} className="block w-full">
-      <div 
-        className="group relative flex flex-col p-5 md:p-6 rounded-[24px] transition-all duration-500 hover:-translate-y-1"
+      <div
+        className="group flex flex-col p-5 rounded-[28px] transition-all duration-200 hover:-translate-y-0.5"
         style={{
-          background: "rgba(255,255,255,0.03)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)",
+          background: style.bg,
+          border: `1px solid ${style.border}`,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
         }}
       >
-        {/* Glow effect on hover */}
-        <div 
-          className="absolute inset-0 rounded-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{
-            background: "radial-gradient(circle at top right, rgba(59,130,246,0.1), transparent 60%)",
-            border: "1px solid rgba(96,165,250,0.3)",
-          }}
-        />
+        {/* Title + category */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <h2 className="text-base font-bold text-[var(--forum-text-primary)] leading-snug line-clamp-2 flex-1">
+            {post.title}
+          </h2>
+          {post.category && (
+            <span className="shrink-0 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full"
+              style={{ background: "#ede9fe", color: "#6d28d9", border: "1px solid #d4caff" }}>
+              {post.category.name}
+            </span>
+          )}
+        </div>
 
-        <div className="relative z-10 flex flex-col gap-4">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-4">
-            <h2 className="text-xl font-bold text-white/95 leading-snug group-hover:text-white transition-colors line-clamp-2">
-              {post.title}
-            </h2>
-            {post.category && (
-              <span 
-                className="shrink-0 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xl"
-                style={{
-                  background: "rgba(255,255,255,0.05)",
-                  color: "rgba(255,255,255,0.6)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
-              >
-                {post.category.name}
-              </span>
-            )}
+        {/* Footer */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t"
+          style={{ borderColor: style.border }}>
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+              style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}>
+              {(post.author?.username || "A").substring(0, 2).toUpperCase()}
+            </div>
+            <span className="text-sm font-semibold text-[var(--forum-text-secondary)] truncate">
+              {post.author?.username || "Anonymous"}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0" />
+            <div className="flex items-center gap-1 text-xs text-[var(--forum-text-muted)] shrink-0">
+              <Clock className="h-3 w-3" />
+              <span>{formatRelativeDate(post.created_at)}</span>
+            </div>
           </div>
 
-          {/* Footer (Meta) */}
-          <div className="mt-2 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-white/5">
-            
-            {/* Author & Time */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <div 
-                  className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold"
-                  style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)", color: "white" }}
-                >
-                  {(post.author?.username || "A").substring(0, 2).toUpperCase()}
-                </div>
-                <span className="text-sm font-semibold text-white/80">
-                  {post.author?.username || "Anonymous"}
-                </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-3 px-3 py-1 rounded-xl"
+              style={{ background: "rgba(0,0,0,0.05)" }}>
+              <div className="flex items-center gap-1 text-xs font-medium text-[var(--forum-text-muted)]" title="Views">
+                <Eye className="h-3.5 w-3.5" /><span>{post.views}</span>
               </div>
-              <span className="w-1 h-1 rounded-full bg-white/20" />
-              <div className="flex items-center gap-1.5 text-xs font-medium text-white/40">
-                <Clock className="h-3.5 w-3.5" />
-                <span>{formatRelativeDate(post.created_at)}</span>
+              <div className="flex items-center gap-1 text-xs font-medium text-[var(--forum-text-muted)]" title="Komentar">
+                <MessageCircle className="h-3.5 w-3.5" /><span>{post.comments?.[0]?.count ?? 0}</span>
               </div>
             </div>
-
-            {/* Actions & Stats */}
-            <div className="flex items-center gap-2">
-              <div 
-                className="flex items-center gap-4 px-4 py-1.5 rounded-2xl"
-                style={{ background: "rgba(0,0,0,0.2)" }}
-              >
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-white/50" title="Views">
-                  <Eye className="h-4 w-4" />
-                  <span>{post.views}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-white/50" title="Comments">
-                  <MessageCircle className="h-4 w-4" />
-                  <span>{post.comments?.[0]?.count ?? 0}</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-1">
-                <LikeButton
-                  postId={post.id}
-                  isLiked={isLiked ?? false}
-                  likeCount={post.likes?.[0]?.count ?? 0}
-                />
-                <BookmarkButton
-                  postId={post.id}
-                  isBookmarked={true}
-                />
-              </div>
+            <div className="flex items-center gap-0.5">
+              <LikeButton postId={post.id} isLiked={isLiked ?? false} likeCount={post.likes?.[0]?.count ?? 0} />
+              <BookmarkButton postId={post.id} isBookmarked={true} />
             </div>
           </div>
         </div>
