@@ -22,7 +22,7 @@ export default function CommunityCard({ community }: { community: Community }) {
   return (
     <Link href={`/communities/${community.slug}`} className="block">
       <div
-        className="group flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
+        className="group flex items-center gap-4 p-4 rounded-[28px] transition-all duration-200 hover:-translate-y-0.5"
         style={{
           background: accent.bg,
           border: `1px solid ${accent.border}`,
@@ -31,7 +31,7 @@ export default function CommunityCard({ community }: { community: Community }) {
       >
         {/* Icon */}
         <div
-          className="h-12 w-12 shrink-0 rounded-2xl overflow-hidden flex items-center justify-center text-xl font-black transition-transform duration-200 group-hover:scale-105"
+          className="h-12 w-12 shrink-0 rounded-[20px] overflow-hidden flex items-center justify-center text-xl font-black transition-transform duration-200 group-hover:scale-105"
           style={{ background: accent.icon, border: `1px solid ${accent.border}` }}
         >
           {community.icon_url ? (
