@@ -121,48 +121,33 @@ export default function ProfileTabs({ userId }: ProfileTabsProps) {
   return (
     <div className="space-y-6 pt-4">
       {/* Tab Controls */}
-      <div 
-        className="flex p-1.5 rounded-[20px] mx-auto overflow-x-auto no-scrollbar"
-        style={{
-          background: "rgba(255,255,255,0.03)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.05)",
-        }}
-      >
-        <button
-          onClick={() => setActiveTab("posts")}
-          className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-bold transition-all ${
+      <div className="flex p-1.5 rounded-[24px] mx-auto overflow-x-auto no-scrollbar"
+        style={{ background: "#f0edff", border: "1px solid #d4caff" }}>
+        <button onClick={() => setActiveTab("posts")}
+          className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-[20px] text-sm font-bold transition-all ${
             activeTab === "posts"
-              ? "bg-white/10 text-white shadow-lg"
-              : "text-white/40 hover:text-white/80 hover:bg-white/5"
-          }`}
-        >
+              ? "bg-white text-violet-600 shadow-sm"
+              : "text-[var(--forum-text-muted)] hover:text-[var(--forum-text-primary)]"
+          }`}>
           <MessageSquare className="h-4 w-4" />
           <span className="hidden sm:inline">Postingan Saya</span>
           <span className="sm:hidden">Post</span>
         </button>
-
-        <button
-          onClick={() => setActiveTab("communities")}
-          className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-bold transition-all ${
+        <button onClick={() => setActiveTab("communities")}
+          className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-[20px] text-sm font-bold transition-all ${
             activeTab === "communities"
-              ? "bg-white/10 text-white shadow-lg"
-              : "text-white/40 hover:text-white/80 hover:bg-white/5"
-          }`}
-        >
+              ? "bg-white text-violet-600 shadow-sm"
+              : "text-[var(--forum-text-muted)] hover:text-[var(--forum-text-primary)]"
+          }`}>
           <Users className="h-4 w-4" />
           <span>Komunitas</span>
         </button>
-
-        <button
-          onClick={() => setActiveTab("bookmarks")}
-          className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl text-sm font-bold transition-all ${
+        <button onClick={() => setActiveTab("bookmarks")}
+          className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-[20px] text-sm font-bold transition-all ${
             activeTab === "bookmarks"
-              ? "bg-white/10 text-white shadow-lg"
-              : "text-white/40 hover:text-white/80 hover:bg-white/5"
-          }`}
-        >
+              ? "bg-white text-violet-600 shadow-sm"
+              : "text-[var(--forum-text-muted)] hover:text-[var(--forum-text-primary)]"
+          }`}>
           <Bookmark className="h-4 w-4" />
           <span>Tersimpan</span>
         </button>
@@ -175,23 +160,21 @@ export default function ProfileTabs({ userId }: ProfileTabsProps) {
             {loadingPosts ? (
               <div className="grid gap-4">
                 {[...Array(2)].map((_, i) => (
-                  <div key={i} className="h-40 rounded-[24px] bg-white/5 animate-pulse" style={{ border: "1px solid rgba(255,255,255,0.05)" }} />
+                  <div key={i} className="h-32 rounded-[28px] bg-gray-100 animate-pulse" />
                 ))}
               </div>
             ) : !userPosts || userPosts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center rounded-[32px]" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                <div className="h-16 w-16 mb-6 rounded-3xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                  <MessageSquare className="h-8 w-8 text-blue-400" />
+              <div className="flex flex-col items-center justify-center py-16 text-center rounded-[28px]"
+                style={{ background: "#f0edff", border: "1px solid #d4caff" }}>
+                <div className="h-14 w-14 mb-5 rounded-[20px] flex items-center justify-center"
+                  style={{ background: "#ede9fe", border: "1px solid #d4caff" }}>
+                  <MessageSquare className="h-7 w-7 text-violet-500" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Belum Ada Postingan</h3>
-                <p className="text-sm font-medium text-white/50 mb-6">
-                  Anda belum pernah membuat postingan di forum ini.
-                </p>
-                <Link
-                  href="/post/create"
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-105"
-                  style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)", boxShadow: "0 4px 15px rgba(124,58,237,0.3)" }}
-                >
+                <h3 className="text-lg font-bold text-[var(--forum-text-primary)] mb-2">Belum Ada Postingan</h3>
+                <p className="text-sm text-[var(--forum-text-muted)] mb-5">Anda belum pernah membuat postingan.</p>
+                <Link href="/post/create"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white"
+                  style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}>
                   Buat Post Pertama
                 </Link>
               </div>
@@ -210,61 +193,41 @@ export default function ProfileTabs({ userId }: ProfileTabsProps) {
             {loadingCommunities ? (
               <div className="grid sm:grid-cols-2 gap-4">
                 {[...Array(2)].map((_, i) => (
-                  <div key={i} className="h-28 rounded-[24px] bg-white/5 animate-pulse" style={{ border: "1px solid rgba(255,255,255,0.05)" }} />
+                  <div key={i} className="h-24 rounded-[24px] bg-gray-100 animate-pulse" />
                 ))}
               </div>
             ) : !userCommunities || userCommunities.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center rounded-[32px]" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                <div className="h-16 w-16 mb-6 rounded-3xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                  <Users className="h-8 w-8 text-emerald-400" />
+              <div className="flex flex-col items-center justify-center py-16 text-center rounded-[28px]"
+                style={{ background: "#edfff5", border: "1px solid #b6f5d3" }}>
+                <div className="h-14 w-14 mb-5 rounded-[20px] flex items-center justify-center"
+                  style={{ background: "#dcfce7", border: "1px solid #b6f5d3" }}>
+                  <Users className="h-7 w-7 text-emerald-500" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Belum Bergabung dengan Komunitas</h3>
-                <p className="text-sm font-medium text-white/50 mb-6">
-                  Jelajahi berbagai komunitas menarik yang tersedia.
-                </p>
-                <Link
-                  href="/communities"
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-105"
-                  style={{ background: "linear-gradient(135deg, #10b981, #059669)", boxShadow: "0 4px 15px rgba(16,185,129,0.3)" }}
-                >
-                  <Compass className="h-4 w-4" />
-                  Jelajahi Komunitas
+                <h3 className="text-lg font-bold text-[var(--forum-text-primary)] mb-2">Belum Bergabung</h3>
+                <p className="text-sm text-[var(--forum-text-muted)] mb-5">Jelajahi berbagai komunitas menarik.</p>
+                <Link href="/communities"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white"
+                  style={{ background: "linear-gradient(135deg, #10b981, #059669)" }}>
+                  <Compass className="h-4 w-4" />Jelajahi Komunitas
                 </Link>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 gap-4">
                 {userCommunities.map((c: any) => (
-                  <Link
-                    key={c.id}
-                    href={`/communities/${c.slug}`}
-                    className="flex items-start gap-4 p-5 rounded-[24px] transition-all duration-300 hover:-translate-y-1 group"
-                    style={{
-                      background: "rgba(255,255,255,0.02)",
-                      backdropFilter: "blur(12px)",
-                      WebkitBackdropFilter: "blur(12px)",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                    }}
-                  >
-                    <div 
-                      className="h-14 w-14 rounded-2xl flex items-center justify-center text-lg font-black shrink-0 overflow-hidden shadow-lg transition-transform group-hover:scale-110"
-                      style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)", color: "white" }}
-                    >
-                      {c.icon_url ? (
-                        <img src={c.icon_url} alt={c.name} className="h-full w-full object-cover" />
-                      ) : (
-                        c.name.slice(0, 2).toUpperCase()
-                      )}
+                  <Link key={c.id} href={`/communities/${c.slug}`}
+                    className="flex items-start gap-4 p-5 rounded-[24px] transition-all duration-200 hover:-translate-y-0.5 group"
+                    style={{ background: "#f0edff", border: "1px solid #d4caff", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+                    <div className="h-14 w-14 rounded-[20px] flex items-center justify-center text-lg font-black shrink-0 overflow-hidden shadow-md text-white"
+                      style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}>
+                      {c.icon_url ? <img src={c.icon_url} alt={c.name} className="h-full w-full object-cover" /> : c.name.slice(0,2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1 mt-0.5">
-                      <h3 className="text-base font-bold text-white/90 group-hover:text-white transition-colors truncate">
-                        {c.name}
-                      </h3>
-                      <p className="text-xs font-medium text-white/50 line-clamp-1 mt-0.5">
-                        {c.description || "Tidak ada deskripsi"}
-                      </p>
-                      <p className="text-xs font-semibold text-violet-300 mt-2 bg-violet-500/10 inline-block px-2 py-0.5 rounded-lg border border-violet-500/20">
+                      <h3 className="text-base font-bold text-[var(--forum-text-primary)] truncate">{c.name}</h3>
+                      <p className="text-xs text-[var(--forum-text-muted)] line-clamp-1 mt-0.5">{c.description || "Tidak ada deskripsi"}</p>
+                      <span className="text-xs font-bold text-violet-600 mt-2 inline-block px-2.5 py-0.5 rounded-full"
+                        style={{ background: "#ede9fe", border: "1px solid #d4caff" }}>
                         {c.member_count ?? 0} Anggota
-                      </p>
+                      </span>
                     </div>
                   </Link>
                 ))}
@@ -278,18 +241,18 @@ export default function ProfileTabs({ userId }: ProfileTabsProps) {
             {loadingBookmarks ? (
               <div className="grid gap-4">
                 {[...Array(2)].map((_, i) => (
-                  <div key={i} className="h-40 rounded-[24px] bg-white/5 animate-pulse" style={{ border: "1px solid rgba(255,255,255,0.05)" }} />
+                  <div key={i} className="h-32 rounded-[28px] bg-gray-100 animate-pulse" />
                 ))}
               </div>
             ) : !userBookmarks || userBookmarks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center rounded-[32px]" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                <div className="h-16 w-16 mb-6 rounded-3xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
-                  <Bookmark className="h-8 w-8 text-amber-400" />
+              <div className="flex flex-col items-center justify-center py-16 text-center rounded-[28px]"
+                style={{ background: "#fff4ed", border: "1px solid #ffd5b4" }}>
+                <div className="h-14 w-14 mb-5 rounded-[20px] flex items-center justify-center"
+                  style={{ background: "#fef3e2", border: "1px solid #ffd5b4" }}>
+                  <Bookmark className="h-7 w-7 text-orange-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Belum Ada Bookmark</h3>
-                <p className="text-sm font-medium text-white/50">
-                  Simpan postingan favorit Anda untuk dibaca nanti.
-                </p>
+                <h3 className="text-lg font-bold text-[var(--forum-text-primary)] mb-2">Belum Ada Bookmark</h3>
+                <p className="text-sm text-[var(--forum-text-muted)]">Simpan postingan favorit Anda untuk dibaca nanti.</p>
               </div>
             ) : (
               <div className="grid gap-4">
