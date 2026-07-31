@@ -103,7 +103,7 @@ export default function ChannelHeader({
   return (
     <>
       <header
-        className="flex h-[60px] items-center gap-3 px-5 shrink-0 z-20"
+        className="flex h-[68px] items-center gap-3 px-5 shrink-0 z-20"
         style={{
           background: "var(--forum-topbar-bg)",
           backdropFilter: "blur(20px)",
