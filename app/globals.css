@@ -49,34 +49,34 @@
 }
 
 /* ─────────────────────────────────────────────────────────
-   Forum Modern — Light Mode Design Tokens
-   Konsep: putih/krem lembut, pastel playful, abu gelap kontras
+   Forum Modern — Playful Bold Style
+   Konsep: background krem peach hangat, bold color cards
    ───────────────────────────────────────────────────────── */
 :root {
-  /* shadcn base tokens — light */
-  --background:            oklch(0.985 0.003 90);   /* krem putih #fafaf8 */
-  --foreground:            oklch(0.18  0.010 265);  /* abu gelap #1e1b2e */
-  --card:                  oklch(1     0     0);    /* putih murni */
-  --card-foreground:       oklch(0.18  0.010 265);
+  /* shadcn base tokens */
+  --background:            oklch(0.945 0.028 60);   /* krem peach #f5e6d3 */
+  --foreground:            oklch(0.15  0.010 265);  /* hampir hitam */
+  --card:                  oklch(1     0     0);
+  --card-foreground:       oklch(0.15  0.010 265);
   --popover:               oklch(1     0     0);
-  --popover-foreground:    oklch(0.18  0.010 265);
-  --primary:               oklch(0.58  0.22  280);  /* violet */
+  --popover-foreground:    oklch(0.15  0.010 265);
+  --primary:               oklch(0.50  0.24  280);  /* ungu bold */
   --primary-foreground:    oklch(1     0     0);
-  --secondary:             oklch(0.94  0.015 290);  /* lavender sangat muda */
-  --secondary-foreground:  oklch(0.35  0.015 280);
-  --muted:                 oklch(0.95  0.008 90);   /* krem muda */
-  --muted-foreground:      oklch(0.50  0.010 265);
-  --accent:                oklch(0.93  0.018 290);  /* lavender */
-  --accent-foreground:     oklch(0.30  0.018 280);
+  --secondary:             oklch(0.75  0.15  55);   /* oranye peach */
+  --secondary-foreground:  oklch(0.15  0.010 265);
+  --muted:                 oklch(0.92  0.025 60);   /* krem sedikit lebih gelap */
+  --muted-foreground:      oklch(0.45  0.010 265);
+  --accent:                oklch(0.50  0.24  280);
+  --accent-foreground:     oklch(1     0     0);
   --destructive:           oklch(0.60  0.22  27);
-  --border:                oklch(0.88  0.008 265);  /* abu muda */
-  --input:                 oklch(0.92  0.006 265);
-  --ring:                  oklch(0.58  0.22  280);
-  --radius:                0.625rem;
+  --border:                oklch(0.86  0.030 60);   /* border krem */
+  --input:                 oklch(0.96  0.015 60);
+  --ring:                  oklch(0.50  0.24  280);
+  --radius:                1rem;                    /* lebih besar untuk bubbly */
 
   /* chart */
-  --chart-1: oklch(0.58 0.22 280);   /* violet */
-  --chart-2: oklch(0.70 0.18 30);    /* peach */
+  --chart-1: oklch(0.50 0.24 280);   /* ungu */
+  --chart-2: oklch(0.72 0.18 50);    /* oranye */
   --chart-3: oklch(0.70 0.18 145);   /* mint */
   --chart-4: oklch(0.75 0.16 200);   /* sky */
   --chart-5: oklch(0.72 0.18 60);    /* amber */
@@ -91,110 +91,117 @@
   --sidebar-border:                oklch(0.88  0.008 265);
   --sidebar-ring:                  oklch(0.58  0.22  280);
 
-  /* ── Forum custom tokens — LIGHT ──────────────────────── */
-  /* Layout surfaces */
-  --forum-sidebar-bg:      #f5f4f0;          /* krem hangat */
-  --forum-sidebar-border:  #e5e3de;
-  --forum-topbar-bg:       #ffffff;
-  --forum-topbar-border:   #e8e6e1;
-  --forum-panel-bg:        #faf9f6;
+  /* ── Forum custom tokens — Playful Bold ──────────────── */
+  --forum-bg:              #f5e6d3;   /* krem peach hangat */
+  --forum-bg-darker:       #ecd5bd;
+  --forum-sidebar-bg:      #f0ddc6;
+  --forum-sidebar-border:  #e2c9ad;
+  --forum-topbar-bg:       #f5e6d3;
+  --forum-topbar-border:   #e2c9ad;
+  --forum-panel-bg:        #f5e6d3;
 
-  /* Text hierarchy */
-  --forum-text-primary:    #1e1b2e;          /* hampir hitam */
-  --forum-text-secondary:  #4a4660;
-  --forum-text-muted:      #8b87a0;
+  --forum-text-primary:    #1a1523;
+  --forum-text-secondary:  #3d3550;
+  --forum-text-muted:      #7a6e8a;
 
-  /* Interactive */
-  --forum-hover:           rgba(124,58,237,0.06);
-  --forum-active:          rgba(124,58,237,0.10);
-  --forum-active-border:   rgba(124,58,237,0.30);
-  --forum-active-bar:      #7c3aed;
+  --forum-hover:           rgba(0,0,0,0.05);
+  --forum-active:          rgba(90,49,200,0.12);
+  --forum-active-border:   rgba(90,49,200,0.35);
+  --forum-active-bar:      #5a31c8;
 
-  /* Accent */
-  --forum-accent-from:     #7c3aed;
+  --forum-accent-from:     #5a31c8;
   --forum-accent-to:       #3b82f6;
-  --forum-accent-glow:     rgba(124,58,237,0.25);
+  --forum-accent-glow:     rgba(90,49,200,0.25);
 
-  /* Status */
-  --forum-online:          #16a34a;
-  --forum-warning:         #d97706;
-  --forum-danger:          #dc2626;
+  --forum-online:          #22c55e;
+  --forum-warning:         #f59e0b;
+  --forum-danger:          #ef4444;
 
-  /* Pastel card palette */
-  --card-lavender:         #f0edff;   /* ungu muda */
-  --card-lavender-border:  #d4caff;
-  --card-peach:            #fff4ed;   /* oranye/peach */
-  --card-peach-border:     #ffd5b4;
-  --card-mint:             #edfff5;   /* mint */
-  --card-mint-border:      #b6f5d3;
-  --card-sky:              #edf6ff;   /* langit */
-  --card-sky-border:       #b3d9ff;
+  /* Bold card colors — sesuai gambar referensi */
+  --card-purple:           #5a31c8;   /* ungu bold */
+  --card-purple-text:      #ffffff;
+  --card-orange:           #f4845f;   /* oranye/peach bold */
+  --card-orange-text:      #ffffff;
+  --card-dark:             #1a1523;   /* hitam gelap */
+  --card-dark-text:        #ffffff;
   --card-white:            #ffffff;
-  --card-dark:             #1e1b2e;   /* kontras tinggi */
+  --card-white-border:     #edd9c0;
+  --card-cream:            #fef0e0;   /* krem hangat */
+  --card-cream-border:     #e8c99a;
+  --card-lavender:         #ede9fe;
+  --card-lavender-border:  #c4b5fd;
+  --card-sky:              #e0f2fe;
+  --card-sky-border:       #93c5fd;
 }
 
-/* Light and dark both use light theme */
+/* Light and dark both use peach theme */
 .dark, .light {
-  --background:            oklch(0.985 0.003 90);
-  --foreground:            oklch(0.18  0.010 265);
+  --background:            oklch(0.945 0.028 60);
+  --foreground:            oklch(0.15  0.010 265);
   --card:                  oklch(1     0     0);
-  --card-foreground:       oklch(0.18  0.010 265);
+  --card-foreground:       oklch(0.15  0.010 265);
   --popover:               oklch(1     0     0);
-  --popover-foreground:    oklch(0.18  0.010 265);
-  --primary:               oklch(0.58  0.22  280);
+  --popover-foreground:    oklch(0.15  0.010 265);
+  --primary:               oklch(0.50  0.24  280);
   --primary-foreground:    oklch(1     0     0);
-  --secondary:             oklch(0.94  0.015 290);
-  --secondary-foreground:  oklch(0.35  0.015 280);
-  --muted:                 oklch(0.95  0.008 90);
-  --muted-foreground:      oklch(0.50  0.010 265);
-  --accent:                oklch(0.93  0.018 290);
-  --accent-foreground:     oklch(0.30  0.018 280);
+  --secondary:             oklch(0.75  0.15  55);
+  --secondary-foreground:  oklch(0.15  0.010 265);
+  --muted:                 oklch(0.92  0.025 60);
+  --muted-foreground:      oklch(0.45  0.010 265);
+  --accent:                oklch(0.50  0.24  280);
+  --accent-foreground:     oklch(1     0     0);
   --destructive:           oklch(0.60  0.22  27);
-  --border:                oklch(0.88  0.008 265);
-  --input:                 oklch(0.92  0.006 265);
-  --ring:                  oklch(0.58  0.22  280);
-  --radius:                0.625rem;
-  --chart-1: oklch(0.58 0.22 280);
-  --chart-2: oklch(0.70 0.18 30);
+  --border:                oklch(0.86  0.030 60);
+  --input:                 oklch(0.96  0.015 60);
+  --ring:                  oklch(0.50  0.24  280);
+  --radius:                1rem;
+  --chart-1: oklch(0.50 0.24 280);
+  --chart-2: oklch(0.72 0.18 50);
   --chart-3: oklch(0.70 0.18 145);
   --chart-4: oklch(0.75 0.16 200);
   --chart-5: oklch(0.72 0.18 60);
-  --sidebar:                       oklch(0.975 0.006 90);
-  --sidebar-foreground:            oklch(0.18  0.010 265);
-  --sidebar-primary:               oklch(0.58  0.22  280);
+  --sidebar:                       oklch(0.925 0.030 58);
+  --sidebar-foreground:            oklch(0.15  0.010 265);
+  --sidebar-primary:               oklch(0.50  0.24  280);
   --sidebar-primary-foreground:    oklch(1     0     0);
-  --sidebar-accent:                oklch(0.93  0.018 290);
-  --sidebar-accent-foreground:     oklch(0.30  0.018 280);
-  --sidebar-border:                oklch(0.88  0.008 265);
-  --sidebar-ring:                  oklch(0.58  0.22  280);
-  --forum-sidebar-bg:      #f5f4f0;
-  --forum-sidebar-border:  #e5e3de;
-  --forum-topbar-bg:       #ffffff;
-  --forum-topbar-border:   #e8e6e1;
-  --forum-panel-bg:        #faf9f6;
-  --forum-text-primary:    #1e1b2e;
-  --forum-text-secondary:  #4a4660;
-  --forum-text-muted:      #8b87a0;
-  --forum-hover:           rgba(124,58,237,0.06);
-  --forum-active:          rgba(124,58,237,0.10);
-  --forum-active-border:   rgba(124,58,237,0.30);
-  --forum-active-bar:      #7c3aed;
-  --forum-accent-from:     #7c3aed;
+  --sidebar-accent:                oklch(0.88  0.035 58);
+  --sidebar-accent-foreground:     oklch(0.15  0.010 265);
+  --sidebar-border:                oklch(0.85  0.030 60);
+  --sidebar-ring:                  oklch(0.50  0.24  280);
+  --forum-bg:              #f5e6d3;
+  --forum-bg-darker:       #ecd5bd;
+  --forum-sidebar-bg:      #f0ddc6;
+  --forum-sidebar-border:  #e2c9ad;
+  --forum-topbar-bg:       #f5e6d3;
+  --forum-topbar-border:   #e2c9ad;
+  --forum-panel-bg:        #f5e6d3;
+  --forum-text-primary:    #1a1523;
+  --forum-text-secondary:  #3d3550;
+  --forum-text-muted:      #7a6e8a;
+  --forum-hover:           rgba(0,0,0,0.05);
+  --forum-active:          rgba(90,49,200,0.12);
+  --forum-active-border:   rgba(90,49,200,0.35);
+  --forum-active-bar:      #5a31c8;
+  --forum-accent-from:     #5a31c8;
   --forum-accent-to:       #3b82f6;
-  --forum-accent-glow:     rgba(124,58,237,0.25);
-  --forum-online:          #16a34a;
-  --forum-warning:         #d97706;
-  --forum-danger:          #dc2626;
-  --card-lavender:         #f0edff;
-  --card-lavender-border:  #d4caff;
-  --card-peach:            #fff4ed;
-  --card-peach-border:     #ffd5b4;
-  --card-mint:             #edfff5;
-  --card-mint-border:      #b6f5d3;
-  --card-sky:              #edf6ff;
-  --card-sky-border:       #b3d9ff;
+  --forum-accent-glow:     rgba(90,49,200,0.25);
+  --forum-online:          #22c55e;
+  --forum-warning:         #f59e0b;
+  --forum-danger:          #ef4444;
+  --card-purple:           #5a31c8;
+  --card-purple-text:      #ffffff;
+  --card-orange:           #f4845f;
+  --card-orange-text:      #ffffff;
+  --card-dark:             #1a1523;
+  --card-dark-text:        #ffffff;
   --card-white:            #ffffff;
-  --card-dark:             #1e1b2e;
+  --card-white-border:     #edd9c0;
+  --card-cream:            #fef0e0;
+  --card-cream-border:     #e8c99a;
+  --card-lavender:         #ede9fe;
+  --card-lavender-border:  #c4b5fd;
+  --card-sky:              #e0f2fe;
+  --card-sky-border:       #93c5fd;
 }
 
 @layer base {
@@ -220,11 +227,11 @@
   }
 }
 
-/* ─── Scrollbar (light) ─────────────────────────────────── */
+/* ─── Scrollbar (peach) ─────────────────────────────────── */
 ::-webkit-scrollbar          { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track    { background: transparent; }
-::-webkit-scrollbar-thumb    { background: #d1cfe8; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #b5b0d0; }
+::-webkit-scrollbar-thumb    { background: #d4b896; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #c4a07a; }
 
 /* ─── Selection ─────────────────────────────────────────── */
 ::selection {
@@ -238,7 +245,36 @@
   outline-offset: 2px;
 }
 
-/* ─── Forum utility classes (light) ────────────────────── */
+/* ─── Bold card utilities ───────────────────────────────── */
+.card-purple-bold {
+  background: var(--card-purple);
+  color: var(--card-purple-text);
+  border: none;
+}
+.card-orange-bold {
+  background: var(--card-orange);
+  color: var(--card-orange-text);
+  border: none;
+}
+.card-dark-bold {
+  background: var(--card-dark);
+  color: var(--card-dark-text);
+  border: none;
+}
+.card-cream-soft {
+  background: var(--card-cream);
+  border: 1px solid var(--card-cream-border);
+}
+.card-white-soft {
+  background: var(--card-white);
+  border: 1px solid var(--card-white-border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* Bottom nav padding — agar konten tidak ketutup floating nav */
+.with-bottom-nav {
+  padding-bottom: 96px;
+}
 
 /* Soft card */
 .forum-card {
