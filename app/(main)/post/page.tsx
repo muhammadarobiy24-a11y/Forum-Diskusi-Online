@@ -182,42 +182,6 @@ export default function PostsPage() {
           {/* ── RIGHT: Sidebar ───────────────────────────────────── */}
           <aside className="hidden xl:flex flex-col w-72 shrink-0">
             <div className="sticky top-8 space-y-4">
-              {/* Create Post CTA */}
-              {user && (
-                <Link href="/post/create" className="block">
-                  <div
-                    className="group rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(59,130,246,0.15))",
-                      border: "1px solid rgba(167,139,250,0.25)",
-                      boxShadow: "0 8px 32px rgba(0,0,0,0.15), 0 0 40px rgba(124,58,237,0.1)",
-                    }}
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div
-                        className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
-                        style={{
-                          background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
-                          boxShadow: "0 0 16px rgba(124,58,237,0.5)",
-                        }}
-                      >
-                        <PenSquare className="h-5 w-5 text-white" />
-                      </div>
-                      <p className="text-sm font-black text-white/90">Buat Postingan</p>
-                    </div>
-                    <p className="text-xs text-white/50 leading-relaxed">
-                      Bagikan ide, tanya jawab, atau mulai diskusi dengan komunitas.
-                    </p>
-                    <div
-                      className="mt-4 w-full py-2 rounded-xl text-center text-xs font-bold text-white"
-                      style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}
-                    >
-                      + Tulis Postingan
-                    </div>
-                  </div>
-                </Link>
-              )}
-
               {/* Trending Placeholder */}
               <div
                 className="rounded-2xl p-6"
