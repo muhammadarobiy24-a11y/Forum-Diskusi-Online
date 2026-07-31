@@ -17,7 +17,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="flex items-center gap-3 rounded-xl p-3"
+      className="flex items-center gap-3 rounded-[20px] p-3"
       style={{
         background: accent ? "#f0edff" : "#faf9f6",
         border: accent ? "1px solid #d4caff" : "1px solid #e8e6e1",
@@ -63,10 +63,10 @@ export default function MemberList({ community }: Props) {
             Tentang Komunitas
           </p>
 
-          <div className="rounded-2xl p-4 mb-3 bg-white" style={{ border: "1px solid #e8e6f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+          <div className="rounded-[24px] p-4 mb-3 bg-white" style={{ border: "1px solid #e8e6f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
             <div className="flex items-center gap-3 mb-3">
               <div
-                className="h-10 w-10 rounded-xl overflow-hidden flex items-center justify-center text-base font-black text-white shrink-0"
+                className="h-10 w-10 rounded-[16px] overflow-hidden flex items-center justify-center text-base font-black text-white shrink-0"
                 style={{
                   background: community.icon_url ? undefined : "linear-gradient(135deg, #7c3aed, #3b82f6)",
                   backgroundImage: community.icon_url ? `url(${community.icon_url})` : undefined,

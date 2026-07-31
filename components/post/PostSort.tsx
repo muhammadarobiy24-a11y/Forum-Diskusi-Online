@@ -14,7 +14,7 @@ export default function PostSort({ value, onChange }: PostSortProps) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as PostSort)}>
       <SelectTrigger
-        className="w-[200px] h-[46px] text-sm font-semibold rounded-2xl border outline-none transition-all duration-200"
+        className="w-[200px] h-[46px] text-sm font-semibold rounded-full border outline-none transition-all duration-200"
         style={{
           background: "#f3f2ef",
           borderColor: "#e5e3de",
@@ -25,7 +25,7 @@ export default function PostSort({ value, onChange }: PostSortProps) {
         <SelectValue placeholder="Urutkan" />
       </SelectTrigger>
       <SelectContent
-        className="rounded-2xl border shadow-lg"
+        className="rounded-[24px] border shadow-lg"
         style={{
           background: "#ffffff",
           borderColor: "#e8e6f0",
@@ -42,7 +42,7 @@ export default function PostSort({ value, onChange }: PostSortProps) {
             <SelectItem
               key={opt.value}
               value={opt.value}
-              className="rounded-xl px-3 py-2.5 text-sm font-semibold cursor-pointer"
+              className="rounded-[16px] px-3 py-2.5 text-sm font-semibold cursor-pointer"
               style={{ color: "var(--forum-text-secondary)" }}
             >
               {opt.label}

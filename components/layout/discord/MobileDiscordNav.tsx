@@ -53,7 +53,7 @@ export default function MobileDiscordNav({ open, onClose }: MobileDiscordNavProp
           </div>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--forum-text-muted)] hover:bg-gray-100 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--forum-text-muted)] hover:bg-gray-100 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -76,7 +76,7 @@ export default function MobileDiscordNav({ open, onClose }: MobileDiscordNavProp
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-150 border",
+                  "flex items-center gap-3 rounded-[20px] px-3 py-2.5 text-sm font-semibold transition-all duration-150 border",
                   isActive
                     ? "text-[var(--forum-active-bar)] bg-[var(--forum-active)] border-[var(--forum-active-border)]"
                     : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border-transparent"
@@ -104,7 +104,7 @@ export default function MobileDiscordNav({ open, onClose }: MobileDiscordNavProp
                     href={`/communities/${c.slug}`}
                     onClick={onClose}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-150 border",
+                      "flex items-center gap-3 rounded-[20px] px-3 py-2.5 text-sm font-semibold transition-all duration-150 border",
                       isActive
                         ? "text-[var(--forum-active-bar)] bg-[var(--forum-active)] border-[var(--forum-active-border)]"
                         : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border-transparent"

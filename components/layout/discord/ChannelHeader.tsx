@@ -35,7 +35,7 @@ function TopBarAction({
 }: {
   href?: string; onClick?: () => void; label: string; active?: boolean; children: React.ReactNode;
 }) {
-  const cls = `flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer shrink-0 ${
+  const cls = `flex h-9 w-9 items-center justify-center rounded-full transition-all duration-150 cursor-pointer shrink-0 ${
     active
       ? "bg-violet-100 text-violet-700"
       : "text-[var(--forum-text-muted)] hover:bg-gray-100 hover:text-[var(--forum-text-primary)]"
@@ -87,7 +87,7 @@ export default function ChannelHeader({
         <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <button
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden flex h-9 w-9 items-center justify-center rounded-xl text-[var(--forum-text-muted)] hover:bg-gray-100 transition-colors shrink-0"
+            className="lg:hidden flex h-9 w-9 items-center justify-center rounded-full text-[var(--forum-text-muted)] hover:bg-gray-100 transition-colors shrink-0"
             aria-label="Buka menu"
           >
             <Menu className="h-5 w-5" />
@@ -107,7 +107,7 @@ export default function ChannelHeader({
         {/* CENTER — search */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex items-center gap-2 rounded-xl px-4 py-2 w-80 transition-all duration-200"
+          className="hidden md:flex items-center gap-2 rounded-full px-4 py-2 w-80 transition-all duration-200"
           style={{
             background: searchFocused ? "#fff" : "#f3f2ef",
             border: searchFocused ? "1.5px solid #7c3aed" : "1.5px solid #e5e3de",

@@ -22,7 +22,7 @@ export default function PostSearch({ value, onChange }: PostSearchProps) {
         style={{
           background: "#f3f2ef",
           border: "1.5px solid #e5e3de",
-          borderRadius: 16,
+          borderRadius: 999,
           padding: "0.75rem 1.25rem 0.75rem 3rem",
         }}
         onFocus={(e) => {

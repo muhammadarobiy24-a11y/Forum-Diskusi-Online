@@ -23,11 +23,11 @@ export default function UserStatusBar() {
         <>
           <div className="fixed inset-0 z-30" onClick={() => setMenuOpen(false)} />
           <div
-            className="absolute bottom-full left-2 right-2 mb-2 rounded-2xl py-1.5 z-40 shadow-xl"
+            className="absolute bottom-full left-2 right-2 mb-2 rounded-[24px] py-1.5 z-40 shadow-xl"
             style={{ background: "#fff", border: "1px solid #e8e6f0", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}
           >
             {/* User info */}
-            <div className="flex items-center gap-2.5 px-4 py-3 mx-1.5 mb-1 rounded-xl bg-gray-50">
+            <div className="flex items-center gap-2.5 px-4 py-3 mx-1.5 mb-1 rounded-[16px] bg-gray-50">
               <div
                 className="h-9 w-9 rounded-xl overflow-hidden flex items-center justify-center text-sm font-bold text-white shrink-0"
                 style={{
@@ -45,13 +45,13 @@ export default function UserStatusBar() {
             </div>
 
             <Link href="/profile" onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 mx-1.5 rounded-xl text-sm font-semibold text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-gray-50 transition-colors">
+              className="flex items-center gap-2.5 px-4 py-2.5 mx-1.5 rounded-[16px] text-sm font-semibold text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-gray-50 transition-colors">
               <User className="h-4 w-4 text-[var(--forum-text-muted)]" />
               Profil Saya
             </Link>
 
             <Link href="/settings" onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 mx-1.5 rounded-xl text-sm font-semibold text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-gray-50 transition-colors">
+              className="flex items-center gap-2.5 px-4 py-2.5 mx-1.5 rounded-[16px] text-sm font-semibold text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-gray-50 transition-colors">
               <Settings className="h-4 w-4 text-[var(--forum-text-muted)]" />
               Pengaturan
             </Link>
@@ -59,7 +59,7 @@ export default function UserStatusBar() {
             <div className="forum-divider mx-3 my-1.5" />
 
             <button onClick={() => { logout(); setMenuOpen(false); }}
-              className="flex items-center gap-2.5 px-4 py-2.5 mx-1.5 w-[calc(100%-12px)] rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+              className="flex items-center gap-2.5 px-4 py-2.5 mx-1.5 w-[calc(100%-12px)] rounded-[16px] text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
               <LogOut className="h-4 w-4" />
               Keluar
             </button>
@@ -72,7 +72,7 @@ export default function UserStatusBar() {
         className="flex items-center gap-2.5 w-full px-3 py-3 text-left hover:bg-[var(--forum-hover)] transition-colors group">
         <div className="relative shrink-0">
           <div
-            className="h-8 w-8 rounded-xl overflow-hidden flex items-center justify-center text-xs font-bold text-white"
+            className="h-8 w-8 rounded-[14px] overflow-hidden flex items-center justify-center text-xs font-bold text-white"
             style={{
               background: avatarUrl ? undefined : "linear-gradient(135deg, #7c3aed, #3b82f6)",
               backgroundImage: avatarUrl ? `url(${avatarUrl})` : undefined,
