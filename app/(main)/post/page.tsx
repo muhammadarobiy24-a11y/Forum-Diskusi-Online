@@ -132,27 +132,25 @@ export default function PostsPage() {
               <p className="text-sm text-white/50 mt-1">Jelajahi diskusi dan temukan topik menarik</p>
             </div>
 
-            {/* Action row: Search + Sort + Create — rata kiri sama dengan judul */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
+            {/* Action row: Search (grow) + Sort + Create — satu baris horizontal */}
+            <div className="flex items-center gap-4 mb-5">
               <div className="flex-1 min-w-0">
                 <PostSearch value={localSearch} onChange={setLocalSearch} />
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
-                {user && (
-                  <Link
-                    href="/post/create"
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:brightness-110"
-                    style={{
-                      background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
-                      boxShadow: "0 0 20px rgba(124,58,237,0.4)",
-                    }}
-                  >
-                    <PenSquare className="h-4 w-4" />
-                    Buat Post
-                  </Link>
-                )}
-              </div>
+              <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
+              {user && (
+                <Link
+                  href="/post/create"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:brightness-110 shrink-0"
+                  style={{
+                    background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
+                    boxShadow: "0 0 20px rgba(124,58,237,0.4)",
+                  }}
+                >
+                  <PenSquare className="h-4 w-4" />
+                  Buat Post
+                </Link>
+              )}
             </div>
 
             {/* Category filter — rata kiri sama dengan judul dan search */}
