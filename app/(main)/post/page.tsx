@@ -3,8 +3,6 @@
 import { useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { usePosts } from "@/hooks/usePosts";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSession } from "@/components/providers/SessionProvider";
@@ -12,10 +10,8 @@ import PostList from "@/components/post/PostList";
 import PostSearch from "@/components/post/PostSearch";
 import PostSort from "@/components/post/PostSort";
 import Pagination from "@/components/post/Pagination";
-import CategoryFilterButtons from "@/components/category/CategoryFilterButtons";
 import ChannelHeader from "@/components/layout/discord/ChannelHeader";
 import { PenSquare } from "lucide-react";
-import type { Category } from "@/types";
 import type { PostSort as PostSortType } from "@/types/post";
 
 const POSTS_PER_PAGE = 10;
@@ -94,21 +90,6 @@ export default function PostsPage() {
     limit: POSTS_PER_PAGE,
   });
 
-  const supabase = createClient();
-
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("*")
-        .order("name", { ascending: true });
-
-      if (error) throw error;
-      return data as Category[];
-    },
-  });
-
   const searchParamsObj: Record<string, string> = {};
   searchParams.forEach((value, key) => {
     if (key !== "page") {
@@ -152,17 +133,6 @@ export default function PostsPage() {
                 </Link>
               )}
             </div>
-
-            {/* Category filter — rata kiri sama dengan judul dan search */}
-            {categories && categories.length > 0 && (
-              <div className="mb-6">
-                <CategoryFilterButtons
-                  categories={categories}
-                  value={category}
-                  onChange={(value) => updateParams({ category: value })}
-                />
-              </div>
-            )}
 
             {/* Feed */}
             <PostList posts={data?.posts} isLoading={isLoading} />

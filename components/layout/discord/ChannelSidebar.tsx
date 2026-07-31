@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import {
   Home,
   LayoutGrid,
@@ -16,10 +16,12 @@ import {
   Shield,
   ChevronRight,
   MessageCircle,
+  Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCommunity } from "@/features/community/hooks/useCommunity";
 import { useCommunities } from "@/features/community/hooks/useCommunities";
+import { useCategories } from "@/hooks/useCategories";
 import UserStatusBar from "./UserStatusBar";
 
 /* ─── Nav items ──────────────────────────────────────────── */
@@ -225,6 +227,72 @@ function CommunitySidebar({ slug }: { slug: string }) {
   );
 }
 
+/* ─── Category filter (hanya tampil di /post) ────────────── */
+function CategoryFilter() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { data: categories } = useCategories();
+
+  // Hanya tampil di halaman /post
+  if (!pathname.startsWith("/post") || pathname.includes("/create") || pathname.includes("/edit")) return null;
+  if (!categories || categories.length === 0) return null;
+
+  const active = searchParams.get("category") ?? "";
+
+  function setCategory(slug: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (slug) {
+      params.set("category", slug);
+    } else {
+      params.delete("category");
+    }
+    params.delete("page");
+    router.push(`/post?${params.toString()}`);
+  }
+
+  return (
+    <div className="px-3 pt-1 pb-2">
+      <div className="flex items-center gap-2 px-2 pt-5 pb-2">
+        <Tag className="h-3 w-3 text-white/35" />
+        <span className="text-[12px] font-bold uppercase tracking-widest text-white/35">
+          Kategori
+        </span>
+      </div>
+      <div className="space-y-0.5">
+        <button
+          onClick={() => setCategory("")}
+          className={cn(
+            "w-full text-left rounded-xl px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
+            !active
+              ? "bg-[var(--forum-active)] text-white border-[var(--forum-active-border)]"
+              : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border-transparent"
+          )}
+        >
+          Semua
+        </button>
+        {categories.map((cat) => {
+          const isActive = active === cat.slug;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setCategory(cat.slug)}
+              className={cn(
+                "w-full text-left rounded-xl px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
+                isActive
+                  ? "bg-[var(--forum-active)] text-white border-[var(--forum-active-border)]"
+                  : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border-transparent"
+              )}
+            >
+              {cat.name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Default sidebar ────────────────────────────────────── */
 function DefaultSidebar() {
   const pathname = usePathname();
@@ -277,6 +345,9 @@ function DefaultSidebar() {
         })}
 
         <div className="forum-divider mx-4 mt-4" />
+
+        {/* Category filter — hanya muncul di /post */}
+        <CategoryFilter />
 
         {/* My Communities */}
         <SectionLabel
