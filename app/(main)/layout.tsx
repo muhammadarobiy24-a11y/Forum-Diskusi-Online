@@ -1,9 +1,9 @@
-import AppLayout from "@/components/layout/AppLayout";
+import DiscordLayout from "@/components/layout/discord/DiscordLayout";
 
 export default function MainGroupLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AppLayout>{children}</AppLayout>;
+  return <DiscordLayout>{children}</DiscordLayout>;
 }
