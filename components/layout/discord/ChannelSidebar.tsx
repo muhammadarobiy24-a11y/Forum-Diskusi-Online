@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import {
   Home,
-  LayoutGrid,
   Bookmark,
   Bell,
   User,
@@ -26,11 +25,10 @@ import UserStatusBar from "./UserStatusBar";
 
 /* ─── Nav items ──────────────────────────────────────────── */
 const NAV_MAIN = [
-  { href: "/post",          label: "Beranda",       icon: Home      },
-  { href: "/communities",   label: "Komunitas",     icon: Compass   },
-  { href: "/categories",    label: "Kategori",      icon: LayoutGrid},
-  { href: "/bookmarks",     label: "Tersimpan",     icon: Bookmark  },
-  { href: "/notifications", label: "Notifikasi",    icon: Bell      },
+  { href: "/post",          label: "Beranda",    icon: Home     },
+  { href: "/communities",   label: "Komunitas",  icon: Compass  },
+  { href: "/bookmarks",     label: "Tersimpan",  icon: Bookmark },
+  { href: "/notifications", label: "Notifikasi", icon: Bell     },
 ];
 
 const NAV_ACCOUNT = [
