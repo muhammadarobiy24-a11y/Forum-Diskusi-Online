@@ -121,15 +121,20 @@ export default function PostsPage() {
       <ChannelHeader channelName="posts" channelDescription="Jelajahi diskusi dan temukan topik menarik" />
       
       <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
-        {/* Two-column layout: feed left, sidebar right */}
-        <div className="flex gap-6 px-4 py-8 md:px-8 w-full max-w-[1280px] mx-auto">
+        <div className="flex gap-8 px-8 py-8 w-full max-w-[1280px] mx-auto">
 
           {/* ── LEFT: Post Feed ─────────────────────────────────── */}
-          <div className="flex-1 min-w-0 max-w-[700px] space-y-8">
+          <div className="flex-1 min-w-0 max-w-[700px]">
 
-            {/* Top Controls: Search + Sort + Create Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="w-full sm:w-[280px]">
+            {/* Page title + description */}
+            <div className="mb-6">
+              <h2 className="text-2xl font-black text-white tracking-tight">Posts</h2>
+              <p className="text-sm text-white/50 mt-1">Jelajahi diskusi dan temukan topik menarik</p>
+            </div>
+
+            {/* Action row: Search + Sort + Create — rata kiri sama dengan judul */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
+              <div className="flex-1 min-w-0">
                 <PostSearch value={localSearch} onChange={setLocalSearch} />
               </div>
               <div className="flex items-center gap-3 shrink-0">
@@ -137,7 +142,7 @@ export default function PostsPage() {
                 {user && (
                   <Link
                     href="/post/create"
-                    className="flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold text-white transition-all duration-200 hover:scale-105 hover:brightness-110"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:brightness-110"
                     style={{
                       background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
                       boxShadow: "0 0 20px rgba(124,58,237,0.4)",
@@ -150,9 +155,9 @@ export default function PostsPage() {
               </div>
             </div>
 
-            {/* Categories */}
+            {/* Category filter — rata kiri sama dengan judul dan search */}
             {categories && categories.length > 0 && (
-              <div className="py-1">
+              <div className="mb-6">
                 <CategoryFilterButtons
                   categories={categories}
                   value={category}
@@ -161,12 +166,12 @@ export default function PostsPage() {
               </div>
             )}
 
-            {/* Feed List */}
+            {/* Feed */}
             <PostList posts={data?.posts} isLoading={isLoading} />
 
             {/* Pagination */}
             {data && (
-              <div className="pt-4 pb-12 flex justify-center">
+              <div className="pt-6 pb-12 flex justify-center">
                 <Pagination
                   pagination={data.pagination}
                   baseUrl="/post"
@@ -176,13 +181,14 @@ export default function PostsPage() {
             )}
           </div>
 
+          {/* ── RIGHT: Sidebar ───────────────────────────────────── */}
           <aside className="hidden xl:flex flex-col w-72 shrink-0">
             <div className="sticky top-8 space-y-4">
               {/* Create Post CTA */}
               {user && (
                 <Link href="/post/create" className="block">
                   <div
-                    className="group rounded-[28px] p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
+                    className="group rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
                     style={{
                       background: "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(59,130,246,0.15))",
                       border: "1px solid rgba(167,139,250,0.25)",
@@ -205,7 +211,7 @@ export default function PostsPage() {
                       Bagikan ide, tanya jawab, atau mulai diskusi dengan komunitas.
                     </p>
                     <div
-                      className="mt-4 w-full py-2 rounded-xl text-center text-xs font-bold text-white transition-all"
+                      className="mt-4 w-full py-2 rounded-xl text-center text-xs font-bold text-white"
                       style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}
                     >
                       + Tulis Postingan
@@ -216,13 +222,12 @@ export default function PostsPage() {
 
               {/* Trending Placeholder */}
               <div
-                className="rounded-[28px] p-6"
+                className="rounded-2xl p-6"
                 style={{
                   background: "rgba(255,255,255,0.02)",
                   backdropFilter: "blur(20px)",
                   WebkitBackdropFilter: "blur(20px)",
                   border: "1px solid rgba(255,255,255,0.06)",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
                 }}
               >
                 <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-4">
