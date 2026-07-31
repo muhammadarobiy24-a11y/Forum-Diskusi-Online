@@ -41,10 +41,18 @@ export async function toggleLike(
 ): Promise<{ liked: boolean }> {
   const supabase = createClient();
 
+  // Pakai session aktif, bukan userId dari parameter
+  // Ini penting agar RLS Supabase berjalan benar
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Anda harus login.");
+
   const { data: existing } = await supabase
     .from("likes")
     .select("id")
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .eq("post_id", postId)
     .maybeSingle();
 
@@ -60,11 +68,11 @@ export async function toggleLike(
 
   const { error } = await supabase
     .from("likes")
-    .insert({ user_id: userId, post_id: postId });
+    .insert({ user_id: user.id, post_id: postId });
 
   if (error) throw error;
 
-  // Ambil pemilik post untuk kirim notifikasi
+  // Kirim notifikasi ke pemilik post
   const { data: post } = await supabase
     .from("posts")
     .select("author_id, title")
@@ -74,7 +82,7 @@ export async function toggleLike(
   if (post) {
     await createNotification({
       userId: post.author_id,
-      actorId: userId,
+      actorId: user.id,
       type: "like",
       message: `menyukai postinganmu "${post.title.substring(0, 50)}${post.title.length > 50 ? "..." : ""}"`,
       postId,
