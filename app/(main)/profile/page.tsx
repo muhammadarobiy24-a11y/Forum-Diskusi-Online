@@ -13,14 +13,15 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="flex flex-col h-full overflow-hidden relative">
-        <ChannelHeader channelName="profile" channelDescription="Kelola informasi akun Anda" />
+      <div className="flex flex-col h-full overflow-hidden">
+        <ChannelHeader />
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-          <div className="h-16 w-16 mb-6 rounded-3xl bg-white/5 flex items-center justify-center border border-white/10">
-            <User className="h-8 w-8 text-white/30" />
+          <div className="h-16 w-16 mb-6 rounded-[28px] flex items-center justify-center"
+            style={{ background: "#f0edff", border: "1px solid #d4caff" }}>
+            <User className="h-8 w-8 text-violet-400" />
           </div>
-          <p className="text-xl font-bold text-white mb-2">Akses Terbatas</p>
-          <p className="text-sm font-medium text-white/50">
+          <p className="text-xl font-bold text-[var(--forum-text-primary)] mb-2">Akses Terbatas</p>
+          <p className="text-sm text-[var(--forum-text-muted)]">
             Silakan masuk dengan akun Anda untuk melihat halaman profil.
           </p>
         </div>
@@ -29,50 +30,54 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden relative">
-      <ChannelHeader channelName="profile" channelDescription="Kelola informasi akun dan aktivitas" />
-      
-      <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
-        <div className="mx-auto max-w-4xl px-4 py-8 md:px-8 space-y-8">
-          
-          {/* Page Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div 
-                className="flex items-center justify-center h-10 w-10 rounded-xl"
-                style={{
-                  background: "linear-gradient(135deg, rgba(124,58,237,0.1), rgba(59,130,246,0.1))",
-                  border: "1px solid rgba(124,58,237,0.2)",
-                  boxShadow: "0 4px 20px rgba(124,58,237,0.1)",
-                }}
-              >
-                <User className="h-5 w-5 text-violet-400" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white leading-none">Profil Saya</h1>
-              </div>
-            </div>
+    <div className="flex flex-col h-full overflow-hidden">
+      <ChannelHeader />
 
-            <button
-              onClick={() => logout()}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500/30 transition-all border border-red-500/20 shadow-[0_4px_15px_rgba(239,68,68,0.1)]"
-            >
-              <LogOut className="h-4 w-4" />
-              Keluar
-            </button>
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-3xl mx-auto px-4 py-4 xl:px-6 xl:py-6 flex flex-col gap-4">
+
+          {/* Hero card */}
+          <div className="rounded-[28px] p-5"
+            style={{ background: "#f0edff", border: "1px solid #d4caff", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-[16px] flex items-center justify-center shrink-0"
+                  style={{ background: "#ede9fe", border: "1px solid #d4caff" }}>
+                  <User className="h-5 w-5 text-violet-500" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-black text-[var(--forum-text-primary)] tracking-tight">Profil Saya</h1>
+                  <p className="text-sm text-[var(--forum-text-muted)]">Kelola informasi akun dan aktivitas</p>
+                </div>
+              </div>
+              <button
+                onClick={() => logout()}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold text-red-500 hover:bg-red-50 transition-all border border-red-200"
+              >
+                <LogOut className="h-4 w-4" />
+                Keluar
+              </button>
+            </div>
           </div>
 
-          <div className="space-y-6 pb-20">
-            {/* Profile Card Banner */}
+          {/* Profile card */}
+          <div className="rounded-[28px] p-5 sm:p-6"
+            style={{ background: "#ffffff", border: "1px solid #e8e6f0", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
             <ProfileCard userId={user.id} />
+          </div>
 
-            {/* Stats Grid */}
+          {/* Stats card */}
+          <div className="rounded-[28px] p-5 sm:p-6"
+            style={{ background: "#fff4ed", border: "1px solid #ffd5b4", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
             <ProfileStats userId={user.id} />
+          </div>
 
-            {/* Activity Tabs */}
+          {/* Tabs card */}
+          <div className="rounded-[28px] p-5 sm:p-6 mb-8"
+            style={{ background: "#ffffff", border: "1px solid #e8e6f0", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
             <ProfileTabs userId={user.id} />
           </div>
-          
+
         </div>
       </div>
     </div>
