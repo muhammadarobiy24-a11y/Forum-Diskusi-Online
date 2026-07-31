@@ -39,6 +39,10 @@ export function useLeaveCommunity(communityId: string) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.communities(),
       });
+      // Invalidate semua query community individual agar member_count terupdate
+      queryClient.invalidateQueries({
+        queryKey: ["community"],
+      });
     },
     onSuccess: () => {
       toast.success("Berhasil keluar dari community.");

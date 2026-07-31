@@ -266,6 +266,12 @@ export async function joinCommunity(
 
   if (error) throw error;
 
+  // Update member_count di tabel communities
+  await supabase.rpc("increment_community_member_count", {
+    community_id: communityId,
+    delta: 1,
+  });
+
   return data as CommunityMember;
 }
 
@@ -289,6 +295,12 @@ export async function leaveCommunity(
     .eq("user_id", user.id);
 
   if (error) throw error;
+
+  // Update member_count di tabel communities
+  await supabase.rpc("increment_community_member_count", {
+    community_id: communityId,
+    delta: -1,
+  });
 }
 
 export async function getMembershipStatus(
