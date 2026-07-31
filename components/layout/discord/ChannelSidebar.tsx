@@ -54,7 +54,7 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-3 text-base font-semibold transition-all duration-150",
+        "group relative flex items-center gap-3 rounded-[20px] mx-3 px-4 py-3 text-base font-semibold transition-all duration-150",
         active
           ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border border-[var(--forum-active-border)]"
           : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border border-transparent"
@@ -232,7 +232,7 @@ function CategoryFilter() {
         <button
           onClick={() => setCategory("")}
           className={cn(
-            "w-full text-left rounded-xl px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
+            "w-full text-left rounded-[20px] px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
             !active
               ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border-[var(--forum-active-border)]"
               : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border-transparent"
@@ -247,7 +247,7 @@ function CategoryFilter() {
               key={cat.id}
               onClick={() => setCategory(cat.slug)}
               className={cn(
-                "w-full text-left rounded-xl px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
+                "w-full text-left rounded-[20px] px-4 py-2.5 text-base font-semibold transition-all duration-150 border",
                 isActive
                   ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border-[var(--forum-active-border)]"
                   : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border-transparent"
@@ -272,11 +272,11 @@ function DefaultSidebar() {
       {/* App brand */}
       <Link
         href="/post"
-        className="flex items-center gap-3.5 px-5 h-[68px] shrink-0 border-b hover:bg-[var(--forum-hover)] transition-colors"
+        className="flex items-center gap-3.5 px-5 h-[68px] shrink-0 border-b hover:bg-[var(--forum-hover)] transition-colors rounded-none"
         style={{ borderColor: "var(--forum-sidebar-border)" }}
       >
         <div
-          className="flex h-9 w-9 items-center justify-center rounded-xl shadow-md shrink-0"
+          className="flex h-9 w-9 items-center justify-center rounded-[16px] shadow-md shrink-0"
           style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}
         >
           <MessageCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
@@ -340,7 +340,7 @@ function DefaultSidebar() {
                 key={c.id}
                 href={href}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-2.5 text-base font-semibold transition-all duration-150",
+                  "group relative flex items-center gap-3 rounded-[20px] mx-3 px-4 py-2.5 text-base font-semibold transition-all duration-150",
                   isActive
                     ? "bg-[var(--forum-active)] text-[var(--forum-active-bar)] border border-[var(--forum-active-border)]"
                     : "text-[var(--forum-text-secondary)] hover:text-[var(--forum-text-primary)] hover:bg-[var(--forum-hover)] border border-transparent"
@@ -353,7 +353,7 @@ function DefaultSidebar() {
                   />
                 )}
                 <div
-                  className="h-7 w-7 rounded-lg overflow-hidden flex items-center justify-center text-[11px] font-black shrink-0"
+                  className="h-7 w-7 rounded-[12px] overflow-hidden flex items-center justify-center text-[11px] font-black shrink-0"
                   style={{
                     background: isActive
                       ? "linear-gradient(135deg, #7c3aed, #3b82f6)"
