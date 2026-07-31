@@ -48,7 +48,7 @@ function MediaPreview({ items }: { items: MediaItem[] }) {
   const first = items[0];
   const extra = items.length - 1;
   return (
-    <div className="relative w-full overflow-hidden rounded-xl" style={{ border: "1px solid rgba(0,0,0,0.08)" }}>
+    <div className="relative w-full overflow-hidden rounded-[20px]" style={{ border: "1px solid rgba(0,0,0,0.08)" }}>
       {first.type === "image" ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={first.url} alt={first.alt} className="w-full object-cover max-h-80" loading="lazy" style={{ display: "block" }} />
@@ -82,7 +82,7 @@ export default function PostCard({ post }: { post: Post }) {
   return (
     <Link href={`/post/${post.id}`} className="block w-full">
       <div
-        className="group relative flex flex-col rounded-2xl transition-all duration-200 hover:-translate-y-0.5 overflow-hidden"
+        className="group relative flex flex-col rounded-[28px] transition-all duration-200 hover:-translate-y-0.5 overflow-hidden"
         style={{
           background: style.bg,
           border: `1px solid ${style.border}`,
@@ -103,7 +103,7 @@ export default function PostCard({ post }: { post: Post }) {
             </h2>
             {post.category && (
               <span
-                className="shrink-0 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-lg"
+                className="shrink-0 px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full"
                 style={{ background: "#ede9fe", color: "#6d28d9", border: "1px solid #d4caff" }}
               >
                 {post.category.name}
@@ -141,7 +141,7 @@ export default function PostCard({ post }: { post: Post }) {
             {/* Stats + actions */}
             <div className="flex items-center gap-2 shrink-0">
               <div
-                className="flex items-center gap-3 px-3 py-1 rounded-xl"
+                className="flex items-center gap-3 px-3 py-1.5 rounded-2xl"
                 style={{ background: "rgba(0,0,0,0.05)" }}
               >
                 <div className="flex items-center gap-1 text-xs font-medium text-[var(--forum-text-muted)]" title="Views">
