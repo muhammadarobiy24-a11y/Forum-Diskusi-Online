@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Fira_Code } from "next/font/google";
+import { Nunito, Fira_Code } from "next/font/google";
 import { Toaster } from "sonner";
 import QueryProvider from "@/components/providers/QueryProvider";
 import SessionProvider from "@/components/providers/SessionProvider";
@@ -7,10 +7,11 @@ import ThemeProvider from "@/components/providers/ThemeProvider";
 import { ColorThemeProvider } from "@/components/providers/ColorThemeProvider";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const firaCode = Fira_Code({
@@ -32,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${firaCode.variable} h-full antialiased`}
+      className={`${nunito.variable} ${firaCode.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
