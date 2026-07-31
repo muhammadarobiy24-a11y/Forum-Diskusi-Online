@@ -159,7 +159,7 @@ export default function LandingPage() {
         minHeight: "100vh",
         background: "linear-gradient(135deg, #0d0d1a 0%, #0f0a1e 40%, #0a1020 100%)",
         color: "white",
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: "var(--font-nunito), Nunito, ui-sans-serif, system-ui, sans-serif",
         overflowX: "hidden",
         position: "relative",
       }}

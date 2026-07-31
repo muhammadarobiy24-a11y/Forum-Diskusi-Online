@@ -11,7 +11,7 @@ export default function AuthLayout({
       className="relative min-h-screen overflow-hidden flex items-center justify-center p-4"
       style={{
         background: "linear-gradient(135deg, #0d0d1a 0%, #0f0a1e 40%, #0a1020 100%)",
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: "var(--font-nunito), Nunito, ui-sans-serif, system-ui, sans-serif",
       }}
     >
       {/* Ambient glow orbs */}
