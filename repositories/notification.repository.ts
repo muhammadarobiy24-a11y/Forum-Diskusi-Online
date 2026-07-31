@@ -1,7 +1,54 @@
 import { createClient } from "@/lib/supabase/client";
-import type { Notification, GetNotificationsParams, GetNotificationsResponse } from "@/types/notification";
+import type {
+  Notification,
+  GetNotificationsParams,
+  GetNotificationsResponse,
+} from "@/types/notification";
 
 const DEFAULT_LIMIT = 20;
+
+/* ─── Create ─────────────────────────────────────────────── */
+
+export interface CreateNotificationInput {
+  /** ID user yang MENERIMA notifikasi (pemilik post/komentar) */
+  userId: string;
+  /** ID user yang MELAKUKAN aksi (yang like/comment) */
+  actorId: string;
+  type: "like" | "comment" | "reply" | "bookmark";
+  message: string;
+  postId?: string;
+  commentId?: string;
+}
+
+/**
+ * Buat notifikasi baru. Tidak lempar error jika gagal —
+ * notifikasi bersifat "best-effort", tidak boleh block aksi utama.
+ * Juga tidak buat notifikasi kalau actor == recipient (like post sendiri).
+ */
+export async function createNotification(
+  input: CreateNotificationInput
+): Promise<void> {
+  // Jangan buat notifikasi jika user melakukan aksi ke kontennya sendiri
+  if (input.userId === input.actorId) return;
+
+  try {
+    const supabase = createClient();
+
+    await supabase.from("notifications").insert({
+      user_id: input.userId,
+      actor_id: input.actorId,
+      type: input.type,
+      message: input.message,
+      post_id: input.postId ?? null,
+      comment_id: input.commentId ?? null,
+      is_read: false,
+    });
+  } catch {
+    // Silent fail — notifikasi tidak critical
+  }
+}
+
+/* ─── Read ───────────────────────────────────────────────── */
 
 export async function getNotifications({
   userId,
@@ -66,16 +113,14 @@ export async function getUnreadCount(userId: string): Promise<number> {
 export async function markAsRead(notificationId: string): Promise<void> {
   const supabase = createClient();
 
-  const { error, count } = await supabase
+  // Supabase v2 tidak mengembalikan count dari .update()
+  // jadi cukup jalankan update tanpa cek count
+  const { error } = await supabase
     .from("notifications")
     .update({ is_read: true })
     .eq("id", notificationId);
 
   if (error) throw error;
-
-  if (count === 0) {
-    throw new Error("Notifikasi tidak ditemukan.");
-  }
 }
 
 export async function markAllAsRead(userId: string): Promise<void> {

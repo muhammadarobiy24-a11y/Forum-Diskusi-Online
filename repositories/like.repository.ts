@@ -1,7 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
+import { createNotification } from "@/repositories/notification.repository";
 import type { Like, GetLikeCountResponse } from "@/types/like";
 
-export async function getLikeCount(postId: string): Promise<GetLikeCountResponse> {
+export async function getLikeCount(
+  postId: string
+): Promise<GetLikeCountResponse> {
   const supabase = createClient();
 
   const { count, error } = await supabase
@@ -14,7 +17,10 @@ export async function getLikeCount(postId: string): Promise<GetLikeCountResponse
   return { count: count || 0 };
 }
 
-export async function isLiked(userId: string, postId: string): Promise<boolean> {
+export async function isLiked(
+  userId: string,
+  postId: string
+): Promise<boolean> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -29,7 +35,10 @@ export async function isLiked(userId: string, postId: string): Promise<boolean> 
   return data !== null;
 }
 
-export async function toggleLike(userId: string, postId: string): Promise<{ liked: boolean }> {
+export async function toggleLike(
+  userId: string,
+  postId: string
+): Promise<{ liked: boolean }> {
   const supabase = createClient();
 
   const { data: existing } = await supabase
@@ -54,6 +63,24 @@ export async function toggleLike(userId: string, postId: string): Promise<{ like
     .insert({ user_id: userId, post_id: postId });
 
   if (error) throw error;
+
+  // Ambil pemilik post untuk kirim notifikasi
+  const { data: post } = await supabase
+    .from("posts")
+    .select("author_id, title")
+    .eq("id", postId)
+    .single();
+
+  if (post) {
+    await createNotification({
+      userId: post.author_id,
+      actorId: userId,
+      type: "like",
+      message: `menyukai postinganmu "${post.title.substring(0, 50)}${post.title.length > 50 ? "..." : ""}"`,
+      postId,
+    });
+  }
+
   return { liked: true };
 }
 

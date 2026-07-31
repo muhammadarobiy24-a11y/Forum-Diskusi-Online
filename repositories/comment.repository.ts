@@ -1,5 +1,13 @@
 import { createClient } from "@/lib/supabase/client";
-import type { Comment, Reply, CommentAuthor, CreateCommentInput, UpdateCommentInput, CreateReplyInput } from "@/types/comment";
+import { createNotification } from "@/repositories/notification.repository";
+import type {
+  Comment,
+  Reply,
+  CommentAuthor,
+  CreateCommentInput,
+  UpdateCommentInput,
+  CreateReplyInput,
+} from "@/types/comment";
 
 interface SupabaseComment {
   id: string;
@@ -17,16 +25,16 @@ function mapComment(item: SupabaseComment): Comment {
   };
 }
 
-export async function createComment(input: CreateCommentInput): Promise<Comment> {
+export async function createComment(
+  input: CreateCommentInput
+): Promise<Comment> {
   const supabase = createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("Anda harus login.");
-  }
+  if (!user) throw new Error("Anda harus login.");
 
   const { data, error } = await supabase
     .from("comments")
@@ -41,30 +49,46 @@ export async function createComment(input: CreateCommentInput): Promise<Comment>
       id,
       content,
       created_at,
-      author:profiles(
-        id,
-        username,
-        avatar_url
-      )
+      author:profiles(id, username, avatar_url)
     `
     )
     .single();
 
   if (error) throw error;
 
-  return mapComment(data as SupabaseComment);
+  const comment = mapComment(data as SupabaseComment);
+
+  // Kirim notifikasi ke pemilik post
+  const { data: post } = await supabase
+    .from("posts")
+    .select("author_id, title")
+    .eq("id", input.postId)
+    .single();
+
+  if (post) {
+    await createNotification({
+      userId: post.author_id,
+      actorId: user.id,
+      type: "comment",
+      message: `mengomentari postinganmu "${post.title.substring(0, 50)}${post.title.length > 50 ? "..." : ""}"`,
+      postId: input.postId,
+      commentId: comment.id,
+    });
+  }
+
+  return comment;
 }
 
-export async function updateComment(input: UpdateCommentInput): Promise<Comment> {
+export async function updateComment(
+  input: UpdateCommentInput
+): Promise<Comment> {
   const supabase = createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("Anda harus login.");
-  }
+  if (!user) throw new Error("Anda harus login.");
 
   const { data, error } = await supabase
     .from("comments")
@@ -79,17 +103,15 @@ export async function updateComment(input: UpdateCommentInput): Promise<Comment>
       id,
       content,
       created_at,
-      author:profiles(
-        id,
-        username,
-        avatar_url
-      )
+      author:profiles(id, username, avatar_url)
     `
     )
     .single();
 
   if (error) {
-    throw new Error("Komentar tidak ditemukan atau Anda tidak memiliki akses.");
+    throw new Error(
+      "Komentar tidak ditemukan atau Anda tidak memiliki akses."
+    );
   }
 
   return mapComment(data as SupabaseComment);
@@ -102,24 +124,20 @@ export async function deleteComment(id: string): Promise<void> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("Anda harus login.");
-  }
+  if (!user) throw new Error("Anda harus login.");
 
-  const { error, count } = await supabase
+  const { error } = await supabase
     .from("comments")
     .delete()
     .eq("id", id)
     .eq("author_id", user.id);
 
   if (error) throw error;
-
-  if (count === 0) {
-    throw new Error("Komentar tidak ditemukan atau Anda tidak memiliki akses.");
-  }
 }
 
-export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
+export async function getCommentsByPostId(
+  postId: string
+): Promise<Comment[]> {
   const supabase = createClient();
 
   const { data, error } = await supabase
@@ -129,11 +147,7 @@ export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
       id,
       content,
       created_at,
-      author:profiles(
-        id,
-        username,
-        avatar_url
-      )
+      author:profiles(id, username, avatar_url)
     `
     )
     .eq("post_id", postId)
@@ -142,7 +156,7 @@ export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
 
   if (error) throw error;
 
-  return (data as SupabaseComment[] || []).map(mapComment);
+  return ((data as SupabaseComment[]) || []).map(mapComment);
 }
 
 export async function getReplies(parentId: string): Promise<Reply[]> {
@@ -155,11 +169,7 @@ export async function getReplies(parentId: string): Promise<Reply[]> {
       id,
       content,
       created_at,
-      author:profiles(
-        id,
-        username,
-        avatar_url
-      )
+      author:profiles(id, username, avatar_url)
     `
     )
     .eq("parent_id", parentId)
@@ -167,7 +177,7 @@ export async function getReplies(parentId: string): Promise<Reply[]> {
 
   if (error) throw error;
 
-  return (data as SupabaseComment[] || []).map(mapComment) as Reply[];
+  return ((data as SupabaseComment[]) || []).map(mapComment) as Reply[];
 }
 
 export async function createReply(input: CreateReplyInput): Promise<Reply> {
@@ -177,9 +187,7 @@ export async function createReply(input: CreateReplyInput): Promise<Reply> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("Anda harus login.");
-  }
+  if (!user) throw new Error("Anda harus login.");
 
   const { data, error } = await supabase
     .from("comments")
@@ -194,16 +202,50 @@ export async function createReply(input: CreateReplyInput): Promise<Reply> {
       id,
       content,
       created_at,
-      author:profiles(
-        id,
-        username,
-        avatar_url
-      )
+      author:profiles(id, username, avatar_url)
     `
     )
     .single();
 
   if (error) throw error;
 
-  return mapComment(data as SupabaseComment) as Reply;
+  const reply = mapComment(data as SupabaseComment) as Reply;
+
+  // Kirim notifikasi ke pemilik post
+  const { data: post } = await supabase
+    .from("posts")
+    .select("author_id, title")
+    .eq("id", input.postId)
+    .single();
+
+  if (post) {
+    await createNotification({
+      userId: post.author_id,
+      actorId: user.id,
+      type: "reply",
+      message: `membalas komentar di postinganmu "${post.title.substring(0, 50)}${post.title.length > 50 ? "..." : ""}"`,
+      postId: input.postId,
+      commentId: reply.id,
+    });
+  }
+
+  // Kirim juga ke pemilik komentar yang di-reply (jika beda orang)
+  const { data: parentComment } = await supabase
+    .from("comments")
+    .select("author_id")
+    .eq("id", input.parentId)
+    .single();
+
+  if (parentComment && parentComment.author_id !== post?.author_id) {
+    await createNotification({
+      userId: parentComment.author_id,
+      actorId: user.id,
+      type: "reply",
+      message: `membalas komentarmu`,
+      postId: input.postId,
+      commentId: reply.id,
+    });
+  }
+
+  return reply;
 }
