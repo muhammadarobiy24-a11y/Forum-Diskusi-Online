@@ -54,7 +54,7 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-3 text-[15px] font-semibold transition-all duration-150",
+        "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-3 text-base font-semibold transition-all duration-150",
         active
           ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
           : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
@@ -100,7 +100,7 @@ function SectionLabel({
 }) {
   return (
     <div className="flex items-center justify-between px-5 pt-6 pb-2">
-      <span className="text-[11px] font-bold uppercase tracking-widest text-white/35">
+      <span className="text-[12px] font-bold uppercase tracking-widest text-white/35">
         {label}
       </span>
       {action}
@@ -180,7 +180,7 @@ function CommunitySidebar({ slug }: { slug: string }) {
             )}
           </div>
           <div className="min-w-0 -mt-1">
-            <p className="text-sm font-bold text-white truncate leading-tight">
+            <p className="text-base font-bold text-white truncate leading-tight">
               {community?.name ?? slug}
             </p>
             <p className="text-[11px] text-white/40 truncate">
@@ -247,7 +247,7 @@ function DefaultSidebar() {
           <MessageCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
         </div>
         <div>
-          <p className="text-[15px] font-black text-white tracking-tight leading-tight">
+          <p className="text-base font-black text-white tracking-tight leading-tight">
             Forum Diskusi
           </p>
           <p className="text-[11px] text-white/35 font-medium leading-tight">
@@ -302,7 +302,7 @@ function DefaultSidebar() {
                 key={c.id}
                 href={href}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-2.5 text-[15px] font-semibold transition-all duration-150",
+                  "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-2.5 text-base font-semibold transition-all duration-150",
                   isActive
                     ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
                     : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
