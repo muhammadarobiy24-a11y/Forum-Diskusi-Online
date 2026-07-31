@@ -33,7 +33,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${nunito.variable} ${firaCode.variable} h-full antialiased`}
+      className={`${nunito.variable} ${firaCode.variable} h-full font-sans`}
+      style={{ fontFamily: "var(--font-nunito), Nunito, ui-sans-serif, system-ui, sans-serif" }}
       suppressHydrationWarning
     >
       <head>
@@ -50,7 +51,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full overflow-hidden">
+      <body
+        className="h-full overflow-hidden font-sans antialiased"
+        style={{ fontFamily: "var(--font-nunito), Nunito, ui-sans-serif, system-ui, sans-serif" }}
+      >
         <ThemeProvider defaultTheme="system" storageKey="forum-theme">
           <ColorThemeProvider>
             <QueryProvider>
