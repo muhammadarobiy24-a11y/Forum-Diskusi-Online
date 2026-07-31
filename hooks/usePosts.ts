@@ -9,12 +9,14 @@ interface UsePostsParams {
   search?: string;
   sort?: PostSort;
   limit?: number;
+  communityId?: string;
 }
 
-export function usePosts({ page, category, search, sort, limit = 10 }: UsePostsParams) {
+export function usePosts({ page, category, search, sort, limit = 10, communityId }: UsePostsParams) {
   return useQuery({
-    queryKey: queryKeys.posts({ page, category, search, sort, limit }),
-    queryFn: () => fetchPosts({ page, limit, category, search, sort }),
+    queryKey: queryKeys.posts({ page, category, search, sort, limit, communityId }),
+    queryFn: () => fetchPosts({ page, limit, category, search, sort, communityId }),
     placeholderData: (prev) => prev,
   });
 }
+

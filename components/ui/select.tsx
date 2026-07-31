@@ -38,9 +38,11 @@ function Select({
 function SelectTrigger({
   children,
   className,
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   const { open, setOpen } = React.useContext(SelectContext);
 
@@ -51,6 +53,7 @@ function SelectTrigger({
         "flex h-8 w-full items-center justify-between rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm",
         className
       )}
+      style={style}
       onClick={() => setOpen(!open)}
     >
       {children}
@@ -80,13 +83,24 @@ function SelectValue({ placeholder }: { placeholder?: string }) {
   );
 }
 
-function SelectContent({ children }: { children: React.ReactNode }) {
+function SelectContent({ 
+  children,
+  className,
+  style,
+}: { 
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   const { open } = React.useContext(SelectContext);
 
   if (!open) return null;
 
   return (
-    <div className="absolute z-50 mt-1 w-full min-w-[8rem] overflow-hidden rounded-lg border bg-popover p-1 text-popover-foreground shadow-md">
+    <div 
+      className={cn("absolute z-50 mt-1 w-full min-w-[8rem] overflow-hidden rounded-lg border bg-popover p-1 text-popover-foreground shadow-md", className)}
+      style={style}
+    >
       {children}
     </div>
   );
@@ -95,9 +109,13 @@ function SelectContent({ children }: { children: React.ReactNode }) {
 function SelectItem({
   children,
   value,
+  className,
+  style,
 }: {
   children: React.ReactNode;
   value: string;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   const { value: selectedValue, onValueChange, setOpen } =
     React.useContext(SelectContext);
@@ -107,8 +125,10 @@ function SelectItem({
       type="button"
       className={cn(
         "relative flex w-full cursor-pointer items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none select-none hover:bg-accent hover:text-accent-foreground",
-        selectedValue === value && "bg-accent text-accent-foreground"
+        selectedValue === value && "bg-accent text-accent-foreground",
+        className
       )}
+      style={style}
       onClick={() => {
         onValueChange(value);
         setOpen(false);

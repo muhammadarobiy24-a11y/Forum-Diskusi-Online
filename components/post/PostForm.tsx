@@ -1,9 +1,11 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, ImagePlus, Video } from "lucide-react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { postSchema, type PostFormValues } from "@/schemas/post.schema";
 import { useCreatePost } from "@/hooks/useCreatePost";
 import { useUpdatePost } from "@/hooks/useUpdatePost";
+import { useSession } from "@/components/providers/SessionProvider";
 import type { Category } from "@/types";
 
 interface PostFormProps {
@@ -27,7 +30,10 @@ interface PostFormProps {
 export default function PostForm({ mode, initialData }: PostFormProps) {
   const { mutate: createPost, isPending: isCreating } = useCreatePost();
   const { mutate: updatePost, isPending: isUpdating } = useUpdatePost();
+  const { user } = useSession();
   const supabase = createClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
   const isPending = isCreating || isUpdating;
 
@@ -47,6 +53,8 @@ export default function PostForm({ mode, initialData }: PostFormProps) {
   const {
     register,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
@@ -56,6 +64,57 @@ export default function PostForm({ mode, initialData }: PostFormProps) {
       content: initialData?.content || "",
     },
   });
+
+  async function handleMediaUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Determine type
+    const isVideo = file.type.startsWith("video/");
+    const isImage = file.type.startsWith("image/");
+    
+    if (!isVideo && !isImage) {
+      toast.error("Hanya file gambar dan video yang diperbolehkan");
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 20MB");
+      return;
+    }
+
+    setIsUploadingMedia(true);
+    toast.loading("Mengunggah media...", { id: "upload-media" });
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("post-images")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) {
+        throw new Error(uploadError.message === "Bucket not found" ? "Bucket 'post-images' belum dibuat di Supabase" : uploadError.message);
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("post-images").getPublicUrl(fileName);
+
+      const markdownTag = isVideo ? `\n\n[video](${publicUrl})\n` : `\n\n![Gambar Sisipan](${publicUrl})\n`;
+      const currentContent = getValues("content");
+      setValue("content", currentContent + markdownTag, { shouldValidate: true });
+
+      toast.success("Media berhasil dilampirkan", { id: "upload-media" });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Gagal mengunggah media", { id: "upload-media" });
+    } finally {
+      setIsUploadingMedia(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
 
   function onSubmit(data: PostFormValues) {
     if (mode === "edit" && initialData) {
@@ -117,13 +176,40 @@ export default function PostForm({ mode, initialData }: PostFormProps) {
             <label htmlFor="content" className="text-sm font-medium">
               Isi Postingan
             </label>
-            <Textarea
-              id="content"
-              placeholder="Tulis isi postingan Anda di sini..."
-              disabled={isPending}
-              className="min-h-[200px]"
-              {...register("content")}
-            />
+            <div className="flex flex-col gap-2">
+              <Textarea
+                id="content"
+                placeholder="Tulis isi postingan Anda di sini..."
+                disabled={isPending}
+                className="min-h-[200px]"
+                {...register("content")}
+              />
+              
+              {/* Media Toolbar */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={isUploadingMedia || isPending}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {isUploadingMedia ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ImagePlus className="h-4 w-4" />
+                  )}
+                  Sisipkan Foto/Video
+                </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*,video/*"
+                  onChange={handleMediaUpload}
+                />
+              </div>
+            </div>
+            
             {errors.content && (
               <p className="text-sm text-destructive">
                 {errors.content.message}

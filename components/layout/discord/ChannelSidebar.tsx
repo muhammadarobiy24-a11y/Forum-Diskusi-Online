@@ -9,262 +9,214 @@ import {
   Bell,
   User,
   Settings,
-  Hash,
-  Volume2,
-  ChevronDown,
-  Plus,
-  Shield,
   Compass,
+  Plus,
+  Users,
+  FileText,
+  Shield,
+  ChevronRight,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCommunity } from "@/features/community/hooks/useCommunity";
+import { useCommunities } from "@/features/community/hooks/useCommunities";
 import UserStatusBar from "./UserStatusBar";
 
-const NAV_ITEMS = [
-  { href: "/post",          label: "Home",          icon: Home,        section: "main" },
-  { href: "/communities",   label: "Communities",   icon: Compass,     section: "main" },
-  { href: "/categories",    label: "Categories",    icon: LayoutGrid,  section: "main" },
-  { href: "/bookmarks",     label: "Bookmarks",     icon: Bookmark,    section: "main" },
-  { href: "/notifications", label: "Notifications", icon: Bell,        section: "main" },
-  { href: "/profile",       label: "Profile",       icon: User,        section: "user" },
-  { href: "/settings",      label: "Settings",      icon: Settings,    section: "user" },
+/* ─── Nav items ──────────────────────────────────────────── */
+const NAV_MAIN = [
+  { href: "/post",          label: "Beranda",       icon: Home      },
+  { href: "/communities",   label: "Komunitas",     icon: Compass   },
+  { href: "/categories",    label: "Kategori",      icon: LayoutGrid},
+  { href: "/bookmarks",     label: "Tersimpan",     icon: Bookmark  },
+  { href: "/notifications", label: "Notifikasi",    icon: Bell      },
 ];
 
-const TEXT_CHANNELS = [
-  { id: "general",       label: "general" },
-  { id: "posts",         label: "posts" },
-  { id: "announcements", label: "announcements" },
+const NAV_ACCOUNT = [
+  { href: "/profile",  label: "Profil Saya", icon: User     },
+  { href: "/settings", label: "Pengaturan",  icon: Settings },
 ];
 
-const VOICE_CHANNELS = [
-  { id: "lobby",  label: "Lobby" },
-  { id: "gaming", label: "Gaming" },
-];
-
-interface ChannelItemProps {
+/* ─── Generic nav link ───────────────────────────────────── */
+function NavLink({
+  href,
+  label,
+  icon: Icon,
+  active,
+  badge,
+}: {
   href: string;
   label: string;
+  icon: React.ElementType;
   active: boolean;
-  icon?: React.ElementType;
-  type?: "text" | "voice" | "nav";
-}
-
-function ChannelItem({ href, label, active, icon: Icon, type = "text" }: ChannelItemProps) {
+  badge?: number;
+}) {
   return (
     <Link
       href={href}
       className={cn(
-        "group relative flex items-center gap-2 rounded-md mx-2 px-2 py-[6px] text-[15px] font-medium transition-all duration-100",
+        "group relative flex items-center gap-3 rounded-xl mx-2 px-3 py-2.5 text-[14px] font-semibold transition-all duration-150",
         active
-          ? "bg-[oklch(0.33_0.008_264)] text-[var(--dc-text-primary)]"
-          : "text-[var(--dc-text-channel)] hover:bg-[oklch(0.29_0.006_264)] hover:text-[oklch(0.82_0.006_264)]"
+          ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
+          : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
       )}
     >
-      {/* Active indicator bar */}
+      {/* Active left bar */}
       {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-white" />
+        <span
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[22px] rounded-r-full"
+          style={{
+            background: "var(--forum-active-bar)",
+            boxShadow: "0 0 8px var(--forum-active-bar)",
+          }}
+        />
       )}
 
-      {Icon ? (
-        <Icon className={cn("h-[18px] w-[18px] shrink-0", active ? "text-[var(--dc-text-primary)]" : "text-[var(--dc-text-channel)] group-hover:text-[oklch(0.78_0.006_264)]")} />
-      ) : type === "voice" ? (
-        <Volume2 className={cn("h-[18px] w-[18px] shrink-0", active ? "text-[var(--dc-text-primary)]" : "text-[var(--dc-text-channel)] group-hover:text-[oklch(0.78_0.006_264)]")} />
-      ) : (
-        <Hash className={cn("h-[18px] w-[18px] shrink-0", active ? "text-[var(--dc-text-primary)]" : "text-[var(--dc-text-channel)] group-hover:text-[oklch(0.78_0.006_264)]")} />
-      )}
-      <span className="truncate leading-snug">{label}</span>
+      <Icon
+        className={cn(
+          "h-4 w-4 shrink-0 transition-colors",
+          active ? "text-violet-400" : "text-white/35 group-hover:text-white/60"
+        )}
+      />
+      <span className="truncate flex-1">{label}</span>
+      {badge && badge > 0 ? (
+        <span
+          className="shrink-0 h-5 min-w-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+          style={{ background: "var(--forum-danger)" }}
+        >
+          {badge > 99 ? "99+" : badge}
+        </span>
+      ) : null}
     </Link>
   );
 }
 
-function SectionHeader({ label, onAdd }: { label: string; onAdd?: () => void }) {
+/* ─── Section label ──────────────────────────────────────── */
+function SectionLabel({
+  label,
+  action,
+}: {
+  label: string;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="flex items-center justify-between px-4 pt-5 pb-1 group">
-      <button className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--dc-text-channel)] hover:text-[oklch(0.78_0.006_264)] transition-colors">
-        <ChevronDown className="h-3 w-3" />
+    <div className="flex items-center justify-between px-4 pt-5 pb-1.5">
+      <span className="text-[11px] font-bold uppercase tracking-widest text-white/35">
         {label}
-      </button>
-      {onAdd && (
-        <button
-          onClick={onAdd}
-          className="h-4 w-4 text-[var(--dc-text-channel)] hover:text-[var(--dc-text-primary)] transition-colors opacity-0 group-hover:opacity-100"
-          aria-label={`Add ${label}`}
-        >
-          <Plus className="h-full w-full" />
-        </button>
-      )}
+      </span>
+      {action}
     </div>
   );
 }
 
-/* Community sidebar */
+/* ─── Community sidebar (saat di /communities/[slug]) ────── */
 function CommunitySidebar({ slug }: { slug: string }) {
   const pathname = usePathname();
   const { data: community, isLoading } = useCommunity(slug);
   const basePath = `/communities/${slug}`;
-  const isGeneralActive = pathname === basePath || pathname === `${basePath}/`;
 
   if (isLoading) {
     return (
-      <div className="flex-1 p-3 space-y-2 animate-pulse">
-        <div className="h-12 rounded-lg bg-[var(--dc-hover)] opacity-30" />
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-8 rounded-md bg-[var(--dc-hover)] opacity-20" />
+      <div className="flex-1 p-4 space-y-2.5 animate-pulse">
+        <div className="h-20 rounded-2xl bg-white/5" />
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-10 rounded-xl bg-white/4" />
         ))}
       </div>
     );
   }
 
+  const COMMUNITY_NAV = [
+    { href: basePath,              label: "Diskusi",    icon: MessageCircle },
+    { href: `${basePath}/members`, label: "Anggota",   icon: Users         },
+    { href: `${basePath}/about`,   label: "Tentang",   icon: FileText      },
+    { href: `${basePath}/settings`,label: "Pengaturan",icon: Shield        },
+  ];
+
   return (
     <div className="flex flex-col h-full">
-      {/* Community header with banner */}
-      <div className="relative h-[72px] shrink-0 overflow-hidden">
-        {community?.banner_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={community.banner_url}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-50"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--dc-blurple)]/60 via-[oklch(0.50_0.22_290)]/40 to-[oklch(0.45_0.20_310)]/30" />
-        )}
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[var(--dc-channel-bg)]/80" />
-        {/* Content */}
-        <div className="relative flex h-full items-end justify-between px-4 pb-3">
-          <div className="min-w-0">
-            <p className="font-bold text-white text-[15px] leading-tight truncate drop-shadow-sm">
+      {/* Community header card */}
+      <div
+        className="relative mx-3 mt-3 mb-1 rounded-2xl overflow-hidden shrink-0"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.07)",
+        }}
+      >
+        {/* Banner */}
+        <div className="h-16 w-full overflow-hidden relative">
+          {community?.banner_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={community.banner_url}
+              alt=""
+              className="h-full w-full object-cover opacity-50"
+            />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-violet-600/40 via-blue-500/25 to-transparent" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        </div>
+
+        {/* Icon + name */}
+        <div className="flex items-center gap-3 px-4 pt-2 pb-3">
+          <div
+            className="-mt-5 h-10 w-10 rounded-xl border-2 overflow-hidden flex items-center justify-center text-base font-black text-white shrink-0 shadow-lg"
+            style={{
+              background: community?.icon_url
+                ? undefined
+                : "linear-gradient(135deg, #7c3aed, #3b82f6)",
+              borderColor: "rgba(0,0,0,0.5)",
+            }}
+          >
+            {community?.icon_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={community.icon_url}
+                alt={community.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              (community?.name?.[0] ?? "?").toUpperCase()
+            )}
+          </div>
+          <div className="min-w-0 -mt-1">
+            <p className="text-sm font-bold text-white truncate leading-tight">
               {community?.name ?? slug}
             </p>
+            <p className="text-[11px] text-white/40 truncate">
+              {community?.member_count?.toLocaleString("id-ID") ?? "—"} anggota
+            </p>
           </div>
-          <ChevronDown className="h-4 w-4 text-white/70 shrink-0" />
         </div>
       </div>
 
-      {/* Channels */}
-      <div className="flex-1 overflow-y-auto pb-2">
-        {/* Text Channels */}
-        <SectionHeader label="Text Channels" onAdd={() => {}} />
-        <div className="space-y-0.5 mt-1">
-          {TEXT_CHANNELS.map((ch) => {
-            const isActive = ch.id === "general"
-              ? isGeneralActive
-              : pathname === `${basePath}/${ch.id}`;
-            return (
-              <ChannelItem
-                key={ch.id}
-                href={ch.id === "general" ? basePath : `${basePath}/${ch.id}`}
-                label={ch.label}
-                active={isActive}
-                type="text"
-              />
-            );
-          })}
-        </div>
-
-        {/* Voice Channels */}
-        <SectionHeader label="Voice Channels" onAdd={() => {}} />
-        <div className="space-y-0.5 mt-1">
-          {VOICE_CHANNELS.map((ch) => (
-            <ChannelItem
-              key={ch.id}
-              href="#"
-              label={ch.label}
-              active={false}
-              type="voice"
-            />
-          ))}
-        </div>
-
-        {/* Moderator */}
-        <SectionHeader label="Moderator" />
-        <div className="space-y-0.5 mt-1">
-          <ChannelItem
-            href={`${basePath}/settings`}
-            label="Community Settings"
-            active={pathname === `${basePath}/settings`}
-            icon={Shield}
+      {/* Community nav */}
+      <nav className="flex-1 overflow-y-auto py-2 space-y-0.5">
+        <SectionLabel label="Navigasi" />
+        {COMMUNITY_NAV.map(({ href, label, icon }) => (
+          <NavLink
+            key={href}
+            href={href}
+            label={label}
+            icon={icon}
+            active={
+              href === basePath
+                ? pathname === basePath || pathname === `${basePath}/`
+                : pathname.startsWith(href)
+            }
           />
-        </div>
-      </div>
+        ))}
 
-      <UserStatusBar />
-    </div>
-  );
-}
+        <div className="forum-divider mx-4 mt-4" />
 
-/* Default sidebar */
-function DefaultSidebar() {
-  const pathname = usePathname();
-
-  const mainItems = NAV_ITEMS.filter((i) => i.section === "main");
-  const userItems = NAV_ITEMS.filter((i) => i.section === "user");
-
-  return (
-    <div className="flex flex-col h-full">
-      {/* App name header */}
-      <div className="flex h-14 items-center px-5 border-b border-[oklch(1_0_0/6%)] shrink-0 bg-gradient-to-r from-[var(--dc-channel-bg)] to-[oklch(0.23_0.006_264)]">
-        <div className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded-lg bg-[var(--dc-blurple)] flex items-center justify-center dc-glow-blurple">
-            <Hash className="h-4 w-4 text-white" strokeWidth={2.5} />
-          </div>
-          <span className="font-bold text-[15px] text-[var(--dc-text-primary)] tracking-tight">
-            Forum Diskusi
-          </span>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-2">
-        {/* Main section */}
-        <div className="px-2 pt-1 pb-1">
-          <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--dc-text-channel)]">
-            Navigate
-          </p>
-          <div className="space-y-0.5">
-            {mainItems.map((item) => {
-              const isActive =
-                item.href === "/post"
-                  ? pathname === "/" || pathname.startsWith("/post")
-                  : pathname.startsWith(item.href);
-              return (
-                <ChannelItem
-                  key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  active={isActive}
-                  icon={item.icon}
-                  type="nav"
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="mx-4 my-2 h-px bg-[oklch(1_0_0/6%)]" />
-
-        {/* User section */}
-        <div className="px-2 pb-1">
-          <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--dc-text-channel)]">
-            Account
-          </p>
-          <div className="space-y-0.5">
-            {userItems.map((item) => {
-              const isActive = pathname.startsWith(item.href);
-              return (
-                <ChannelItem
-                  key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  active={isActive}
-                  icon={item.icon}
-                  type="nav"
-                />
-              );
-            })}
-          </div>
+        {/* Back to all communities */}
+        <div className="pt-2">
+          <NavLink
+            href="/communities"
+            label="Semua Komunitas"
+            icon={Compass}
+            active={false}
+          />
         </div>
       </nav>
 
@@ -273,9 +225,178 @@ function DefaultSidebar() {
   );
 }
 
-export default function ChannelSidebar({ communitySlug }: { communitySlug?: string }) {
+/* ─── Default sidebar ────────────────────────────────────── */
+function DefaultSidebar() {
+  const pathname = usePathname();
+  const { data: communities } = useCommunities();
+
   return (
-    <aside className="dc-channel-bg hidden lg:flex flex-col w-64 shrink-0 overflow-hidden shadow-xl shadow-black/20">
+    <div className="flex flex-col h-full">
+      {/* App brand */}
+      <Link
+        href="/post"
+        className="flex items-center gap-3 px-5 h-[60px] shrink-0 border-b border-[var(--forum-sidebar-border)] hover:bg-[var(--forum-hover)] transition-colors"
+      >
+        <div
+          className="flex h-8 w-8 items-center justify-center rounded-xl shadow-lg shrink-0"
+          style={{
+            background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
+            boxShadow: "0 0 16px rgba(124,58,237,0.45)",
+          }}
+        >
+          <MessageCircle className="h-4 w-4 text-white" strokeWidth={2.5} />
+        </div>
+        <div>
+          <p className="text-[14px] font-black text-white tracking-tight leading-tight">
+            Forum Diskusi
+          </p>
+          <p className="text-[10px] text-white/35 font-medium leading-tight">
+            Community Platform
+          </p>
+        </div>
+      </Link>
+
+      {/* Scrollable nav area */}
+      <nav className="flex-1 overflow-y-auto py-2 space-y-0.5">
+        {/* Main navigation */}
+        <SectionLabel label="Menu" />
+        {NAV_MAIN.map((item) => {
+          const isActive =
+            item.href === "/post"
+              ? pathname === "/" || pathname.startsWith("/post")
+              : pathname.startsWith(item.href);
+          return (
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              active={isActive}
+            />
+          );
+        })}
+
+        <div className="forum-divider mx-4 mt-4" />
+
+        {/* My Communities */}
+        <SectionLabel
+          label="Komunitas"
+          action={
+            <Link
+              href="/communities/create"
+              className="flex h-5 w-5 items-center justify-center rounded-lg text-white/35 hover:bg-white/10 hover:text-white transition-colors"
+              title="Buat Komunitas"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </Link>
+          }
+        />
+
+        {communities && communities.length > 0 ? (
+          communities.slice(0, 10).map((c) => {
+            const href = `/communities/${c.slug}`;
+            const isActive = pathname.startsWith(href);
+            const initial = (c.name?.[0] ?? "?").toUpperCase();
+            return (
+              <Link
+                key={c.id}
+                href={href}
+                className={cn(
+                  "group relative flex items-center gap-3 rounded-xl mx-2 px-3 py-2 text-[14px] font-semibold transition-all duration-150",
+                  isActive
+                    ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
+                    : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
+                )}
+              >
+                {isActive && (
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-r-full"
+                    style={{
+                      background: "var(--forum-active-bar)",
+                      boxShadow: "0 0 8px var(--forum-active-bar)",
+                    }}
+                  />
+                )}
+                <div
+                  className="h-6 w-6 rounded-lg overflow-hidden flex items-center justify-center text-[10px] font-black text-white shrink-0"
+                  style={{
+                    background: isActive
+                      ? "linear-gradient(135deg, rgba(124,58,237,0.9), rgba(59,130,246,0.9))"
+                      : "rgba(255,255,255,0.10)",
+                    border: isActive
+                      ? "1px solid rgba(167,139,250,0.4)"
+                      : "1px solid rgba(255,255,255,0.08)",
+                  }}
+                >
+                  {c.icon_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={c.icon_url} alt={c.name} className="h-full w-full object-cover" />
+                  ) : (
+                    initial
+                  )}
+                </div>
+                <span className="truncate">{c.name}</span>
+                {isActive && (
+                  <ChevronRight className="h-3.5 w-3.5 ml-auto shrink-0 text-white/40" />
+                )}
+              </Link>
+            );
+          })
+        ) : (
+          <div className="mx-4 py-3 text-[12px] text-white/30 italic text-center">
+            Belum ada komunitas
+          </div>
+        )}
+
+        {communities && communities.length > 10 && (
+          <Link
+            href="/communities"
+            className="flex items-center gap-2 mx-4 py-2 text-[12px] font-semibold text-white/40 hover:text-white/70 transition-colors"
+          >
+            <span>Lihat semua komunitas</span>
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
+
+        <div className="forum-divider mx-4 mt-4" />
+
+        {/* Account section */}
+        <SectionLabel label="Akun" />
+        {NAV_ACCOUNT.map((item) => (
+          <NavLink
+            key={item.href}
+            href={item.href}
+            label={item.label}
+            icon={item.icon}
+            active={pathname.startsWith(item.href)}
+          />
+        ))}
+
+        {/* Padding bottom */}
+        <div className="h-2" />
+      </nav>
+
+      <UserStatusBar />
+    </div>
+  );
+}
+
+/* ─── Export ─────────────────────────────────────────────── */
+export default function ChannelSidebar({
+  communitySlug,
+}: {
+  communitySlug?: string;
+}) {
+  return (
+    <aside
+      className="hidden lg:flex flex-col w-64 shrink-0 overflow-hidden"
+      style={{
+        background: "var(--forum-sidebar-bg)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderRight: "1px solid var(--forum-sidebar-border)",
+      }}
+    >
       {communitySlug ? (
         <CommunitySidebar slug={communitySlug} />
       ) : (

@@ -1,155 +1,175 @@
 "use client";
 
-import { useSession } from "@/components/providers/SessionProvider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Crown, Shield } from "lucide-react";
+import { Users, FileText, Eye, ShieldCheck, Calendar } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { id } from "date-fns/locale";
 import type { Community } from "@/features/community/types/community";
+import JoinButton from "@/features/community/components/JoinButton";
 
-type MemberStatus = "online" | "idle" | "dnd" | "offline";
-
-interface MemberRowProps {
-  username: string;
-  avatarUrl?: string | null;
-  role?: "owner" | "moderator" | "member";
-  status?: MemberStatus;
-  activity?: string;
+interface CommunityInfoPanelProps {
+  community?: Community | null;
 }
 
-const STATUS_CONFIG: Record<MemberStatus, { cls: string; label: string }> = {
-  online:  { cls: "dc-status-online",  label: "Online"  },
-  idle:    { cls: "dc-status-idle",    label: "Idle"    },
-  dnd:     { cls: "dc-status-dnd",     label: "Do Not Disturb" },
-  offline: { cls: "dc-status-offline", label: "Offline" },
-};
-
-function MemberRow({ username, avatarUrl, role, status = "online", activity }: MemberRowProps) {
-  const initials = username.slice(0, 2).toUpperCase();
-  const { cls, label } = STATUS_CONFIG[status];
-  const isOffline = status === "offline";
-
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
   return (
     <div
-      className="group flex items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-[oklch(0.30_0.006_264)] transition-colors cursor-pointer mx-2"
+      className="flex items-center gap-3 rounded-xl p-3 transition-colors"
+      style={{
+        background: accent
+          ? "rgba(124,58,237,0.08)"
+          : "rgba(255,255,255,0.03)",
+        border: accent
+          ? "1px solid rgba(124,58,237,0.20)"
+          : "1px solid rgba(255,255,255,0.06)",
+      }}
     >
-      <div className="relative shrink-0">
-        <Avatar size="sm">
-          {avatarUrl && <AvatarImage src={avatarUrl} alt={username} />}
-          <AvatarFallback
-            className={`text-[11px] font-bold ${isOffline ? "bg-[oklch(0.31_0.006_264)] text-[var(--dc-text-channel)]" : "bg-[var(--dc-blurple)] text-white"}`}
-          >
-            {initials}
-          </AvatarFallback>
-        </Avatar>
-        <span
-          className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[oklch(0.225_0.005_264)] ${cls}`}
-          title={label}
-        />
+      <div
+        className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
+        style={{
+          background: accent
+            ? "rgba(124,58,237,0.20)"
+            : "rgba(255,255,255,0.06)",
+        }}
+      >
+        <Icon className="h-4 w-4 text-white/60" />
       </div>
-
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1">
-          <p
-            className={`text-[13px] font-semibold truncate transition-colors leading-tight ${
-              isOffline
-                ? "text-[var(--dc-text-channel)] group-hover:text-[oklch(0.72_0.006_264)]"
-                : "text-[oklch(0.78_0.006_264)] group-hover:text-[var(--dc-text-primary)]"
-            }`}
-          >
-            {username}
-          </p>
-          {role === "owner" && (
-            <Crown className="h-3 w-3 text-amber-400 shrink-0" />
-          )}
-          {role === "moderator" && (
-            <Shield className="h-3 w-3 text-[var(--dc-blurple)] shrink-0" />
-          )}
-        </div>
-        {activity && (
-          <p className="text-[11px] text-[var(--dc-text-channel)] truncate leading-tight">
-            {activity}
-          </p>
-        )}
+      <div>
+        <p className="text-[13px] font-bold text-white/90 leading-tight">
+          {value}
+        </p>
+        <p className="text-[11px] text-white/40 leading-tight">{label}</p>
       </div>
     </div>
   );
 }
 
-function SectionLabel({ label, count }: { label: string; count: number }) {
-  return (
-    <p className="px-4 pt-5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--dc-text-channel)]">
-      {label} — {count}
-    </p>
-  );
-}
+export default function MemberList({ community }: CommunityInfoPanelProps) {
+  if (!community) return null;
 
-interface MemberListProps {
-  community?: Community | null;
-}
+  const createdAgo = formatDistanceToNow(new Date(community.created_at), {
+    addSuffix: true,
+    locale: id,
+  });
 
-export default function MemberList({ community }: MemberListProps) {
-  const { user } = useSession();
-  const currentUsername =
-    (user?.user_metadata?.username as string) ||
-    user?.email?.split("@")[0] ||
-    "You";
-  const currentAvatarUrl = user?.user_metadata?.avatar_url as string | undefined;
-
-  const offlineCount = community ? Math.max(0, community.member_count - 1) : 0;
+  const visibilityLabel: Record<string, string> = {
+    public: "Publik",
+    restricted: "Terbatas",
+    private: "Privat",
+  };
 
   return (
-    <aside className="dc-member-bg hidden xl:flex flex-col w-64 shrink-0 overflow-y-auto border-l border-[oklch(1_0_0/6%)]">
-      {/* Online members */}
-      <SectionLabel label="Online" count={1} />
-      <MemberRow
-        username={currentUsername}
-        avatarUrl={currentAvatarUrl}
-        role="member"
-        status="online"
-        activity="Browsing forum"
-      />
+    <aside
+      className="hidden xl:flex flex-col w-72 shrink-0 overflow-y-auto"
+      style={{
+        background: "rgba(255,255,255,0.02)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderLeft: "1px solid rgba(255,255,255,0.05)",
+      }}
+    >
+      <div className="p-4 space-y-4">
+        {/* Section: About */}
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-white/35 mb-3">
+            Tentang Komunitas
+          </p>
 
-      {/* Offline members */}
-      {offlineCount > 0 && (
-        <>
-          <SectionLabel label="Offline" count={offlineCount} />
-          <div className="px-2">
-            {[...Array(Math.min(offlineCount, 5))].map((_, i) => (
-              <MemberRow
-                key={i}
-                username={`Member ${i + 1}`}
-                status="offline"
-                role="member"
-              />
-            ))}
-            {offlineCount > 5 && (
-              <p className="px-2 pt-1 pb-2 text-[12px] text-[var(--dc-text-channel)] italic">
-                +{offlineCount - 5} more offline
+          {/* Community name card */}
+          <div
+            className="rounded-2xl p-4 mb-3"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.07)",
+            }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="h-10 w-10 rounded-xl overflow-hidden flex items-center justify-center text-base font-black text-white shrink-0"
+                style={{
+                  background: community.icon_url
+                    ? undefined
+                    : "linear-gradient(135deg, #7c3aed, #3b82f6)",
+                  backgroundImage: community.icon_url
+                    ? `url(${community.icon_url})`
+                    : undefined,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                {!community.icon_url &&
+                  (community.name?.[0] ?? "?").toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-bold text-white truncate">
+                    {community.name}
+                  </p>
+                  {community.is_verified && (
+                    <ShieldCheck className="h-3.5 w-3.5 text-violet-400 shrink-0" />
+                  )}
+                </div>
+                <p className="text-[11px] text-white/40 capitalize">
+                  {visibilityLabel[community.visibility] ?? community.visibility}
+                </p>
+              </div>
+            </div>
+
+            {community.description && (
+              <p className="text-[12px] text-white/55 leading-relaxed line-clamp-4">
+                {community.description}
               </p>
             )}
           </div>
-        </>
-      )}
 
-      {/* Community info card */}
-      {community && (
-        <div className="mx-3 mt-4 mb-3 rounded-lg bg-[oklch(0.21_0.005_264)] border border-[oklch(1_0_0/6%)] p-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--dc-text-channel)] mb-2">
-            Community Info
+          {/* Join button */}
+          <JoinButton communityId={community.id} />
+        </div>
+
+        {/* Section: Stats */}
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-white/35 mb-3">
+            Statistik
           </p>
-          <div className="space-y-1.5">
-            {[
-              { label: "Members",    value: community.member_count.toLocaleString("id-ID") },
-              { label: "Posts",      value: community.post_count.toLocaleString("id-ID") },
-              { label: "Visibility", value: community.visibility },
-            ].map(({ label, value }) => (
-              <div key={label} className="flex justify-between items-center">
-                <span className="text-[12px] text-[var(--dc-text-channel)]">{label}</span>
-                <span className="text-[12px] font-medium text-[var(--dc-text-primary)] capitalize">{value}</span>
-              </div>
-            ))}
+          <div className="space-y-2">
+            <StatCard
+              icon={Users}
+              label="Anggota"
+              value={community.member_count.toLocaleString("id-ID")}
+              accent
+            />
+            <StatCard
+              icon={FileText}
+              label="Postingan"
+              value={community.post_count.toLocaleString("id-ID")}
+            />
+            <StatCard
+              icon={Eye}
+              label="Visibilitas"
+              value={visibilityLabel[community.visibility] ?? community.visibility}
+            />
+            <StatCard
+              icon={Calendar}
+              label="Dibuat"
+              value={createdAgo}
+            />
           </div>
         </div>
-      )}
+
+        {/* Footer note */}
+        <p className="text-[11px] text-white/25 text-center pb-2">
+          Komunitas ini dikelola oleh anggota aktif.
+        </p>
+      </div>
     </aside>
   );
 }

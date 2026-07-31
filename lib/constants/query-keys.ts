@@ -30,7 +30,7 @@ export const queryKeys = {
 
   post: (id: string) => [...QUERY_KEYS.post, id] as const,
 
-  posts: (params?: { page?: number; category?: string; limit?: number; search?: string; sort?: string }) =>
+  posts: (params?: { page?: number; category?: string; limit?: number; search?: string; sort?: string; communityId?: string }) =>
     params
       ? [...QUERY_KEYS.posts, params] as const
       : QUERY_KEYS.posts,

@@ -21,6 +21,7 @@ export interface Post {
   category: PostCategory;
   comment_count: number;
   like_count: number;
+  community_id?: string;
 }
 
 export type PostSort = "newest" | "oldest" | "most_viewed" | "most_commented";
@@ -31,6 +32,7 @@ export interface GetPostsParams {
   category?: string;
   search?: string;
   sort?: PostSort;
+  communityId?: string;
 }
 
 export interface PaginationMeta {
@@ -51,6 +53,7 @@ export interface CreatePostInput {
   title: string;
   categoryId: string;
   content: string;
+  communityId?: string;
 }
 
 export interface UpdatePostInput {
@@ -58,4 +61,5 @@ export interface UpdatePostInput {
   title: string;
   categoryId: string;
   content: string;
+  communityId?: string;
 }

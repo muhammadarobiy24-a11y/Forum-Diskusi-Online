@@ -2,16 +2,19 @@
 
 import { useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { usePosts } from "@/hooks/usePosts";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useSession } from "@/components/providers/SessionProvider";
 import PostList from "@/components/post/PostList";
 import PostSearch from "@/components/post/PostSearch";
 import PostSort from "@/components/post/PostSort";
 import Pagination from "@/components/post/Pagination";
 import CategoryFilterButtons from "@/components/category/CategoryFilterButtons";
 import ChannelHeader from "@/components/layout/discord/ChannelHeader";
+import { PenSquare } from "lucide-react";
 import type { Category } from "@/types";
 import type { PostSort as PostSortType } from "@/types/post";
 
@@ -20,6 +23,7 @@ const POSTS_PER_PAGE = 10;
 export default function PostsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user } = useSession();
 
   const page = Number(searchParams.get("page") ?? "1");
   const urlSearch = searchParams.get("search") ?? "";
@@ -113,35 +117,144 @@ export default function PostsPage() {
   });
 
   return (
-    <>
-      <ChannelHeader channelName="posts" channelDescription="Browse discussions and find interesting topics" />
-      <div className="flex-1 overflow-y-auto dc-chat-bg">
-        <div className="max-w-3xl mx-auto px-5 py-5 space-y-5">
-          <PostSearch value={localSearch} onChange={setLocalSearch} />
+    <div className="flex flex-col h-full overflow-hidden relative">
+      <ChannelHeader channelName="posts" channelDescription="Jelajahi diskusi dan temukan topik menarik" />
+      
+      <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
+        {/* Two-column layout: feed left, sidebar right */}
+        <div className="flex gap-6 px-4 py-8 md:px-8 w-full max-w-[1280px] mx-auto">
 
-          {categories && categories.length > 0 && (
-            <CategoryFilterButtons
-              categories={categories}
-              value={category}
-              onChange={(value) => updateParams({ category: value })}
-            />
-          )}
+          {/* ── LEFT: Post Feed ─────────────────────────────────── */}
+          <div className="flex-1 min-w-0 max-w-[700px] space-y-8">
 
-          <div className="flex justify-end">
-            <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
+            {/* Top Controls: Search + Sort + Create Button */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="w-full sm:w-[280px]">
+                <PostSearch value={localSearch} onChange={setLocalSearch} />
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
+                {user && (
+                  <Link
+                    href="/post/create"
+                    className="flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-bold text-white transition-all duration-200 hover:scale-105 hover:brightness-110"
+                    style={{
+                      background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
+                      boxShadow: "0 0 20px rgba(124,58,237,0.4)",
+                    }}
+                  >
+                    <PenSquare className="h-4 w-4" />
+                    Buat Post
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Categories */}
+            {categories && categories.length > 0 && (
+              <div className="py-1">
+                <CategoryFilterButtons
+                  categories={categories}
+                  value={category}
+                  onChange={(value) => updateParams({ category: value })}
+                />
+              </div>
+            )}
+
+            {/* Feed List */}
+            <PostList posts={data?.posts} isLoading={isLoading} />
+
+            {/* Pagination */}
+            {data && (
+              <div className="pt-4 pb-12 flex justify-center">
+                <Pagination
+                  pagination={data.pagination}
+                  baseUrl="/post"
+                  searchParams={searchParamsObj}
+                />
+              </div>
+            )}
           </div>
 
-          <PostList posts={data?.posts} isLoading={isLoading} />
+          <aside className="hidden xl:flex flex-col w-72 shrink-0">
+            <div className="sticky top-8 space-y-4">
+              {/* Create Post CTA */}
+              {user && (
+                <Link href="/post/create" className="block">
+                  <div
+                    className="group rounded-[28px] p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(59,130,246,0.15))",
+                      border: "1px solid rgba(167,139,250,0.25)",
+                      boxShadow: "0 8px 32px rgba(0,0,0,0.15), 0 0 40px rgba(124,58,237,0.1)",
+                    }}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div
+                        className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                        style={{
+                          background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
+                          boxShadow: "0 0 16px rgba(124,58,237,0.5)",
+                        }}
+                      >
+                        <PenSquare className="h-5 w-5 text-white" />
+                      </div>
+                      <p className="text-sm font-black text-white/90">Buat Postingan</p>
+                    </div>
+                    <p className="text-xs text-white/50 leading-relaxed">
+                      Bagikan ide, tanya jawab, atau mulai diskusi dengan komunitas.
+                    </p>
+                    <div
+                      className="mt-4 w-full py-2 rounded-xl text-center text-xs font-bold text-white transition-all"
+                      style={{ background: "linear-gradient(135deg, #7c3aed, #3b82f6)" }}
+                    >
+                      + Tulis Postingan
+                    </div>
+                  </div>
+                </Link>
+              )}
 
-          {data && (
-            <Pagination
-              pagination={data.pagination}
-              baseUrl="/post"
-              searchParams={searchParamsObj}
-            />
-          )}
+              {/* Trending Placeholder */}
+              <div
+                className="rounded-[28px] p-6"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
+                }}
+              >
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-4">
+                  🔥 Trending Topics
+                </p>
+                {[80, 60, 72, 55, 68].map((w, i) => (
+                  <div key={i} className="flex items-center gap-3 py-3 border-b border-white/5 last:border-0">
+                    <span
+                      className="text-xs font-black"
+                      style={{
+                        background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                      }}
+                    >
+                      #{i + 1}
+                    </span>
+                    <div
+                      className="h-3 rounded-full animate-pulse"
+                      style={{ width: `${w}%`, background: "rgba(255,255,255,0.06)" }}
+                    />
+                  </div>
+                ))}
+                <p className="text-[10px] font-medium text-white/30 mt-4 text-center italic">
+                  Segera hadir
+                </p>
+              </div>
+            </div>
+          </aside>
+
         </div>
       </div>
-    </>
+    </div>
   );
 }

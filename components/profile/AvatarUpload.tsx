@@ -3,8 +3,6 @@
 import { useRef, useState } from "react";
 import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
 
 interface AvatarUploadProps {
@@ -21,6 +19,7 @@ export default function AvatarUpload({
   onAvatarUpdate,
 }: AvatarUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(currentAvatarUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
@@ -32,15 +31,18 @@ export default function AvatarUpload({
 
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Only JPG, JPEG, and PNG files are allowed");
+      toast.error("Hanya file JPG, JPEG, dan PNG yang diizinkan");
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("File size must be less than 2MB");
+      toast.error("Ukuran file harus kurang dari 2MB");
       return;
     }
 
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
     setIsUploading(true);
 
     try {
@@ -60,42 +62,76 @@ export default function AvatarUpload({
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: publicUrl })
-        .eq("user_id", userId);
+        .eq("id", userId);
 
       if (updateError) throw updateError;
 
+      setPreviewUrl(publicUrl);
       onAvatarUpdate(publicUrl);
-      toast.success("Avatar updated successfully");
+      toast.success("Foto profil berhasil diperbarui!");
     } catch {
-      toast.error("Failed to upload avatar");
+      setPreviewUrl(currentAvatarUrl);
+      toast.error("Gagal mengupload foto profil.");
     } finally {
       setIsUploading(false);
     }
   }
 
   return (
-    <div className="relative inline-block">
-      <Avatar size="lg" className="h-24 w-24">
-        {currentAvatarUrl && (
-          <AvatarImage src={currentAvatarUrl} alt={username} />
-        )}
-        <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
-      </Avatar>
+    <div className="flex flex-col items-center gap-4">
+      {/* Avatar circle */}
+      <div className="relative group">
+        <div
+          className="h-28 w-28 rounded-full flex items-center justify-center text-3xl font-black border-4 border-[#0a1020] shadow-2xl overflow-hidden transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(124,58,237,0.3)]"
+          style={{
+            background: previewUrl
+              ? `url(${previewUrl}) center/cover`
+              : "linear-gradient(135deg, #7c3aed, #3b82f6)",
+            color: "white",
+          }}
+        >
+          {!previewUrl && initials}
+        </div>
 
-      <Button
-        size="icon"
-        variant="secondary"
-        className="absolute bottom-0 right-0 h-8 w-8 rounded-full"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={isUploading}
-      >
-        {isUploading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Camera className="h-4 w-4" />
+        {/* Overlay on hover */}
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="absolute inset-0 rounded-full flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed"
+        >
+          {isUploading ? (
+            <Loader2 className="h-7 w-7 text-white animate-spin" />
+          ) : (
+            <Camera className="h-7 w-7 text-white" />
+          )}
+        </button>
+
+        {/* Upload indicator ring */}
+        {isUploading && (
+          <div
+            className="absolute inset-0 rounded-full border-4 border-transparent animate-spin"
+            style={{
+              borderTopColor: "#a78bfa",
+              boxShadow: "0 0 15px rgba(167,139,250,0.5)",
+            }}
+          />
         )}
-        <span className="sr-only">Upload avatar</span>
-      </Button>
+      </div>
+
+      <div className="text-center space-y-1">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="text-sm font-bold text-violet-400 hover:text-violet-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isUploading ? "Mengupload..." : "Ganti Foto Profil"}
+        </button>
+        <p className="text-xs font-medium text-white/40">
+          JPG, JPEG, atau PNG · Maks. 2MB
+        </p>
+      </div>
 
       <input
         ref={fileInputRef}

@@ -14,6 +14,7 @@ interface SupabasePost {
   category: PostCategory[] | PostCategory;
   comments?: { count: number }[];
   likes?: { count: number }[];
+  community_id?: string;
 }
 
 function mapPost(item: SupabasePost): Post {
@@ -28,6 +29,7 @@ function mapPost(item: SupabasePost): Post {
     category: Array.isArray(item.category) ? item.category[0] : item.category,
     comment_count: item.comments?.[0]?.count ?? 0,
     like_count: item.likes?.[0]?.count ?? 0,
+    community_id: item.community_id,
   };
 }
 
@@ -47,6 +49,7 @@ export async function createPost(input: CreatePostInput): Promise<Post> {
     .insert({
       author_id: user.id,
       category_id: input.categoryId,
+      community_id: input.communityId,
       title: input.title,
       content: input.content,
       status: "published",
@@ -89,6 +92,7 @@ export async function updatePost(input: UpdatePostInput): Promise<Post> {
     .update({
       title: input.title.trim(),
       category_id: input.categoryId,
+      community_id: input.communityId,
       content: input.content.trim(),
       updated_at: new Date().toISOString(),
     })
@@ -171,6 +175,7 @@ export async function getPosts({
   category,
   search,
   sort = "newest",
+  communityId,
 }: GetPostsParams): Promise<GetPostsResponse> {
   const supabase = createClient();
   const from = (page - 1) * limit;
@@ -214,6 +219,10 @@ export async function getPosts({
 
   if (categoryId) {
     query = query.eq("category_id", categoryId);
+  }
+
+  if (communityId) {
+    query = query.eq("community_id", communityId);
   }
 
   if (search) {

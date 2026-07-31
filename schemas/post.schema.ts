@@ -15,3 +15,12 @@ export const postSchema = z.object({
 });
 
 export type PostFormValues = z.infer<typeof postSchema>;
+
+export const chatMessageSchema = z.object({
+  content: z
+    .string()
+    .min(1, "Pesan tidak boleh kosong")
+    .max(2000, "Pesan terlalu panjang"),
+});
+
+export type ChatMessageValues = z.infer<typeof chatMessageSchema>;

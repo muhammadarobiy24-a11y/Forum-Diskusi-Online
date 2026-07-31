@@ -1,22 +1,13 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import RegisterForm from "@/components/auth/RegisterForm";
 
 export default function RegisterPage() {
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle>Create an account</CardTitle>
-        <CardDescription>Join our community today</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <RegisterForm />
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      {/* 
+        Header is now handled inside RegisterForm for better alignment
+        with the Frosted Touch aesthetic and easier state handling.
+      */}
+      <RegisterForm />
+    </div>
   );
 }

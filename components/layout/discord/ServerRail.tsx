@@ -16,30 +16,48 @@ interface ServerIconProps {
 
 function ServerIcon({ href, label, active, hasNotification, children }: ServerIconProps) {
   return (
-    <div className="relative flex items-center group" title={label}>
+    <div className="relative flex items-center group w-full justify-center" title={label}>
       {/* Active pill indicator */}
       <span
         className={cn(
-          "absolute -left-3 w-[3px] rounded-r-full bg-white transition-all duration-200 ease-out",
+          "absolute left-0 w-[4px] rounded-r-full transition-all duration-300 ease-out",
           active
-            ? "h-10"
-            : "h-0 group-hover:h-5 opacity-0 group-hover:opacity-100"
+            ? "h-10 bg-violet-400"
+            : "h-0 group-hover:h-5 bg-white/50 opacity-0 group-hover:opacity-100"
         )}
+        style={{
+          boxShadow: active ? "0 0 10px rgba(167,139,250,0.8)" : "none",
+        }}
       />
 
       {/* Notification dot */}
       {hasNotification && !active && (
-        <span className="absolute -left-1.5 bottom-0 w-2 h-2 rounded-full bg-white" />
+        <span
+          className="absolute left-1.5 bottom-0 w-2.5 h-2.5 rounded-full"
+          style={{ background: "#f87171", boxShadow: "0 0 8px #f87171" }}
+        />
       )}
 
       <Link href={href}>
         <div
           className={cn(
-            "relative flex h-12 w-12 items-center justify-center overflow-hidden font-semibold text-base transition-all duration-200 ease-out select-none",
+            "relative flex h-12 w-12 items-center justify-center overflow-hidden font-bold text-base transition-all duration-300 ease-out select-none",
             active
-              ? "rounded-2xl bg-[var(--dc-blurple)] text-white shadow-lg dc-glow-blurple"
-              : "rounded-3xl bg-[oklch(0.28_0.006_264)] text-[var(--dc-text-muted)] group-hover:rounded-2xl group-hover:bg-[var(--dc-blurple)] group-hover:text-white group-hover:shadow-lg group-hover:dc-glow-blurple"
+              ? "rounded-2xl text-white"
+              : "rounded-[24px] text-white/50 group-hover:rounded-2xl group-hover:text-white"
           )}
+          style={{
+            background: active
+              ? "linear-gradient(135deg, rgba(124,58,237,0.8), rgba(59,130,246,0.8))"
+              : "rgba(255,255,255,0.05)",
+            border: active
+              ? "1px solid rgba(167,139,250,0.5)"
+              : "1px solid rgba(255,255,255,0.05)",
+            boxShadow: active
+              ? "0 0 20px rgba(124,58,237,0.4)"
+              : "none",
+            backdropFilter: "blur(12px)",
+          }}
         >
           {children}
         </div>
@@ -50,8 +68,8 @@ function ServerIcon({ href, label, active, hasNotification, children }: ServerIc
 
 function Divider() {
   return (
-    <div className="flex items-center justify-center w-12">
-      <div className="h-[2px] w-8 rounded-full bg-[oklch(0.31_0.006_264)]" />
+    <div className="flex items-center justify-center w-12 my-1">
+      <div className="h-[2px] w-8 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }} />
     </div>
   );
 }
@@ -62,7 +80,7 @@ export default function ServerRail() {
 
   const isHome =
     pathname === "/" ||
-    pathname.startsWith("/post") ||
+    pathname === "/post" ||
     pathname.startsWith("/bookmarks") ||
     pathname.startsWith("/notifications") ||
     pathname.startsWith("/profile") ||
@@ -71,7 +89,13 @@ export default function ServerRail() {
 
   return (
     <nav
-      className="dc-server-rail hidden lg:flex flex-col items-center gap-2.5 pt-3 pb-3 w-[80px] shrink-0 overflow-y-auto overflow-x-hidden"
+      className="hidden lg:flex flex-col items-center gap-3 pt-4 pb-4 w-[80px] shrink-0 overflow-y-auto overflow-x-hidden border-r"
+      style={{
+        background: "rgba(0,0,0,0.2)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderColor: "rgba(255,255,255,0.05)",
+      }}
       aria-label="Communities"
     >
       {/* Home / Direct Messages */}
@@ -103,7 +127,7 @@ export default function ServerRail() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <span className="text-base font-bold tracking-tight">{initial}</span>
+              <span className="text-lg font-black tracking-tight">{initial}</span>
             )}
           </ServerIcon>
         );

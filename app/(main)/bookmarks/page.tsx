@@ -75,14 +75,14 @@ export default function BookmarksPage() {
 
   if (sessionLoading) {
     return (
-      <>
+      <div className="flex flex-col h-full overflow-hidden relative">
         <ChannelHeader channelName="bookmarks" channelDescription="Postingan yang Anda simpan" />
-        <div className="flex-1 overflow-y-auto dc-chat-bg">
-          <div className="max-w-3xl mx-auto px-5 py-5">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
+          <div className="mx-auto max-w-4xl px-4 py-8 md:px-8 space-y-8">
             <BookmarkList bookmarks={undefined} isLoading={true} />
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -99,24 +99,35 @@ export default function BookmarksPage() {
   });
 
   return (
-    <>
+    <div className="flex flex-col h-full overflow-hidden relative">
       <ChannelHeader channelName="bookmarks" channelDescription="Postingan yang Anda simpan" />
-      <div className="flex-1 overflow-y-auto dc-chat-bg">
-        <div className="max-w-3xl mx-auto px-5 py-5 space-y-5">
-          <PostSearch value={localSearch} onChange={setLocalSearch} />
-          <div className="flex justify-end">
-            <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
+      
+      <div className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
+        <div className="mx-auto max-w-4xl px-4 py-8 md:px-8 space-y-8">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="w-full sm:w-[400px]">
+              <PostSearch value={localSearch} onChange={setLocalSearch} />
+            </div>
+            <div className="shrink-0">
+              <PostSort value={sort} onChange={(value) => updateParams({ sort: value })} />
+            </div>
           </div>
+
           <BookmarkList bookmarks={data?.bookmarks} isLoading={isLoading} />
+          
           {data && (
-            <Pagination
-              pagination={data.pagination}
-              baseUrl="/bookmarks"
-              searchParams={searchParamsObj}
-            />
+            <div className="pt-4 pb-12 flex justify-center">
+              <Pagination
+                pagination={data.pagination}
+                baseUrl="/bookmarks"
+                searchParams={searchParamsObj}
+              />
+            </div>
           )}
+          
         </div>
       </div>
-    </>
+    </div>
   );
 }

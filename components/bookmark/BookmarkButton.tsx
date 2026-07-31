@@ -1,9 +1,9 @@
 "use client";
 
 import { Bookmark } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useToggleBookmark } from "@/hooks/useToggleBookmark";
 import { useSession } from "@/components/providers/SessionProvider";
+import { cn } from "@/lib/utils";
 
 interface BookmarkButtonProps {
   postId: string;
@@ -22,17 +22,29 @@ export default function BookmarkButton({ postId, isBookmarked }: BookmarkButtonP
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <button
       onClick={handleClick}
       disabled={isPending || !user}
       aria-label={isBookmarked ? "Hapus bookmark" : "Tambah bookmark"}
       title={isBookmarked ? "Hapus bookmark" : "Tambah bookmark"}
+      className={cn(
+        "flex items-center justify-center p-1.5 rounded-full transition-all duration-300",
+        isBookmarked
+          ? "text-blue-400 bg-blue-500/10 border-blue-500/20"
+          : "text-white/50 hover:text-white hover:bg-white/10 border-transparent"
+      )}
+      style={{
+        borderWidth: 1,
+        borderStyle: "solid",
+      }}
     >
       <Bookmark
-        className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
+        className={cn(
+          "h-4 w-4 transition-transform",
+          isBookmarked ? "fill-current scale-110" : "scale-100",
+          isPending && "opacity-50"
+        )}
       />
-    </Button>
+    </button>
   );
 }

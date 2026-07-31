@@ -1,49 +1,61 @@
 "use client";
 
 import { useState } from "react";
-import { Hash, Bell, Pin, Users, Search, Menu, AtSign } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useUnreadNotifications } from "@/hooks/useUnreadNotifications";
-import { useSession } from "@/components/providers/SessionProvider";
+import { Bell, Search, Menu, User, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "@/components/providers/SessionProvider";
+import { useUnreadNotifications } from "@/hooks/useUnreadNotifications";
 import MobileDiscordNav from "./MobileDiscordNav";
 
-interface ChannelHeaderProps {
-  channelName?: string;
-  channelDescription?: string;
-  showMemberList?: boolean;
-  onToggleMemberList?: () => void;
-  communitySlug?: string;
+/* ── Map route → page title ────────────────────────────── */
+function usePageTitle(channelName?: string): string {
+  const pathname = usePathname();
+
+  if (channelName) return channelName;
+
+  if (pathname === "/" || pathname.startsWith("/post/create")) return "Forum";
+  if (pathname.startsWith("/post/") && pathname.includes("/edit")) return "Edit Post";
+  if (pathname.startsWith("/post/")) return "Detail Post";
+  if (pathname === "/post") return "Beranda";
+  if (pathname === "/communities") return "Komunitas";
+  if (pathname === "/communities/create") return "Buat Komunitas";
+  if (pathname.startsWith("/communities/")) {
+    const slug = pathname.split("/")[2];
+    return slug ? slug.replace(/-/g, " ") : "Komunitas";
+  }
+  if (pathname === "/categories") return "Kategori";
+  if (pathname.startsWith("/categories/")) return "Kategori";
+  if (pathname === "/bookmarks") return "Tersimpan";
+  if (pathname === "/notifications") return "Notifikasi";
+  if (pathname === "/profile") return "Profil";
+  if (pathname === "/settings") return "Pengaturan";
+  return "Forum";
 }
 
-function HeaderIcon({
-  children,
+/* ── Action icon button ────────────────────────────────── */
+function TopBarAction({
+  href,
+  onClick,
   label,
   active,
-  onClick,
-  href,
+  children,
 }: {
-  children: React.ReactNode;
+  href?: string;
+  onClick?: () => void;
   label: string;
   active?: boolean;
-  onClick?: () => void;
-  href?: string;
+  children: React.ReactNode;
 }) {
-  const cls = cn(
-    "flex h-8 w-8 items-center justify-center rounded-md transition-all duration-100 cursor-pointer",
-    active
-      ? "bg-[oklch(0.33_0.008_264)] text-[var(--dc-text-primary)]"
-      : "text-[var(--dc-text-muted)] hover:bg-[oklch(0.30_0.006_264)] hover:text-[var(--dc-text-primary)]"
-  );
+  const cls = `flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-150 cursor-pointer shrink-0
+    ${active ? "bg-white/10 text-white" : "text-white/50 hover:bg-white/8 hover:text-white/90"}`;
 
-  if (href) {
+  if (href)
     return (
       <Link href={href} className={cls} aria-label={label} title={label}>
         {children}
       </Link>
     );
-  }
-
   return (
     <button onClick={onClick} className={cls} aria-label={label} title={label}>
       {children}
@@ -51,92 +63,180 @@ function HeaderIcon({
   );
 }
 
+/* ── Main export ────────────────────────────────────────── */
+interface AppTopBarProps {
+  /** Override the auto-detected title */
+  channelName?: string;
+  channelDescription?: string;
+  /** Unused legacy — kept to avoid breaking call-sites */
+  showMemberList?: boolean;
+  onToggleMemberList?: () => void;
+  communitySlug?: string;
+}
+
 export default function ChannelHeader({
-  channelName = "general",
+  channelName,
   channelDescription,
-  showMemberList,
   onToggleMemberList,
+  showMemberList,
   communitySlug,
-}: ChannelHeaderProps) {
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+}: AppTopBarProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const router = useRouter();
   const { user } = useSession();
   const { data: unreadCount } = useUnreadNotifications(user?.id);
   const hasUnread = (unreadCount ?? 0) > 0;
+  const title = usePageTitle(channelName);
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (search.trim()) {
+      router.push(`/post?search=${encodeURIComponent(search.trim())}`);
+      setSearch("");
+      setSearchOpen(false);
+    }
+  }
 
   return (
     <>
-      <header className="flex h-12 items-center gap-2 px-4 border-b border-[oklch(1_0_0/7%)] dc-chat-bg shrink-0 z-10 shadow-sm shadow-black/10">
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMobileNavOpen(true)}
-          className="lg:hidden flex h-8 w-8 items-center justify-center rounded-md text-[var(--dc-text-muted)] hover:text-[var(--dc-text-primary)] hover:bg-[oklch(0.30_0.006_264)] transition-colors"
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+      <header
+        className="flex h-[52px] items-center gap-3 px-4 shrink-0 z-20"
+        style={{
+          background: "var(--forum-topbar-bg)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid var(--forum-topbar-border)",
+          boxShadow: "0 1px 0 rgba(0,0,0,0.15)",
+        }}
+      >
+        {/* LEFT — hamburger (mobile) + page title */}
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="lg:hidden flex h-8 w-8 items-center justify-center rounded-xl text-white/50 hover:bg-white/8 hover:text-white transition-colors shrink-0"
+            aria-label="Buka menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
 
-        {/* Channel name + description */}
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <Hash className="h-[22px] w-[22px] text-[var(--dc-text-channel)] shrink-0" strokeWidth={2.5} />
-          <span className="font-semibold text-[15px] text-[var(--dc-text-primary)] truncate">
-            {channelName}
-          </span>
-          {channelDescription && (
-            <>
-              <div className="h-5 w-px bg-[oklch(1_0_0/15%)] shrink-0 hidden sm:block" />
-              <p className="text-[13px] text-[var(--dc-text-channel)] truncate hidden sm:block">
+          <div className="min-w-0">
+            <h1 className="text-[15px] font-bold text-white/90 truncate capitalize leading-tight">
+              {title}
+            </h1>
+            {channelDescription && (
+              <p className="text-[11px] text-white/40 truncate hidden sm:block leading-tight">
                 {channelDescription}
               </p>
-            </>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1 shrink-0">
-          {onToggleMemberList && (
-            <HeaderIcon
-              label="Toggle Member List"
-              active={showMemberList}
-              onClick={onToggleMemberList}
+        {/* CENTER — search (desktop inline) */}
+        <form
+          onSubmit={handleSearch}
+          className="hidden md:flex items-center gap-2 rounded-xl px-3 py-1.5 w-64 transition-all duration-200"
+          style={{
+            background: "rgba(0,0,0,0.25)",
+            border: searchFocused
+              ? "1px solid rgba(124,58,237,0.55)"
+              : "1px solid rgba(255,255,255,0.07)",
+            boxShadow: searchFocused
+              ? "0 0 0 3px rgba(124,58,237,0.12)"
+              : "none",
+          }}
+        >
+          <Search
+            className="h-3.5 w-3.5 shrink-0 transition-colors"
+            style={{ color: searchFocused ? "#a78bfa" : "rgba(255,255,255,0.30)" }}
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            placeholder="Cari diskusi..."
+            className="bg-transparent text-[13px] font-medium text-white/90 placeholder:text-white/30 outline-none flex-1 w-full"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="text-white/30 hover:text-white/60 transition-colors shrink-0"
+              aria-label="Hapus"
             >
-              <Users className="h-[18px] w-[18px]" />
-            </HeaderIcon>
+              <X className="h-3 w-3" />
+            </button>
           )}
+        </form>
 
-          <HeaderIcon label="Notifications" href="/notifications">
+        {/* RIGHT — actions */}
+        <div className="flex items-center gap-1 shrink-0">
+          {/* Mobile search toggle */}
+          <TopBarAction
+            label="Cari"
+            onClick={() => setSearchOpen((v) => !v)}
+          >
+            <Search className="h-4 w-4 md:hidden" />
+            {/* On desktop show nothing — handled inline above */}
+            <span className="hidden md:block sr-only">Search</span>
+          </TopBarAction>
+
+          <TopBarAction href="/notifications" label="Notifikasi">
             <div className="relative">
-              <Bell className="h-[18px] w-[18px]" />
+              <Bell className="h-4 w-4" />
               {hasUnread && (
-                <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[var(--dc-red)] text-[8px] font-bold text-white leading-none">
+                <span
+                  className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8px] font-bold text-white border border-black/40"
+                  style={{ background: "var(--forum-danger)" }}
+                >
                   {(unreadCount ?? 0) > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </div>
-          </HeaderIcon>
+          </TopBarAction>
 
-          <HeaderIcon label="Pinned Messages">
-            <Pin className="h-[18px] w-[18px]" />
-          </HeaderIcon>
-
-          <HeaderIcon label="Mentions">
-            <AtSign className="h-[18px] w-[18px]" />
-          </HeaderIcon>
-
-          {/* Search */}
-          <div className="hidden md:flex items-center gap-2 rounded-md bg-[oklch(0.19_0.005_264)] px-2.5 py-1.5 w-40 ml-1 border border-[oklch(1_0_0/5%)] hover:border-[oklch(1_0_0/10%)] transition-colors">
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-transparent text-[13px] text-[var(--dc-text-primary)] placeholder:text-[var(--dc-text-channel)] outline-none flex-1 w-full"
-            />
-            <Search className="h-3.5 w-3.5 text-[var(--dc-text-channel)] shrink-0" />
-          </div>
+          <TopBarAction href="/profile" label="Profil">
+            <User className="h-4 w-4" />
+          </TopBarAction>
         </div>
       </header>
 
+      {/* Mobile full-width search */}
+      {searchOpen && (
+        <form
+          onSubmit={handleSearch}
+          className="lg:hidden flex items-center gap-2 px-4 py-2.5 border-b"
+          style={{
+            background: "rgba(0,0,0,0.35)",
+            borderColor: "rgba(255,255,255,0.06)",
+          }}
+        >
+          <Search className="h-4 w-4 text-white/40 shrink-0" />
+          <input
+            autoFocus
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari diskusi..."
+            className="bg-transparent text-sm text-white/90 placeholder:text-white/30 outline-none flex-1"
+          />
+          <button
+            type="button"
+            onClick={() => setSearchOpen(false)}
+            className="text-white/40 hover:text-white/70"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </form>
+      )}
+
       <MobileDiscordNav
-        open={mobileNavOpen}
-        onClose={() => setMobileNavOpen(false)}
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
         communitySlug={communitySlug}
       />
     </>

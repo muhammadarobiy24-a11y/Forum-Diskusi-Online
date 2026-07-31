@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import QueryProvider from "@/components/providers/QueryProvider";
 import SessionProvider from "@/components/providers/SessionProvider";
 import ThemeProvider from "@/components/providers/ThemeProvider";
+import { ColorThemeProvider } from "@/components/providers/ColorThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -50,6 +51,14 @@ export default function RootLayout({
                       document.documentElement.classList.add('light');
                     }
                   }
+                  // Apply color theme background to prevent flash
+                  var colorTheme = localStorage.getItem('forum-color-theme') || 'frosted';
+                  var bgs = {
+                    frosted: 'linear-gradient(135deg, #0d0d1a 0%, #0f0a1e 40%, #0a1020 100%)',
+                    midnight: 'linear-gradient(135deg, #020818 0%, #030d2e 40%, #030c28 100%)',
+                    slate: 'linear-gradient(135deg, #0a0f0a 0%, #0d1a10 40%, #091208 100%)'
+                  };
+                  document.documentElement.style.setProperty('--app-bg', bgs[colorTheme] || bgs.frosted);
                 } catch(e) {}
               })();
             `,
@@ -58,12 +67,14 @@ export default function RootLayout({
       </head>
       <body className="h-full overflow-hidden">
         <ThemeProvider defaultTheme="system" storageKey="forum-theme">
-          <QueryProvider>
-            <SessionProvider>
-              {children}
-              <Toaster position="top-right" richColors />
-            </SessionProvider>
-          </QueryProvider>
+          <ColorThemeProvider>
+            <QueryProvider>
+              <SessionProvider>
+                {children}
+                <Toaster position="top-right" richColors />
+              </SessionProvider>
+            </QueryProvider>
+          </ColorThemeProvider>
         </ThemeProvider>
       </body>
     </html>
