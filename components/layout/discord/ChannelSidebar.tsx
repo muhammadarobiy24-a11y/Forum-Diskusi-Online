@@ -54,7 +54,7 @@ function NavLink({
     <Link
       href={href}
       className={cn(
-        "group relative flex items-center gap-3 rounded-xl mx-2 px-3 py-2.5 text-[14px] font-semibold transition-all duration-150",
+        "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-3 text-[15px] font-semibold transition-all duration-150",
         active
           ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
           : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
@@ -63,7 +63,7 @@ function NavLink({
       {/* Active left bar */}
       {active && (
         <span
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[22px] rounded-r-full"
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[24px] rounded-r-full"
           style={{
             background: "var(--forum-active-bar)",
             boxShadow: "0 0 8px var(--forum-active-bar)",
@@ -73,7 +73,7 @@ function NavLink({
 
       <Icon
         className={cn(
-          "h-4 w-4 shrink-0 transition-colors",
+          "h-[18px] w-[18px] shrink-0 transition-colors",
           active ? "text-violet-400" : "text-white/35 group-hover:text-white/60"
         )}
       />
@@ -99,7 +99,7 @@ function SectionLabel({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between px-4 pt-5 pb-1.5">
+    <div className="flex items-center justify-between px-5 pt-6 pb-2">
       <span className="text-[11px] font-bold uppercase tracking-widest text-white/35">
         {label}
       </span>
@@ -191,7 +191,7 @@ function CommunitySidebar({ slug }: { slug: string }) {
       </div>
 
       {/* Community nav */}
-      <nav className="flex-1 overflow-y-auto py-2 space-y-0.5">
+      <nav className="flex-1 overflow-y-auto py-3 space-y-0.5">
         <SectionLabel label="Navigasi" />
         {COMMUNITY_NAV.map(({ href, label, icon }) => (
           <NavLink
@@ -235,22 +235,22 @@ function DefaultSidebar() {
       {/* App brand */}
       <Link
         href="/post"
-        className="flex items-center gap-3 px-5 h-[60px] shrink-0 border-b border-[var(--forum-sidebar-border)] hover:bg-[var(--forum-hover)] transition-colors"
+        className="flex items-center gap-3.5 px-5 h-[68px] shrink-0 border-b border-[var(--forum-sidebar-border)] hover:bg-[var(--forum-hover)] transition-colors"
       >
         <div
-          className="flex h-8 w-8 items-center justify-center rounded-xl shadow-lg shrink-0"
+          className="flex h-9 w-9 items-center justify-center rounded-xl shadow-lg shrink-0"
           style={{
             background: "linear-gradient(135deg, #7c3aed, #3b82f6)",
-            boxShadow: "0 0 16px rgba(124,58,237,0.45)",
+            boxShadow: "0 0 18px rgba(124,58,237,0.50)",
           }}
         >
-          <MessageCircle className="h-4 w-4 text-white" strokeWidth={2.5} />
+          <MessageCircle className="h-5 w-5 text-white" strokeWidth={2.5} />
         </div>
         <div>
-          <p className="text-[14px] font-black text-white tracking-tight leading-tight">
+          <p className="text-[15px] font-black text-white tracking-tight leading-tight">
             Forum Diskusi
           </p>
-          <p className="text-[10px] text-white/35 font-medium leading-tight">
+          <p className="text-[11px] text-white/35 font-medium leading-tight">
             Community Platform
           </p>
         </div>
@@ -302,7 +302,7 @@ function DefaultSidebar() {
                 key={c.id}
                 href={href}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl mx-2 px-3 py-2 text-[14px] font-semibold transition-all duration-150",
+                  "group relative flex items-center gap-3 rounded-xl mx-3 px-4 py-2.5 text-[15px] font-semibold transition-all duration-150",
                   isActive
                     ? "bg-[var(--forum-active)] text-white border border-[var(--forum-active-border)]"
                     : "text-white/55 hover:text-white/90 hover:bg-[var(--forum-hover)] border border-transparent"
@@ -310,7 +310,7 @@ function DefaultSidebar() {
               >
                 {isActive && (
                   <span
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-r-full"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[20px] rounded-r-full"
                     style={{
                       background: "var(--forum-active-bar)",
                       boxShadow: "0 0 8px var(--forum-active-bar)",
@@ -318,7 +318,7 @@ function DefaultSidebar() {
                   />
                 )}
                 <div
-                  className="h-6 w-6 rounded-lg overflow-hidden flex items-center justify-center text-[10px] font-black text-white shrink-0"
+                  className="h-7 w-7 rounded-lg overflow-hidden flex items-center justify-center text-[11px] font-black text-white shrink-0"
                   style={{
                     background: isActive
                       ? "linear-gradient(135deg, rgba(124,58,237,0.9), rgba(59,130,246,0.9))"
@@ -389,7 +389,7 @@ export default function ChannelSidebar({
 }) {
   return (
     <aside
-      className="hidden lg:flex flex-col w-64 shrink-0 overflow-hidden"
+      className="hidden lg:flex flex-col w-72 shrink-0 overflow-hidden"
       style={{
         background: "var(--forum-sidebar-bg)",
         backdropFilter: "blur(24px)",
