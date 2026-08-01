@@ -118,9 +118,10 @@ export default function PostCard({ post }: { post: Post }) {
             </p>
           )}
 
-          {/* Footer */}
-          <div className="flex items-center justify-between gap-3 pt-3 border-t" style={{ borderColor: `${style.border}` }}>
-            {/* Author + time */}
+          {/* Footer — dua baris di mobile, satu baris di sm+ */}
+          <div className="flex flex-col gap-2 pt-3 border-t" style={{ borderColor: style.border }}>
+
+            {/* Baris 1: Author + time */}
             <div className="flex items-center gap-2 min-w-0">
               <div
                 className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
@@ -138,8 +139,8 @@ export default function PostCard({ post }: { post: Post }) {
               </div>
             </div>
 
-            {/* Stats + actions */}
-            <div className="flex items-center gap-2 shrink-0">
+            {/* Baris 2: Stats + Like + Bookmark */}
+            <div className="flex items-center gap-2">
               <div
                 className="flex items-center gap-3 px-3 py-1.5 rounded-2xl"
                 style={{ background: "rgba(0,0,0,0.05)" }}
@@ -151,11 +152,12 @@ export default function PostCard({ post }: { post: Post }) {
                   <MessageCircle className="h-3.5 w-3.5" /><span>{post.comment_count}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-0.5">
+              <div className="flex items-center gap-0.5 ml-auto">
                 <LikeButton postId={post.id} isLiked={isLiked ?? false} likeCount={post.like_count} />
                 <BookmarkButton postId={post.id} isBookmarked={isBookmarked ?? false} />
               </div>
             </div>
+
           </div>
         </div>
       </div>
