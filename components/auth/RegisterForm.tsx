@@ -41,9 +41,15 @@ export default function RegisterForm() {
     setIsLoading(true);
     try {
       const result = await registerAction(data);
+      // result hanya ada jika ada error — redirect tidak return apapun
       if (result?.error) toast.error(result.error);
-    } catch { toast.error("Terjadi kesalahan."); }
-    finally { setIsLoading(false); }
+    } catch (err: unknown) {
+      // Next.js redirect() melempar error NEXT_REDIRECT — biarkan propagate
+      if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

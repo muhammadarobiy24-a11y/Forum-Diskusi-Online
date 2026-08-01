@@ -52,8 +52,12 @@ export default function LoginForm() {
     try {
       const result = await loginAction(data, redirectTo || undefined);
       if (result?.error) toast.error(result.error);
-    } catch { toast.error("Terjadi kesalahan."); }
-    finally { setIsLoading(false); }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
+      toast.error("Terjadi kesalahan. Silakan coba lagi.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
