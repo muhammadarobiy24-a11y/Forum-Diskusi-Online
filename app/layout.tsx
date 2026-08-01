@@ -44,7 +44,7 @@ export default function RootLayout({
               (function() {
                 try {
                   // Light mode is the default — set bg immediately to prevent flash
-                  document.documentElement.style.setProperty('--app-bg', '#faf9f6');
+                  document.documentElement.style.setProperty('--app-bg', '#f5e6d3');
                 } catch(e) {}
               })();
             `,
