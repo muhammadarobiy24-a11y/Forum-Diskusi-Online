@@ -23,7 +23,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <MessageCircle className="h-6 w-6 text-white" strokeWidth={2} />
             </div>
             <span className="text-xl font-black tracking-tight text-[var(--forum-text-primary)]">
-              Forum Diskusi
+              Threadly
             </span>
           </Link>
           <p className="text-xs font-semibold text-[var(--forum-text-muted)]">

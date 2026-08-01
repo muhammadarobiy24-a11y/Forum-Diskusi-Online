@@ -283,10 +283,10 @@ function DefaultSidebar() {
         </div>
         <div>
           <p className="text-base font-black text-[var(--forum-text-primary)] tracking-tight leading-tight">
-            Forum Diskusi
+            Threadly
           </p>
           <p className="text-[11px] text-[var(--forum-text-muted)] font-medium leading-tight">
-            Community Platform
+            by Threadly
           </p>
         </div>
       </Link>

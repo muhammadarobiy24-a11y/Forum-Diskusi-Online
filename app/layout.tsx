@@ -21,7 +21,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "Forum Diskusi — Community Platform",
+  title: "Threadly — Community Platform",
   description: "Join communities, share ideas, and connect with people",
 };
 

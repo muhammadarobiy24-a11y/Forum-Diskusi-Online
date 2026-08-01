@@ -171,7 +171,7 @@ export default function LandingPage() {
             >
               <MessageCircle size={16} />
             </div>
-            <span className="text-sm font-bold tracking-tight text-[var(--forum-text-primary)]">Forum Diskusi</span>
+            <span className="text-sm font-bold tracking-tight text-[var(--forum-text-primary)]">Threadly</span>
           </Link>
 
           {/* Desktop */}
@@ -668,13 +668,13 @@ export default function LandingPage() {
                 <MessageCircle size={16} />
               </div>
               <div>
-                <p className="text-sm font-bold text-[var(--forum-text-primary)]">Forum Diskusi Online</p>
+                <p className="text-sm font-bold text-[var(--forum-text-primary)]">Threadly</p>
                 <p className="text-xs text-[var(--forum-text-muted)]">Tempat ngobrol yang bermakna</p>
               </div>
             </div>
 
             <p className="text-xs font-medium text-[var(--forum-text-muted)]">
-              © {new Date().getFullYear()} Forum Diskusi. Dibuat dengan ❤️
+              © {new Date().getFullYear()} Threadly. Dibuat dengan ❤️
             </p>
 
             <div className="flex gap-2">

@@ -49,7 +49,7 @@ export default function MobileDiscordNav({ open, onClose }: MobileDiscordNavProp
             >
               <MessageCircle className="h-4 w-4 text-white" />
             </div>
-            <span className="text-sm font-bold text-[var(--forum-text-primary)]">Forum Diskusi</span>
+            <span className="text-sm font-bold text-[var(--forum-text-primary)]">Threadly</span>
           </div>
           <button
             onClick={onClose}
