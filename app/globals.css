@@ -39,149 +39,162 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: calc(var(--radius) * 0.75);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.5);
-  --radius-2xl: calc(var(--radius) * 2);
-  --radius-3xl: calc(var(--radius) * 2.5);
-  --radius-4xl: calc(var(--radius) * 3);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 /* ─────────────────────────────────────────────────────────
-   Style referensi: peach bg, bold cards, mobile-first
+   Forum Modern — Light Mode Design Tokens
+   Konsep: putih/krem lembut, pastel playful, abu gelap kontras
    ───────────────────────────────────────────────────────── */
 :root {
-  /* Base */
-  --background:         oklch(0.945 0.030 62);   /* peach krem #f5e6d3 */
-  --foreground:         oklch(0.14  0.012 270);  /* hampir hitam #1a1523 */
-  --card:               oklch(1     0     0);    /* putih murni */
-  --card-foreground:    oklch(0.14  0.012 270);
-  --popover:            oklch(1     0     0);
-  --popover-foreground: oklch(0.14  0.012 270);
-  --primary:            oklch(0.52  0.25  285);  /* ungu bold #6c5ce7 */
-  --primary-foreground: oklch(1     0     0);
-  --secondary:          oklch(0.74  0.16  52);   /* oranye peach #f4845f */
-  --secondary-foreground: oklch(1   0     0);
-  --muted:              oklch(0.91  0.025 62);
-  --muted-foreground:   oklch(0.48  0.012 270);
-  --accent:             oklch(0.52  0.25  285);
-  --accent-foreground:  oklch(1     0     0);
-  --destructive:        oklch(0.60  0.22  27);
-  --border:             oklch(0.88  0.025 62);
-  --input:              oklch(0.96  0.015 62);
-  --ring:               oklch(0.52  0.25  285);
-  --radius:             1.25rem;                /* 20px — sangat bubbly */
+  /* shadcn base tokens — light */
+  --background:            oklch(0.985 0.003 90);   /* krem putih #fafaf8 */
+  --foreground:            oklch(0.18  0.010 265);  /* abu gelap #1e1b2e */
+  --card:                  oklch(1     0     0);    /* putih murni */
+  --card-foreground:       oklch(0.18  0.010 265);
+  --popover:               oklch(1     0     0);
+  --popover-foreground:    oklch(0.18  0.010 265);
+  --primary:               oklch(0.58  0.22  280);  /* violet */
+  --primary-foreground:    oklch(1     0     0);
+  --secondary:             oklch(0.94  0.015 290);  /* lavender sangat muda */
+  --secondary-foreground:  oklch(0.35  0.015 280);
+  --muted:                 oklch(0.95  0.008 90);   /* krem muda */
+  --muted-foreground:      oklch(0.50  0.010 265);
+  --accent:                oklch(0.93  0.018 290);  /* lavender */
+  --accent-foreground:     oklch(0.30  0.018 280);
+  --destructive:           oklch(0.60  0.22  27);
+  --border:                oklch(0.88  0.008 265);  /* abu muda */
+  --input:                 oklch(0.92  0.006 265);
+  --ring:                  oklch(0.58  0.22  280);
+  --radius:                0.625rem;
 
   /* chart */
-  --chart-1: oklch(0.52 0.25 285);
-  --chart-2: oklch(0.72 0.18 52);
-  --chart-3: oklch(0.68 0.18 145);
-  --chart-4: oklch(0.74 0.16 200);
-  --chart-5: oklch(0.70 0.18 60);
+  --chart-1: oklch(0.58 0.22 280);   /* violet */
+  --chart-2: oklch(0.70 0.18 30);    /* peach */
+  --chart-3: oklch(0.70 0.18 145);   /* mint */
+  --chart-4: oklch(0.75 0.16 200);   /* sky */
+  --chart-5: oklch(0.72 0.18 60);    /* amber */
 
-  /* sidebar (tidak dipakai tapi dibutuhkan shadcn) */
-  --sidebar:                     oklch(0.925 0.030 60);
-  --sidebar-foreground:          oklch(0.14  0.012 270);
-  --sidebar-primary:             oklch(0.52  0.25  285);
-  --sidebar-primary-foreground:  oklch(1     0     0);
-  --sidebar-accent:              oklch(0.88  0.030 60);
-  --sidebar-accent-foreground:   oklch(0.14  0.012 270);
-  --sidebar-border:              oklch(0.86  0.025 62);
-  --sidebar-ring:                oklch(0.52  0.25  285);
+  /* sidebar */
+  --sidebar:                       oklch(0.975 0.006 90);
+  --sidebar-foreground:            oklch(0.18  0.010 265);
+  --sidebar-primary:               oklch(0.58  0.22  280);
+  --sidebar-primary-foreground:    oklch(1     0     0);
+  --sidebar-accent:                oklch(0.93  0.018 290);
+  --sidebar-accent-foreground:     oklch(0.30  0.018 280);
+  --sidebar-border:                oklch(0.88  0.008 265);
+  --sidebar-ring:                  oklch(0.58  0.22  280);
 
-  /* ── Custom tokens ── */
-  --app-bg:             #f5e6d3;
-  --app-bg-card:        #eedcc6;
+  /* ── Forum custom tokens — LIGHT ──────────────────────── */
+  /* Layout surfaces */
+  --forum-sidebar-bg:      #f5f4f0;          /* krem hangat */
+  --forum-sidebar-border:  #e5e3de;
+  --forum-topbar-bg:       #ffffff;
+  --forum-topbar-border:   #e8e6e1;
+  --forum-panel-bg:        #faf9f6;
 
-  /* Text */
-  --forum-text-primary:   #1a1523;
-  --forum-text-secondary: #3d3252;
-  --forum-text-muted:     #7c6e8a;
+  /* Text hierarchy */
+  --forum-text-primary:    #1e1b2e;          /* hampir hitam */
+  --forum-text-secondary:  #4a4660;
+  --forum-text-muted:      #8b87a0;
 
   /* Interactive */
-  --forum-hover:         rgba(0,0,0,0.04);
-  --forum-active:        rgba(108,92,231,0.12);
-  --forum-active-border: rgba(108,92,231,0.35);
-  --forum-active-bar:    #6c5ce7;
+  --forum-hover:           rgba(124,58,237,0.06);
+  --forum-active:          rgba(124,58,237,0.10);
+  --forum-active-border:   rgba(124,58,237,0.30);
+  --forum-active-bar:      #7c3aed;
 
-  /* Accent gradient */
-  --forum-accent-from:   #6c5ce7;
-  --forum-accent-to:     #a29bfe;
-  --forum-accent-glow:   rgba(108,92,231,0.30);
+  /* Accent */
+  --forum-accent-from:     #7c3aed;
+  --forum-accent-to:       #3b82f6;
+  --forum-accent-glow:     rgba(124,58,237,0.25);
 
   /* Status */
-  --forum-online:  #00b894;
-  --forum-warning: #fdcb6e;
-  --forum-danger:  #e17055;
+  --forum-online:          #16a34a;
+  --forum-warning:         #d97706;
+  --forum-danger:          #dc2626;
 
-  /* Bold card palette — sesuai referensi */
-  --c-purple:      #6c5ce7;
-  --c-orange:      #f4845f;
-  --c-dark:        #1a1523;
-  --c-white:       #ffffff;
-  --c-lavender:    #a29bfe;
-  --c-cream:       #ffeaa7;
-  --c-mint:        #55efc4;
-  --c-sky:         #74b9ff;
+  /* Pastel card palette */
+  --card-lavender:         #f0edff;   /* ungu muda */
+  --card-lavender-border:  #d4caff;
+  --card-peach:            #fff4ed;   /* oranye/peach */
+  --card-peach-border:     #ffd5b4;
+  --card-mint:             #edfff5;   /* mint */
+  --card-mint-border:      #b6f5d3;
+  --card-sky:              #edf6ff;   /* langit */
+  --card-sky-border:       #b3d9ff;
+  --card-white:            #ffffff;
+  --card-dark:             #1e1b2e;   /* kontras tinggi */
 }
 
+/* Light and dark both use light theme */
 .dark, .light {
-  --background:         oklch(0.945 0.030 62);
-  --foreground:         oklch(0.14  0.012 270);
-  --card:               oklch(1     0     0);
-  --card-foreground:    oklch(0.14  0.012 270);
-  --popover:            oklch(1     0     0);
-  --popover-foreground: oklch(0.14  0.012 270);
-  --primary:            oklch(0.52  0.25  285);
-  --primary-foreground: oklch(1     0     0);
-  --secondary:          oklch(0.74  0.16  52);
-  --secondary-foreground: oklch(1   0     0);
-  --muted:              oklch(0.91  0.025 62);
-  --muted-foreground:   oklch(0.48  0.012 270);
-  --accent:             oklch(0.52  0.25  285);
-  --accent-foreground:  oklch(1     0     0);
-  --destructive:        oklch(0.60  0.22  27);
-  --border:             oklch(0.88  0.025 62);
-  --input:              oklch(0.96  0.015 62);
-  --ring:               oklch(0.52  0.25  285);
-  --radius:             1.25rem;
-  --chart-1: oklch(0.52 0.25 285);
-  --chart-2: oklch(0.72 0.18 52);
-  --chart-3: oklch(0.68 0.18 145);
-  --chart-4: oklch(0.74 0.16 200);
-  --chart-5: oklch(0.70 0.18 60);
-  --sidebar:                     oklch(0.925 0.030 60);
-  --sidebar-foreground:          oklch(0.14  0.012 270);
-  --sidebar-primary:             oklch(0.52  0.25  285);
-  --sidebar-primary-foreground:  oklch(1     0     0);
-  --sidebar-accent:              oklch(0.88  0.030 60);
-  --sidebar-accent-foreground:   oklch(0.14  0.012 270);
-  --sidebar-border:              oklch(0.86  0.025 62);
-  --sidebar-ring:                oklch(0.52  0.25  285);
-  --app-bg:             #f5e6d3;
-  --app-bg-card:        #eedcc6;
-  --forum-text-primary:   #1a1523;
-  --forum-text-secondary: #3d3252;
-  --forum-text-muted:     #7c6e8a;
-  --forum-hover:         rgba(0,0,0,0.04);
-  --forum-active:        rgba(108,92,231,0.12);
-  --forum-active-border: rgba(108,92,231,0.35);
-  --forum-active-bar:    #6c5ce7;
-  --forum-accent-from:   #6c5ce7;
-  --forum-accent-to:     #a29bfe;
-  --forum-accent-glow:   rgba(108,92,231,0.30);
-  --forum-online:  #00b894;
-  --forum-warning: #fdcb6e;
-  --forum-danger:  #e17055;
-  --c-purple:      #6c5ce7;
-  --c-orange:      #f4845f;
-  --c-dark:        #1a1523;
-  --c-white:       #ffffff;
-  --c-lavender:    #a29bfe;
-  --c-cream:       #ffeaa7;
-  --c-mint:        #55efc4;
-  --c-sky:         #74b9ff;
+  --background:            oklch(0.985 0.003 90);
+  --foreground:            oklch(0.18  0.010 265);
+  --card:                  oklch(1     0     0);
+  --card-foreground:       oklch(0.18  0.010 265);
+  --popover:               oklch(1     0     0);
+  --popover-foreground:    oklch(0.18  0.010 265);
+  --primary:               oklch(0.58  0.22  280);
+  --primary-foreground:    oklch(1     0     0);
+  --secondary:             oklch(0.94  0.015 290);
+  --secondary-foreground:  oklch(0.35  0.015 280);
+  --muted:                 oklch(0.95  0.008 90);
+  --muted-foreground:      oklch(0.50  0.010 265);
+  --accent:                oklch(0.93  0.018 290);
+  --accent-foreground:     oklch(0.30  0.018 280);
+  --destructive:           oklch(0.60  0.22  27);
+  --border:                oklch(0.88  0.008 265);
+  --input:                 oklch(0.92  0.006 265);
+  --ring:                  oklch(0.58  0.22  280);
+  --radius:                0.625rem;
+  --chart-1: oklch(0.58 0.22 280);
+  --chart-2: oklch(0.70 0.18 30);
+  --chart-3: oklch(0.70 0.18 145);
+  --chart-4: oklch(0.75 0.16 200);
+  --chart-5: oklch(0.72 0.18 60);
+  --sidebar:                       oklch(0.975 0.006 90);
+  --sidebar-foreground:            oklch(0.18  0.010 265);
+  --sidebar-primary:               oklch(0.58  0.22  280);
+  --sidebar-primary-foreground:    oklch(1     0     0);
+  --sidebar-accent:                oklch(0.93  0.018 290);
+  --sidebar-accent-foreground:     oklch(0.30  0.018 280);
+  --sidebar-border:                oklch(0.88  0.008 265);
+  --sidebar-ring:                  oklch(0.58  0.22  280);
+  --forum-sidebar-bg:      #f5f4f0;
+  --forum-sidebar-border:  #e5e3de;
+  --forum-topbar-bg:       #ffffff;
+  --forum-topbar-border:   #e8e6e1;
+  --forum-panel-bg:        #faf9f6;
+  --forum-text-primary:    #1e1b2e;
+  --forum-text-secondary:  #4a4660;
+  --forum-text-muted:      #8b87a0;
+  --forum-hover:           rgba(124,58,237,0.06);
+  --forum-active:          rgba(124,58,237,0.10);
+  --forum-active-border:   rgba(124,58,237,0.30);
+  --forum-active-bar:      #7c3aed;
+  --forum-accent-from:     #7c3aed;
+  --forum-accent-to:       #3b82f6;
+  --forum-accent-glow:     rgba(124,58,237,0.25);
+  --forum-online:          #16a34a;
+  --forum-warning:         #d97706;
+  --forum-danger:          #dc2626;
+  --card-lavender:         #f0edff;
+  --card-lavender-border:  #d4caff;
+  --card-peach:            #fff4ed;
+  --card-peach-border:     #ffd5b4;
+  --card-mint:             #edfff5;
+  --card-mint-border:      #b6f5d3;
+  --card-sky:              #edf6ff;
+  --card-sky-border:       #b3d9ff;
+  --card-white:            #ffffff;
+  --card-dark:             #1e1b2e;
 }
 
 @layer base {
@@ -201,22 +214,22 @@
     font-family: var(--font-fira-code), ui-monospace, monospace;
   }
   h1, h2, h3, h4, h5, h6 {
-    letter-spacing: -0.02em;
-    font-weight: 800;
+    letter-spacing: -0.015em;
+    font-weight: 700;
     color: var(--forum-text-primary);
   }
 }
 
-/* ─── Scrollbar ─────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 5px; height: 5px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: #d4b896; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #c09a75; }
+/* ─── Scrollbar (light) ─────────────────────────────────── */
+::-webkit-scrollbar          { width: 5px; height: 5px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: #d1cfe8; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #b5b0d0; }
 
 /* ─── Selection ─────────────────────────────────────────── */
 ::selection {
-  background: rgba(108,92,231,0.20);
-  color: #1a1523;
+  background: rgba(124,58,237,0.18);
+  color: #1e1b2e;
 }
 
 /* ─── Focus ring ────────────────────────────────────────── */
@@ -225,42 +238,70 @@
   outline-offset: 2px;
 }
 
-/* ─── Utilities ─────────────────────────────────────────── */
+/* ─── Forum utility classes (light) ────────────────────── */
 
-/* Accent button — ungu gradient */
-.forum-btn-accent {
-  background: linear-gradient(135deg, var(--forum-accent-from), var(--forum-accent-to));
-  box-shadow: 0 4px 16px var(--forum-accent-glow);
-  color: white;
-  font-weight: 800;
-  transition: all 0.2s ease;
+/* Soft card */
+.forum-card {
+  background: #ffffff;
+  border: 1px solid #e8e6f0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(124,58,237,0.04);
 }
-.forum-btn-accent:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
+.forum-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(124,58,237,0.08);
 }
 
-/* Bold card variants */
-.card-purple { background: var(--c-purple); color: white; }
-.card-orange  { background: var(--c-orange);  color: white; }
-.card-dark    { background: var(--c-dark);    color: white; }
-.card-lavender { background: var(--c-lavender); color: white; }
-.card-white-soft {
-  background: var(--c-white);
-  border: 1.5px solid oklch(0.88 0.025 62);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-}
+/* Pastel card variants */
+.card-lavender { background: var(--card-lavender); border: 1px solid var(--card-lavender-border); }
+.card-peach    { background: var(--card-peach);    border: 1px solid var(--card-peach-border);    }
+.card-mint     { background: var(--card-mint);     border: 1px solid var(--card-mint-border);     }
+.card-sky      { background: var(--card-sky);      border: 1px solid var(--card-sky-border);      }
 
-/* Gradient text */
+/* Gradient accent text */
 .forum-gradient-text {
-  background: linear-gradient(135deg, var(--forum-accent-from), var(--forum-accent-to));
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Divider */
-.forum-divider { height: 1px; background: oklch(0.88 0.025 62); }
+/* Accent button */
+.forum-btn-accent {
+  background: linear-gradient(135deg, var(--forum-accent-from), var(--forum-accent-to));
+  box-shadow: 0 4px 14px var(--forum-accent-glow);
+  color: white;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+.forum-btn-accent:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--forum-accent-glow);
+}
 
-/* Bottom nav padding — agar konten tidak ketutup */
-.with-bottom-nav { padding-bottom: 100px; }
+/* Hover lift */
+.forum-hover-lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.forum-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* Active nav */
+.forum-nav-active {
+  background: var(--forum-active);
+  border: 1px solid var(--forum-active-border);
+  color: var(--forum-active-bar);
+}
+
+/* Divider */
+.forum-divider {
+  height: 1px;
+  background: #e8e6e1;
+}
+
+/* Status dots */
+.forum-dot-online  { background: var(--forum-online); }
+.forum-dot-warning { background: var(--forum-warning); }
+.forum-dot-danger  { background: var(--forum-danger); }
+.forum-dot-offline { background: #c4c2d0; }
