@@ -170,7 +170,8 @@ export default function PostsPage() {
             </div>
 
             {/* ── RIGHT column (xl only) ───────────────────────── */}
-            <div className="hidden xl:flex flex-col gap-4 w-72 shrink-0">
+            <div className="hidden xl:flex flex-col w-72 shrink-0">
+              <div className="sticky top-6 flex flex-col gap-4">
 
               {/* Stats card */}
               <BentoCard accent={{ bg: "#fff4ed", border: "#ffd5b4" }}>
@@ -235,6 +236,7 @@ export default function PostsPage() {
                 </p>
               </BentoCard>
 
+            </div>
             </div>
           </div>
 
