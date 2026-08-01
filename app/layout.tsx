@@ -52,7 +52,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="h-full overflow-hidden font-sans antialiased"
+        className="h-full font-sans antialiased"
         style={{ fontFamily: "var(--font-nunito), Nunito, ui-sans-serif, system-ui, sans-serif" }}
       >
         <ThemeProvider defaultTheme="system" storageKey="forum-theme">
