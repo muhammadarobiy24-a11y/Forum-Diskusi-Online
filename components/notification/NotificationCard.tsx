@@ -37,62 +37,53 @@ export default function NotificationCard({ notification, onMarkAsRead }: Notific
   return (
     <div
       onClick={handleClick}
-      className={`group relative flex items-start gap-4 p-5 md:p-6 rounded-[24px] transition-all duration-500 ${
-        notification.is_read 
-          ? "hover:bg-white/[0.04]" 
-          : "cursor-pointer hover:-translate-y-1"
+      className={`group relative flex items-start gap-4 p-5 rounded-[24px] transition-all duration-200 cursor-pointer ${
+        notification.is_read ? "" : "hover:-translate-y-0.5"
       }`}
       style={{
-        background: notification.is_read ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: notification.is_read ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(255,255,255,0.15)",
-        boxShadow: notification.is_read ? "none" : "0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+        background: notification.is_read ? "#ffffff" : "#f0edff",
+        border: notification.is_read ? "1px solid #e8e6f0" : "1px solid #d4caff",
+        boxShadow: notification.is_read
+          ? "0 1px 4px rgba(0,0,0,0.04)"
+          : "0 2px 12px rgba(108,92,231,0.12)",
       }}
     >
-      {/* Glow effect on hover for unread */}
-      {!notification.is_read && (
-        <div 
-          className="absolute inset-0 rounded-[24px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          style={{
-            background: "radial-gradient(circle at top left, rgba(124,58,237,0.15), transparent 60%)",
-            border: "1px solid rgba(167,139,250,0.4)",
-          }}
-        />
-      )}
+      {/* Remove dark glow */}
 
       {/* Actor Avatar */}
-      <div 
-        className="relative z-10 h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-xs font-bold mt-1"
-        style={{ 
-          background: notification.actor?.avatar_url ? `url(${notification.actor.avatar_url}) center/cover` : "linear-gradient(135deg, #7c3aed, #3b82f6)", 
-          color: "white" 
+      <div
+        className="h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-xs font-bold mt-0.5 text-white overflow-hidden"
+        style={{
+          background: notification.actor?.avatar_url
+            ? `url(${notification.actor.avatar_url}) center/cover`
+            : "linear-gradient(135deg, #6c5ce7, #a29bfe)",
         }}
       >
         {!notification.actor?.avatar_url && initials}
       </div>
 
-      <div className="relative z-10 flex-1 min-w-0 space-y-1.5">
+      <div className="flex-1 min-w-0 space-y-1">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-sm text-white/90">
-              {notification.actor?.username || "Unknown"}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="font-bold text-sm text-[var(--forum-text-primary)]">
+              {notification.actor?.username || "Seseorang"}
             </span>
-            <div className={`flex items-center justify-center h-6 w-6 rounded-lg border ${colorClass}`}>
+            <div className={`flex items-center justify-center h-5 w-5 rounded-lg border ${colorClass}`}>
               <Icon className="h-3 w-3" />
             </div>
             {!notification.is_read && (
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-violet-500 text-white shadow-[0_0_10px_rgba(139,92,246,0.5)]">
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-white"
+                style={{ background: "#6c5ce7" }}>
                 Baru
               </span>
             )}
           </div>
-          <span className="text-xs font-medium text-white/40 shrink-0 mt-1">
+          <span className="text-xs font-medium text-[var(--forum-text-muted)] shrink-0 mt-0.5">
             {formatRelativeDate(notification.created_at)}
           </span>
         </div>
-        
-        <p className="text-sm font-medium text-white/70 leading-relaxed">
+
+        <p className="text-sm text-[var(--forum-text-secondary)] leading-relaxed">
           {notification.message}
         </p>
       </div>
